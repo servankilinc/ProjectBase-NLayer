@@ -3,17 +3,24 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Model.Entities;
 
-public class User: IdentityUser<Guid>, IEntity, ISoftDeletableEntity, IAuditableEntity
+public class User: IdentityUser<Guid>, IEntity, ISoftDeletableEntity, IAuditableEntity, ILoggableEntity, IArchivableEntity
 {
     // Id Email gibi alanları Identity kütüphanesi sağlıyor yinede girilebilir
-    public Guid Id { get; set; }
+    public override Guid Id { get; set; }
     public string Name { get; set; } = null!;
-    public string Email { get; set; } = null!;
+    public string LastName { get; set; } = null!;
+    public override string Email { get; set; } = null!;
+    public string? Addres { get; set; }
+    public DateOnly? BirthDate { get; set; }
     public string Password { get; set; } = null!;
-    public string Addres { get; set; } = null!;
-    public DateOnly DateOfBirth { get; set; }
 
+    #region Relations
+    public virtual ICollection<Blog>? Blogs { get; set; }
+    public virtual ICollection<BlogLike>? BlogLikes { get; set; }
+    public virtual ICollection<BlogComment>? BlogComments { get; set; }
+    #endregion
 
+    #region Legacy Props
     // Auditable Properties
     public string? CreatedBy { get; set; }
     public string? UpdatedBy { get; set; }
@@ -24,9 +31,5 @@ public class User: IdentityUser<Guid>, IEntity, ISoftDeletableEntity, IAuditable
     public string? DeletedBy { get; set; }
     public bool IsDeleted { get; set; }
     public DateTime? DeletedDateUtc { get; set; }
-
-    // Relationships
-    public virtual ICollection<Blog>? Blogs { get; set; }
-    public virtual ICollection<BlogLikeMap>? BlogLikeMaps { get; set; }
-    public virtual ICollection<BlogCommentMap>? BlogCommentMaps { get; set; }
+    #endregion
 }

@@ -1,4 +1,5 @@
 ﻿using Castle.DynamicProxy;
+using Core.Utils.CrossCuttingConcerns.Helpers;
 using Core.Utils.ExceptionHandle.Exceptions;
 using System.Reflection;
 
@@ -8,46 +9,51 @@ public class BusinessExceptionInterceptor : IInterceptor
 {
     public void Intercept(IInvocation invocation)
     {
-        var methodInfo = invocation.MethodInvocationTarget ?? invocation.Method;
-        var attribute = methodInfo.GetCustomAttributes(typeof(BusinessExceptionHandlerAttribute), true).FirstOrDefault();
-        var classAttribute = methodInfo.DeclaringType?.GetCustomAttributes(typeof(BusinessExceptionHandlerAttribute), true).FirstOrDefault();
-        if (attribute == null && classAttribute == null)
+        if (invocation.HasAttribute<BusinessExceptionAttribute>())
+        {
+            HandleIntercept(invocation);
+        }
+        else
         {
             invocation.Proceed();
-            return;
         }
+    }
 
+    private void HandleIntercept(IInvocation invocation)
+    {
+        var methodInfo = invocation.MethodInvocationTarget ?? invocation.Method;
 
-        try
+        if (!methodInfo.IsAsync())
         {
-            if (!typeof(Task).IsAssignableFrom(methodInfo.ReturnType))
-            {
-                invocation.Proceed();
-            }
-            else if (!methodInfo.ReturnType.IsGenericType)
+            InterceptSync(invocation);
+        }
+        else
+        {
+            if (!methodInfo.IsGenericAsync())
             {
                 invocation.ReturnValue = InterceptAsync(invocation);
             }
             else
             {
-                var returnType = methodInfo.ReturnType.GetGenericArguments().FirstOrDefault(); ;
-                if (returnType == null)
-                {
-                    invocation.ReturnValue = InterceptAsync(invocation);
-                    return;
-                }
-                var method = GetType().GetMethod(nameof(InterceptAsyncGeneric), BindingFlags.NonPublic | BindingFlags.Instance);
-                if (method == null) throw new InvalidOperationException("InterceptAsyncGeneric method not found.");
-                var genericMethod = method.MakeGenericMethod(returnType);
-                if (genericMethod == null) throw new InvalidOperationException("InterceptAsyncGeneric has not been created.");
+                var returnType = methodInfo.ReturnType.GetGenericArguments()[0];
 
-                invocation.ReturnValue = genericMethod.Invoke(this, new object[] { invocation });
+                var method = GetType().GetMethod(nameof(InterceptAsyncGeneric), BindingFlags.NonPublic | BindingFlags.Instance)?.MakeGenericMethod(returnType);
+                if (method == null) throw new InvalidOperationException("InterceptAsyncGeneric could not be resolved.");
+
+                invocation.ReturnValue = method.Invoke(this, new object[] { invocation });
             }
+        }
+    }
+
+    private void InterceptSync(IInvocation invocation)
+    {
+        try
+        {
+            invocation.Proceed();
         }
         catch (Exception exception)
         {
-            if (exception.InnerException != null) throw new BusinessException(exception.Message + exception.InnerException.Message);
-            throw new BusinessException(exception.Message);
+            throw HandleException(exception);
         }
     }
 
@@ -56,12 +62,12 @@ public class BusinessExceptionInterceptor : IInterceptor
         try
         {
             invocation.Proceed();
-            await (Task)invocation.ReturnValue;
+            var task = (Task)invocation.ReturnValue;
+            await task.ConfigureAwait(false);
         }
         catch (Exception exception)
         {
-            if (exception.InnerException != null) throw new BusinessException(exception.Message + exception.InnerException.Message);
-            throw new BusinessException(exception.Message);
+            throw HandleException(exception);
         }
     }
 
@@ -70,19 +76,25 @@ public class BusinessExceptionInterceptor : IInterceptor
         try
         {
             invocation.Proceed();
-            var result = await (Task<TResult>)invocation.ReturnValue;
-            return result;
+            var task = (Task<TResult>)invocation.ReturnValue;
+            return await task.ConfigureAwait(false);
         }
         catch (Exception exception)
         {
-            if (exception.InnerException != null) throw new BusinessException(exception.Message + exception.InnerException.Message);
-            throw new BusinessException(exception.Message);
+            throw HandleException(exception);
         }
+    }
+
+    private BusinessException HandleException(Exception exception)
+    {
+        if (exception.InnerException != null)
+            return new BusinessException($"{exception.Message} \n Detail: {exception.InnerException.Message})");
+        return new BusinessException(exception.Message);
     }
 }
 
 
-[AttributeUsage(AttributeTargets.Method | AttributeTargets.Class | AttributeTargets.Assembly, AllowMultiple = true, Inherited = true)]
-public class BusinessExceptionHandlerAttribute : Attribute
+[AttributeUsage(AttributeTargets.Method | AttributeTargets.Class | AttributeTargets.Assembly, AllowMultiple = false, Inherited = true)]
+public class BusinessExceptionAttribute : Attribute
 {
 }

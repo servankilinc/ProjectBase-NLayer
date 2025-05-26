@@ -26,12 +26,17 @@ public class AutofacModule : Module
             .InterceptedBy(typeof(DataAccessExceptionInterceptor))
             .InstancePerLifetimeScope();
 
-        builder.RegisterType<BlogLikeMapRepository>().As<IBlogLikeMapRepository>()
+        builder.RegisterType<CategoryRepository>().As<ICategoryRepository>()
             .EnableInterfaceInterceptors()
             .InterceptedBy(typeof(DataAccessExceptionInterceptor))
             .InstancePerLifetimeScope();
 
-        builder.RegisterType<BlogCommentMapRepository>().As<IBlogCommentMapRepository>()
+        builder.RegisterType<BlogLikeRepository>().As<IBlogLikeRepository>()
+            .EnableInterfaceInterceptors()
+            .InterceptedBy(typeof(DataAccessExceptionInterceptor))
+            .InstancePerLifetimeScope();
+
+        builder.RegisterType<BlogCommentRepository>().As<IBlogCommentRepository>()
             .EnableInterfaceInterceptors()
             .InterceptedBy(typeof(DataAccessExceptionInterceptor))
             .InstancePerLifetimeScope();

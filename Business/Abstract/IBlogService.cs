@@ -1,6 +1,7 @@
 ﻿using Core.Utils.DynamicQuery;
 using Microsoft.EntityFrameworkCore.Query;
 using Model.Dtos;
+using Model.Dtos.Blog_;
 using Model.Entities;
 using System.Linq.Expressions;
 

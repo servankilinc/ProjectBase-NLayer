@@ -1,112 +1,59 @@
-﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
+﻿using Core.Model;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
-using Core.Model;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Http;
-using Core.Enums;
-using Model.ProjectEntities;
-using Newtonsoft.Json;
-using System.Net;
+using Core.Utils.RequestInfoProvider;
 
-namespace Core.Utils.Repository.Interceptors;
+namespace DataAccess.Interceptors;
 
 public sealed class SoftDeleteInterceptor : SaveChangesInterceptor
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    public SoftDeleteInterceptor(IHttpContextAccessor httpContextAccessor) => _httpContextAccessor = httpContextAccessor;
+    private readonly RequestInfoProvider _requestInfoProvider;
+    public SoftDeleteInterceptor(RequestInfoProvider requestInfoProvider) => _requestInfoProvider = requestInfoProvider;
 
 
-    public override ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData eventData, InterceptionResult<int> result, CancellationToken cancellationToken = default)
+    //  ****************************** SYNC VERSION ******************************
+    public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
     {
-        if (eventData.Context is null) return base.SavingChangesAsync(eventData, result, cancellationToken);
+        if (eventData.Context is null) return base.SavingChanges(eventData, result);
 
-        // 1) SoftDeletable entity process handling
         IEnumerable<EntityEntry<ISoftDeletableEntity>> softDeletableEntries = eventData.Context.ChangeTracker.Entries<ISoftDeletableEntity>()
             .Where(e => e.State == EntityState.Deleted && e.Entity is not IProjectEntity);
 
-        if (softDeletableEntries.Count() > 0)
+        if (softDeletableEntries.Any())
         {
-            string? userId = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
             foreach (EntityEntry<ISoftDeletableEntity> entry in softDeletableEntries)
             {
                 entry.State = EntityState.Modified;
-                entry.Entity.DeletedBy = userId ?? "Not found";
+                entry.Entity.DeletedBy = _requestInfoProvider.GetUserId();
                 entry.Entity.IsDeleted = true;
                 entry.Entity.DeletedDateUtc = DateTime.UtcNow;
             }
         }
 
-        // 2) Loggable entity process handling
-        IEnumerable<EntityEntry<ILoggableEntity>> loggableEntries = eventData.Context.ChangeTracker.Entries<ILoggableEntity>()
+        return base.SavingChanges(eventData, result);
+    }
+
+
+    //  ****************************** ASYNC VERSION ******************************
+    public override ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData eventData, InterceptionResult<int> result, CancellationToken cancellationToken = default)
+    {
+        if (eventData.Context is null) return base.SavingChangesAsync(eventData, result, cancellationToken);
+
+        IEnumerable<EntityEntry<ISoftDeletableEntity>> softDeletableEntries = eventData.Context.ChangeTracker.Entries<ISoftDeletableEntity>()
             .Where(e => e.State == EntityState.Deleted && e.Entity is not IProjectEntity);
 
-        if (loggableEntries.Count() > 0)
+        if (softDeletableEntries.Any())
         {
-            string? userId = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            string? userAgent = _httpContextAccessor.HttpContext?.Request.Headers.UserAgent;
-            IPAddress? ipAddress = _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress;
-
-            foreach (EntityEntry<ILoggableEntity> entry in loggableEntries)
+            foreach (EntityEntry<ISoftDeletableEntity> entry in softDeletableEntries)
             {
-                var primaryKeys = entry.Metadata.FindPrimaryKey()?.Properties.Select(pk => entry.Property(pk.Name).CurrentValue?.ToString()).Where(v => !string.IsNullOrEmpty(v));
-                string? entityId = default;
-
-                if (primaryKeys != null && primaryKeys.Count() > 0)
-                {
-                    if (primaryKeys.Count() == 1) entityId = primaryKeys.FirstOrDefault();
-                    else entityId = primaryKeys.OrderByDescending(x => x).Aggregate((a, b) => $"{a}-{b}");
-                }
-
-                eventData.Context.Set<ProjectLog>().Add(new ProjectLog
-                {
-                    TableName = entry.Entity?.GetType().Name,
-                    EntityId = entityId,
-                    RequesterId = userId,
-                    ClientIp = ipAddress?.ToString(),
-                    UserAgent = userAgent?.ToString(),
-                    DateUtc = DateTime.UtcNow,
-                    Action = CrudTypes.Delete,
-                    Data = entry.Entity != null ? JsonConvert.SerializeObject(entry.OriginalValues.ToObject()) : default
-                });
+                entry.State = EntityState.Modified;
+                entry.Entity.DeletedBy = _requestInfoProvider.GetUserId();
+                entry.Entity.IsDeleted = true;
+                entry.Entity.DeletedDateUtc = DateTime.UtcNow;
             }
         }
 
-        // 3) Archivable entity process handling
-        IEnumerable<EntityEntry<IArchivableEntity>> archivableEntries = eventData.Context.ChangeTracker.Entries<IArchivableEntity>()
-            .Where(e => e.State == EntityState.Deleted && e.Entity is not IProjectEntity);
-
-        if (loggableEntries.Count() > 0)
-        {
-            string? userId = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            string? userAgent = _httpContextAccessor.HttpContext?.Request.Headers.UserAgent;
-            IPAddress? ipAddress = _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress;
-
-            foreach (EntityEntry<ILoggableEntity> entry in loggableEntries)
-            {
-                var primaryKeys = entry.Metadata.FindPrimaryKey()?.Properties.Select(pk => entry.Property(pk.Name).CurrentValue?.ToString()).Where(v => !string.IsNullOrEmpty(v));
-                string? entityId = default;
-
-                if (primaryKeys != null && primaryKeys.Count() > 0)
-                {
-                    if (primaryKeys.Count() == 1) entityId = primaryKeys.FirstOrDefault();
-                    else entityId = primaryKeys.OrderByDescending(x => x).Aggregate((a, b) => $"{a}-{b}");
-                }
-
-                eventData.Context.Set<ProjectArchive>().Add(new ProjectArchive
-                {
-                    TableName = entry.Entity != null ? entry.Entity.GetType().Name : default,
-                    EntityId = entityId,
-                    RequesterId = userId,
-                    ClientIp = ipAddress?.ToString(),
-                    UserAgent = userAgent?.ToString(),
-                    Action = CrudTypes.Delete,
-                    DateUtc = DateTime.UtcNow,
-                    Data = entry.OriginalValues != null ? JsonConvert.SerializeObject(entry.OriginalValues.ToObject()) : default,
-                });
-            }
-        }
         return base.SavingChangesAsync(eventData, result, cancellationToken);
     }
 }

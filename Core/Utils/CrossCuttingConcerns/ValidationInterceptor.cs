@@ -1,6 +1,8 @@
 ﻿using Castle.DynamicProxy;
+using Core.Utils.CrossCuttingConcerns.Helpers;
 using FluentValidation;
 using FluentValidation.Results;
+using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
 namespace Core.Utils.CrossCuttingConcerns;
@@ -10,85 +12,85 @@ public class ValidationInterceptor : IInterceptor
     private readonly IServiceProvider _serviceProvider;
     public ValidationInterceptor(IServiceProvider serviceProvider) => _serviceProvider = serviceProvider;
 
-
     public void Intercept(IInvocation invocation)
     {
-        var methodInfo = invocation.MethodInvocationTarget ?? invocation.Method;
-        var attribute = methodInfo.GetCustomAttributes(typeof(ValidationAttribute), true).FirstOrDefault() as ValidationAttribute;
-        if (attribute == null || attribute.TargetType == null)
+        if (invocation.HasAttribute<ValidationAttribute>())
         {
-            invocation.Proceed();
-            return;
-        }
-
-
-        if (!typeof(Task).IsAssignableFrom(methodInfo.ReturnType))
-        {
-            // On before...
-            CheckValidation(invocation, attribute.TargetType);
-            invocation.Proceed();
-            // On success...
-        }
-        else if (!methodInfo.ReturnType.IsGenericType)
-        {
-            invocation.ReturnValue = InterceptAsync(invocation, attribute);
+            HandleIntercept(invocation);
         }
         else
         {
-            var returnType = methodInfo.ReturnType.GetGenericArguments().FirstOrDefault(); ;
-            if (returnType == null) { invocation.ReturnValue = InterceptAsync(invocation, attribute); return; }
-            var method = GetType().GetMethod(nameof(InterceptAsyncGeneric), BindingFlags.NonPublic | BindingFlags.Instance);
-            if (method == null) throw new InvalidOperationException("InterceptAsyncGeneric method not found.");
-            var genericMethod = method.MakeGenericMethod(returnType);
-            if (genericMethod == null) throw new InvalidOperationException("InterceptAsyncGeneric has not been created.");
-
-            invocation.ReturnValue = genericMethod.Invoke(this, new object[] { invocation, attribute });
+            invocation.Proceed();
         }
     }
 
+    public void HandleIntercept(IInvocation invocation)
+    {
+        var methodInfo = invocation.MethodInvocationTarget ?? invocation.Method;
+
+        var attribute = invocation.GetAttribute<ValidationAttribute>();
+        if (attribute == null) throw new InvalidOperationException("ValidationAttribute not found.");
+
+        if (!methodInfo.IsAsync())
+        {
+            InterceptSync(invocation, attribute);
+        }
+        else
+        {
+            if (!methodInfo.IsGenericAsync())
+            {
+                invocation.ReturnValue = InterceptAsync(invocation, attribute);
+            }
+            else
+            {
+                var returnType = methodInfo.ReturnType.GetGenericArguments()[0];
+
+                var method = GetType().GetMethod(nameof(InterceptAsyncGeneric), BindingFlags.NonPublic | BindingFlags.Instance)?.MakeGenericMethod(returnType);
+                if (method == null) throw new InvalidOperationException("InterceptAsyncGeneric could not be resolved.");
+
+                invocation.ReturnValue = method.Invoke(this, new object[] { invocation, attribute });
+            }
+        }
+    }
+
+    private void InterceptSync(IInvocation invocation, ValidationAttribute attribute)
+    {
+        CheckValidation(invocation, attribute.TargetType);
+        invocation.Proceed();
+    }
 
     private async Task InterceptAsync(IInvocation invocation, ValidationAttribute attribute)
     {
-        // on before...
         CheckValidation(invocation, attribute.TargetType);
-
         invocation.Proceed();
-        await (Task)invocation.ReturnValue;
-        // on success...
+        var task = (Task)invocation.ReturnValue;
+        await task.ConfigureAwait(false);
     }
 
     private async Task<TResult> InterceptAsyncGeneric<TResult>(IInvocation invocation, ValidationAttribute attribute)
     {
-        // on before...
         CheckValidation(invocation, attribute.TargetType);
-
         invocation.Proceed();
-        var result = await (Task<TResult>)invocation.ReturnValue;
-        // on success...
-        return result;
+        var task = (Task<TResult>)invocation.ReturnValue;
+        return await task.ConfigureAwait(false);
     }
-
 
     private void CheckValidation(IInvocation invocation, Type targetType)
     {
-        var request = invocation.Arguments.FirstOrDefault(arg => arg?.GetType() == targetType);
-        if (request == null) throw new InvalidOperationException("Request object to validation could not read.");
+        var arg = invocation.Arguments.FirstOrDefault(arg => arg?.GetType() == targetType);
+        if (arg == null) throw new InvalidOperationException("Arg object to validation could not be determined.");
 
         var validatorsType = typeof(IEnumerable<>).MakeGenericType(typeof(IValidator<>).MakeGenericType(targetType));
-        if (validatorsType == null) throw new InvalidOperationException("ValidatorsType has not been created.");
-        var validators = (IEnumerable<IValidator>)_serviceProvider.GetService(validatorsType)!;
-        if (validators == null || !validators.Any()) return;
 
+        var validators = (IEnumerable<IValidator>)_serviceProvider.GetRequiredService(validatorsType);
+        if (!validators.Any()) return;
 
-        var contextType = typeof(ValidationContext<>).MakeGenericType(targetType);
-        if (contextType == null) throw new InvalidOperationException("contextType has not been created.");
-
-        var context = (IValidationContext)Activator.CreateInstance(contextType, request)!;
-        if (context == null) throw new InvalidOperationException("context has not been created.");
+        var context = (IValidationContext)Activator.CreateInstance(typeof(ValidationContext<>).MakeGenericType(targetType), arg)!;
+        if (context == null) throw new InvalidOperationException("ValidationContext could not be created.");
 
         IEnumerable<ValidationFailure> failures = validators
             .Select(validator => validator.Validate(context))
-            .Where(result => result.IsValid == false)
+            .Where(result => !result.IsValid)
             .SelectMany(result => result.Errors)
             .ToList();
 

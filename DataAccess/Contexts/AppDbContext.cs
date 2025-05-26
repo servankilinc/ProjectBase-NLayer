@@ -2,12 +2,6 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Model.Entities;
-using StackExchange.Redis;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccess.Contexts;
 
@@ -17,10 +11,11 @@ public class AppDbContext: IdentityDbContext<User, IdentityRole<Guid>, Guid> // 
     {
     }
 
-    public DbSet<User> Users { get; set; }
+    public override DbSet<User> Users { get; set; }
+    public DbSet<Category> Categories { get; set; }
     public DbSet<Blog> Blogs { get; set; }
-    public DbSet<BlogLikeMap> BlogLikeMaps { get; set; }
-    public DbSet<BlogCommentMap> BlogCommentMaps { get; set; }
+    public DbSet<BlogLike> BlogLikes { get; set; }
+    public DbSet<BlogComment> BlogComments { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -30,22 +25,22 @@ public class AppDbContext: IdentityDbContext<User, IdentityRole<Guid>, Guid> // 
 
         modelBuilder.Entity<User>(u =>
         {
-            u.ToTable("Users");
+            u.ToTable("dbo_user");
  
             u.HasMany(u => u.Blogs)
-                .WithOne(b => b.User)
+                .WithOne(b => b.Author)
                 .HasForeignKey(b => b.AuthorId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.SetNull);
 
-            u.HasMany(u => u.BlogLikeMaps)
-               .WithOne(blm => blm.User)
-               .HasForeignKey(blm => blm.UserId)
-               .OnDelete(DeleteBehavior.Restrict);
+            u.HasMany(u => u.BlogComments)
+               .WithOne(b => b.User)
+               .HasForeignKey(b => b.UserId)
+               .OnDelete(DeleteBehavior.SetNull);
 
-            u.HasMany(u => u.BlogCommentMaps)
-               .WithOne(bcm => bcm.User)
-               .HasForeignKey(bcm => bcm.UserId)
-               .OnDelete(DeleteBehavior.Restrict);
+            u.HasMany(u => u.BlogLikes)
+               .WithOne(b => b.User)
+               .HasForeignKey(b => b.UserId)
+               .OnDelete(DeleteBehavior.SetNull);
 
             // ****** If SoftDeletable is used, the filter should be applied to all entities
             u.HasQueryFilter(f => !f.IsDeleted);
@@ -54,52 +49,73 @@ public class AppDbContext: IdentityDbContext<User, IdentityRole<Guid>, Guid> // 
 
         modelBuilder.Entity<Blog>(b =>
         {
-            b.ToTable("Blogs");
+            b.ToTable("dbo_blog");
+
+            b.HasOne(b => b.Author)
+               .WithMany(a => a.Blogs)
+               .HasForeignKey(b => b.AuthorId)
+               .OnDelete(DeleteBehavior.SetNull);
+
+            b.HasOne(b => b.Category)
+               .WithMany(c => c.Blogs)
+               .HasForeignKey(b => b.CategoryId)
+               .OnDelete(DeleteBehavior.SetNull);
+
+            b.HasMany(b => b.BlogLikes)
+                .WithOne(b => b.Blog)
+                .HasForeignKey(b => b.BlogId)
+                .OnDelete(DeleteBehavior.SetNull);
+             
+            b.HasMany(b => b.BlogComments)
+               .WithOne(b => b.Blog)
+               .HasForeignKey(b => b.BlogId)
+               .OnDelete(DeleteBehavior.SetNull);
+            
+            b.HasQueryFilter(f => !f.IsDeleted);
+        });
+
+
+        modelBuilder.Entity<Category>(c =>
+        {
+            c.ToTable("dbo_category");
+
+            c.HasMany(c => c.Blogs)
+               .WithOne(b => b.Category)
+               .HasForeignKey(b=> b.CategoryId)
+               .OnDelete(DeleteBehavior.SetNull);
+
+            c.HasQueryFilter(f => !f.IsDeleted);
+        });
+
+        modelBuilder.Entity<BlogLike>(b =>
+        {
+            b.ToTable("dbo_blogLike");
+
+            b.HasOne(b => b.Blog)
+               .WithMany(b => b.BlogLikes)
+               .HasForeignKey(b => b.BlogId)
+               .OnDelete(DeleteBehavior.SetNull);
 
             b.HasOne(b => b.User)
-               .WithMany(u => u.Blogs)
-               .HasForeignKey(b => b.AuthorId)
-               .OnDelete(DeleteBehavior.Restrict);
-
-            b.HasMany(b => b.BlogLikeMaps)
-                .WithOne(blm => blm.Blog)
-                .HasForeignKey(blm => blm.BlogId)
-                .OnDelete(DeleteBehavior.Restrict);
-             
-            b.HasMany(b => b.BlogCommentMaps)
-               .WithOne(bcm => bcm.Blog)
-               .HasForeignKey(bcm => bcm.BlogId)
-               .OnDelete(DeleteBehavior.Restrict);
+               .WithMany(u => u.BlogLikes)
+               .HasForeignKey(b => b.UserId)
+               .OnDelete(DeleteBehavior.SetNull);
         });
 
-        modelBuilder.Entity<BlogLikeMap>(blm =>
+
+        modelBuilder.Entity<BlogComment>(b =>
         {
-            blm.ToTable("BlogLikeMaps");
+            b.ToTable("dbo_blogComment");
 
-            blm.HasOne(blm => blm.User)
-               .WithMany(u => u.BlogLikeMaps)
-               .HasForeignKey(blm => blm.UserId)
-               .OnDelete(DeleteBehavior.Restrict);
+            b.HasOne(b => b.User)
+               .WithMany(u => u.BlogComments)
+               .HasForeignKey(b => b.UserId)
+               .OnDelete(DeleteBehavior.SetNull);
 
-            blm.HasOne(blm => blm.Blog)
-               .WithMany(u => u.BlogLikeMaps)
-               .HasForeignKey(blm => blm.BlogId)
-               .OnDelete(DeleteBehavior.Restrict);
-        });
-
-        modelBuilder.Entity<BlogCommentMap>(bcm =>
-        {
-            bcm.ToTable("BlogCommentMap");
-
-            bcm.HasOne(bcm => bcm.User)
-               .WithMany(u => u.BlogCommentMaps)
-               .HasForeignKey(bcm => bcm.UserId)
-               .OnDelete(DeleteBehavior.Restrict);
-
-            bcm.HasOne(bcm => bcm.Blog)
-               .WithMany(u => u.BlogCommentMaps)
-               .HasForeignKey(bcm => bcm.BlogId)
-               .OnDelete(DeleteBehavior.Restrict);
+            b.HasOne(b => b.Blog)
+               .WithMany(b => b.BlogComments)
+               .HasForeignKey(b => b.BlogId)
+               .OnDelete(DeleteBehavior.SetNull);
         });
 
 

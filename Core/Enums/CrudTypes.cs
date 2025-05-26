@@ -12,4 +12,6 @@ public enum CrudTypes
     Update = 3,
     [Description("Delete")]
     Delete = 4,
+    [Description("Undefined")]
+    Undefined = 5,
 }

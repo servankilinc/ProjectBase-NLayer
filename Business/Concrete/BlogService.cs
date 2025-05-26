@@ -4,6 +4,7 @@ using Core.Utils.DynamicQuery;
 using DataAccess.UoW;
 using Microsoft.EntityFrameworkCore.Query;
 using Model.Dtos;
+using Model.Dtos.Blog_;
 using Model.Entities;
 using System.Linq.Expressions;
 
@@ -49,7 +50,7 @@ public class BlogService : IBlogService
             BlogId = s.Id,
             Title = s.Title,
             AuthorName = s.User.Name,
-            BannerImage = s.BannerImageSource,
+            BannerImage = s.BannerImage,
             LikeCount = s.LikeCount,
             CommentCount = s.CommentCount,
         };

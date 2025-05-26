@@ -6,56 +6,24 @@ namespace Core.Utils.Datatable;
 public static class QueryableDatatableExtension
 {
     #region Server-Side Extension Methods
-    
     // ***************** Sync Version *****************
     public static DatatableResponseServerSide<TData> ToDatatableServerSide<TData>(this IQueryable<TData> query, DatatableRequest dataTableRequest)
     {
-        if (dataTableRequest == null) throw new ArgumentNullException(nameof(DatatableRequest));
-        var _response = new DatatableResponseServerSide<TData>();
+        if (dataTableRequest == null) throw new ArgumentNullException(nameof(dataTableRequest));
 
         // 1. Count of Total Records
         int recordsTotal = query.Count();
 
         // 2. Filter by search parameter
-        if (dataTableRequest.Search != null && !string.IsNullOrEmpty(dataTableRequest.Search.Value) && dataTableRequest.Columns != null)
-        {
-            var props = typeof(TData).GetProperties().Select(p => p.Name).ToDictionary(p => p.ToLower(), p => p);
-
-            foreach (var column in dataTableRequest.Columns.Where(c => c.Searchable && !string.IsNullOrWhiteSpace(c.Data)))
-            {
-                var key = column.Data!.ToLower();
-                if (props.TryGetValue(key, out var actualPropName))
-                {
-                    column.Data = actualPropName;
-                }
-            }
-            var filters = dataTableRequest.Columns
-                .Where(c => c.Searchable && c.Data != null && props.Any(p => p.Value == c.Data))
-                .Select(c => $"{c.Data}.Contains(@0.ToLower())");
-
-            var searchPredicate = string.Join(" OR ", filters);
-            query = query.Where(searchPredicate, dataTableRequest.Search.Value.ToLower());
-        }
+        string? searchPredicate = GenerateSearchPredicate<TData>(dataTableRequest);
+        if (searchPredicate != null) query = query.Where(searchPredicate, dataTableRequest.Search!.Value!.ToLower());
 
         // 3. Count of Filtered Records
         int recordsFiltered = query.Count();
 
         // 4. Ordering 
-        if (dataTableRequest.Order != null && dataTableRequest.Columns != null)
-        {
-            List<string> orderList = new List<string>();
-            foreach (var orderItem in dataTableRequest.Order)
-            {
-                var column = dataTableRequest.Columns[orderItem.Column];
-                if (column != null && column.Orderable && !string.IsNullOrEmpty(column.Data))
-                    orderList.Add($"{column.Data} {orderItem.Dir}");
-            }
-            if (orderList.Count > 0)
-            {
-                string concatedOrders = string.Join(",", orderList);
-                query = query.OrderBy(concatedOrders);
-            }
-        }
+        string? orderPredicate = GenerateOrderPredicate<TData>(dataTableRequest);
+        if (orderPredicate != null) query = query.OrderBy(orderPredicate);
 
         // 5. Pagination
         query = query.Skip(dataTableRequest.Start).Take(dataTableRequest.Length);
@@ -69,58 +37,25 @@ public static class QueryableDatatableExtension
         };
     }
 
+
     // ***************** Async Version *****************
     public static async Task<DatatableResponseServerSide<TData>> ToDatatableServerSideAsync<TData>(this IQueryable<TData> query, DatatableRequest dataTableRequest, CancellationToken cancellationToken = default)
     {
         if (dataTableRequest == null) throw new ArgumentNullException(nameof(dataTableRequest));
 
-        var _response = new DatatableResponseServerSide<TData>();
-
         // 1. Count of Total Records
-        int recordsTotal = await query.CountAsync(cancellationToken);
+        int recordsTotal = await query.CountAsync();
 
         // 2. Filter by search parameter
-        if (dataTableRequest.Search != null && !string.IsNullOrEmpty(dataTableRequest.Search.Value) && dataTableRequest.Columns != null)
-        {
-            var props = typeof(TData).GetProperties().Select(p => p.Name).ToDictionary(p => p.ToLower(), p => p);
-
-            foreach (var column in dataTableRequest.Columns.Where(c => c.Searchable && !string.IsNullOrWhiteSpace(c.Data)))
-            {
-                var key = column.Data!.ToLower();
-                if (props.TryGetValue(key, out var actualPropName))
-                {
-                    column.Data = actualPropName;
-                }
-            }
-
-            var filters = dataTableRequest.Columns
-                .Where(c => c.Searchable && c.Data != null && props.Any(p => p.Value == c.Data))
-                .Select(c => $"{c.Data}.ToLower().Contains(@0)");
-
-            var searchPredicate = string.Join(" OR ", filters);
-            query = query.Where(searchPredicate, dataTableRequest.Search.Value.ToLower());
-        }
+        string? searchPredicate = GenerateSearchPredicate<TData>(dataTableRequest);
+        if (searchPredicate != null) query = query.Where(searchPredicate, dataTableRequest.Search!.Value!.ToLower());
 
         // 3. Count of Filtered Records
-        int recordsFiltered = await query.CountAsync(cancellationToken);
+        int recordsFiltered = await query.CountAsync();
 
-        // 4. Ordering
-        if (dataTableRequest.Order != null && dataTableRequest.Columns != null)
-        {
-            List<string> orderList = new List<string>();
-            foreach (var orderItem in dataTableRequest.Order)
-            {
-                var column = dataTableRequest.Columns[orderItem.Column];
-                if (column != null && column.Orderable && !string.IsNullOrEmpty(column.Data))
-                    orderList.Add($"{column.Data} {orderItem.Dir}");
-            }
-
-            if (orderList.Count > 0)
-            {
-                string concatedOrders = string.Join(",", orderList);
-                query = query.OrderBy(concatedOrders);
-            }
-        }
+        // 4. Ordering 
+        string? orderPredicate = GenerateOrderPredicate<TData>(dataTableRequest);
+        if (orderPredicate != null) query = query.OrderBy(orderPredicate);
 
         // 5. Pagination
         query = query.Skip(dataTableRequest.Start).Take(dataTableRequest.Length);
@@ -135,12 +70,10 @@ public static class QueryableDatatableExtension
             RecordsFiltered = recordsFiltered,
         };
     }
-
     #endregion
 
 
     #region Client-Side Extension Methods
-
     // ***************** Sync Version *****************
     public static DatatableResponseClientSide<TData> ToDatatableClientSide<TData>(this IQueryable<TData> query)
     {
@@ -159,6 +92,54 @@ public static class QueryableDatatableExtension
             Data = data,
         };
     }
-
     #endregion
+
+
+    // ############################################ Helper Methods ############################################
+    private static string? GenerateSearchPredicate<TData>(DatatableRequest dataTableRequest)
+    {
+        if (dataTableRequest.Search == null || string.IsNullOrEmpty(dataTableRequest.Search.Value) || dataTableRequest.Columns == null) return null;
+
+        var props = typeof(TData).GetProperties().Select(p => p.Name).ToDictionary(p => p.ToLower(), p => p);
+
+        IEnumerable<Column>? searchableColumns = dataTableRequest.Columns!.Where(c => c.Searchable && !string.IsNullOrEmpty(c.Data));
+
+        foreach (var column in searchableColumns) // c.Data is column name
+        {
+            var key = column.Data!.ToLower();
+            if (props.TryGetValue(key, out var actualPropName))
+            {
+                column.Data = actualPropName;
+            }
+        }
+        var filters = searchableColumns.Select(c => $"{c.Data}.Contains(@0)");
+
+        var searchPredicate = string.Join(" OR ", filters);
+        return searchPredicate;
+    }
+
+    private static string? GenerateOrderPredicate<TData>(DatatableRequest dataTableRequest)
+    {
+        if (dataTableRequest.Order == null || dataTableRequest.Columns == null) return null;
+        
+        var props = typeof(TData).GetProperties().Select(p => p.Name).ToDictionary(p => p.ToLower(), p => p);
+
+        List<string> orderList = new List<string>();
+        foreach (var orderItem in dataTableRequest.Order)
+        {
+            var column = dataTableRequest.Columns[orderItem.Column];
+            if (column == null || !column.Orderable || string.IsNullOrEmpty(column.Data)) continue;
+
+            var key = column.Data.ToLower();
+            if (props.TryGetValue(key, out var actualPropName))
+            {
+                orderList.Add($"{actualPropName} {orderItem.Dir}");
+            }
+        }
+        string orderPredicate = string.Join(",", orderList);
+
+        if (orderList.Any()) return orderPredicate;
+        return null;
+    }
+    // ############################################ Helper Methods ############################################
 }

@@ -2,12 +2,15 @@
 
 namespace DataAccess.UoW;
 
-public interface IUnitOfWork : IDisposable
+public interface IUnitOfWork : IDisposable, IAsyncDisposable
 {
-    IUserRepository UserRepository { get; }
-    IBlogRepository BlogRepository { get; }
-    IBlogLikeMapRepository BlogLikeMapRepository { get; }
-    IBlogCommentMapRepository BlogCommentMapRepository { get; }
+    #region Repositories
+    IUserRepository Users { get; }
+    IBlogRepository Blogs { get; }
+    ICategoryRepository Categories { get; }
+    IBlogCommentRepository BlogComments { get; }
+    IBlogLikeRepository BlogLikes { get; }
+    #endregion
 
 
     int SaveChanges();

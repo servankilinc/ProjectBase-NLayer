@@ -7,21 +7,21 @@ public static class QueryableFilterExtension
 {
     private static readonly string[] _logics = { "and", "or" };
     private static readonly IDictionary<string, string> _operators = new Dictionary<string, string>
-        {
-            { "base", " " },
-            { "eq", "=" },
-            { "neq", "!=" },
-            { "lt", "<" },
-            { "lte", "<=" },
-            { "gt", ">" },
-            { "gte", ">=" },
-            { "isnull", "== null" },
-            { "isnotnull", "!= null" },
-            { "startswith", "StartsWith" },
-            { "endswith", "EndsWith" },
-            { "contains", "Contains" },
-            { "doesnotcontain", "Contains" }
-        };
+    {
+        { "base", " " },
+        { "eq", "=" },
+        { "neq", "!=" },
+        { "lt", "<" },
+        { "lte", "<=" },
+        { "gt", ">" },
+        { "gte", ">=" },
+        { "isnull", "== null" },
+        { "isnotnull", "!= null" },
+        { "startswith", "StartsWith" },
+        { "endswith", "EndsWith" },
+        { "contains", "Contains" },
+        { "doesnotcontain", "Contains" }
+    };
 
     public static IQueryable<T> ToFilter<T>(this IQueryable<T> queryable, Filter filter)
     {

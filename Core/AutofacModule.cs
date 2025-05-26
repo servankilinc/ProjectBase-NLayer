@@ -12,7 +12,7 @@ public class AutofacModule : Module
         builder.RegisterType<CacheInterceptor>();
         builder.RegisterType<CacheRemoveInterceptor>();
         builder.RegisterType<CacheRemoveGroupInterceptor>();
-        builder.RegisterType<BusinessExceptionInterceptor>(); // Use Business Exception Spesific Errors for user feedbacks
+        builder.RegisterType<BusinessExceptionInterceptor>();
         builder.RegisterType<DataAccessExceptionInterceptor>();
     }
 }

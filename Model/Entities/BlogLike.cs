@@ -2,12 +2,13 @@
 
 namespace Model.Entities;
 
-public class BlogCommentMap : IEntity
+public class BlogLike : IEntity, ILoggableEntity
 {
-    public Guid BlogId { get; set; }
+    public Guid BlogId { get; set; } 
     public Guid UserId { get; set; }
-    public string Comment { get; set; } = null!;
 
+    #region Relations
     public Blog? Blog { get; set; }
     public User? User { get; set; }
+    #endregion
 }

@@ -1,40 +1,39 @@
 ﻿using DataAccess.Abstract;
 using DataAccess.Contexts;
 using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace DataAccess.UoW;
 
 public class UnitOfWork : IUnitOfWork
 {
     private readonly AppDbContext _context;
-    private readonly IServiceProvider _serviceProvider;
-    private IDbContextTransaction _transaction;
+    private IDbContextTransaction? _transaction;
 
-    #region UserRepository
-    private IUserRepository _userRepository;
-    public IUserRepository UserRepository => _userRepository ??= _serviceProvider.GetRequiredService<IUserRepository>();
+    #region Repositories
+    public IUserRepository Users { get; private set; }
+    public IBlogRepository Blogs { get; private set; }
+    public ICategoryRepository Categories { get; private set; }
+    public IBlogLikeRepository BlogLikes { get; private set; }
+    public IBlogCommentRepository BlogComments { get; private set; }
     #endregion
 
-    #region BlogRepository
-    private IBlogRepository _blogRepository;
-    public IBlogRepository BlogRepository => _blogRepository ??= _serviceProvider.GetRequiredService<IBlogRepository>();
-    #endregion
 
-    #region BlogLikeMapRepository
-    private IBlogLikeMapRepository _blogLikeMapRepository;
-    public IBlogLikeMapRepository BlogLikeMapRepository => _blogLikeMapRepository ??= _serviceProvider.GetRequiredService<IBlogLikeMapRepository>();
-    #endregion
+    public UnitOfWork(
+        AppDbContext context,
 
-    #region BlogCommentMapRepository
-    private IBlogCommentMapRepository _blogCommentMapRepository;
-    public IBlogCommentMapRepository BlogCommentMapRepository => _blogCommentMapRepository ??= _serviceProvider.GetRequiredService<IBlogCommentMapRepository>();
-    #endregion
-
-    public UnitOfWork(AppDbContext context, IServiceProvider serviceProvider)
+        IUserRepository userRepository,
+        IBlogRepository blogRepository,
+        ICategoryRepository categoryRepository,
+        IBlogLikeRepository blogLikeRepository,
+        IBlogCommentRepository blogCommentRepository)
     {
         _context = context;
-        _serviceProvider = serviceProvider;
+
+        Users = userRepository;
+        Blogs = blogRepository;
+        Categories = categoryRepository;
+        BlogLikes = blogLikeRepository;
+        BlogComments = blogCommentRepository;
     }
 
 
@@ -43,25 +42,27 @@ public class UnitOfWork : IUnitOfWork
     {
         return _context.SaveChanges();
     }
+
     public void BeginTransaction()
     {
-        if (_transaction != null) throw new InvalidOperationException("Transaction already started.");
+        if (_transaction != null) throw new InvalidOperationException("Transaction already started for begin transaction.");
 
         _transaction = _context.Database.BeginTransaction();
     }
 
     public void CommitTransaction()
     {
-        if (_transaction == null) throw new InvalidOperationException("Transaction has not been started.");
+        if (_transaction == null) throw new InvalidOperationException("Transaction has not been started for commit transaction.");
 
         _transaction.Commit();
+
         _transaction.Dispose();
         _transaction = null;
     }
 
     public void RollbackTransaction()
     {
-        if (_transaction != null) 
+        if (_transaction != null)
         {
             _transaction.Rollback();
             _transaction.Dispose();
@@ -79,23 +80,24 @@ public class UnitOfWork : IUnitOfWork
 
     public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
     {
-        if (_transaction != null) throw new InvalidOperationException("Transaction already started.");
+        if (_transaction != null) throw new InvalidOperationException("Transaction already started for begin transaction.");
 
         _transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
     }
 
     public async Task CommitTransactionAsync(CancellationToken cancellationToken = default)
     {
-        if (_transaction == null) throw new InvalidOperationException("Transaction has not been started.");
-        
+        if (_transaction == null) throw new InvalidOperationException("Transaction has not been started for commit.");
+
         await _transaction.CommitAsync(cancellationToken);
+
         await _transaction.DisposeAsync();
         _transaction = null;
     }
 
     public async Task RollbackTransactionAsync(CancellationToken cancellationToken = default)
     {
-        if (_transaction != null) 
+        if (_transaction != null)
         {
             await _transaction.RollbackAsync(cancellationToken);
             await _transaction.DisposeAsync();
@@ -104,13 +106,26 @@ public class UnitOfWork : IUnitOfWork
     }
     #endregion
 
+
     public void Dispose()
     {
-        _context.Dispose();
         if (_transaction != null)
         {
             _transaction.Dispose();
             _transaction = null;
         }
+
+        _context.Dispose();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_transaction != null)
+        {
+            await _transaction.DisposeAsync();
+            _transaction = null;
+        }
+
+        await _context.DisposeAsync();
     }
 }
