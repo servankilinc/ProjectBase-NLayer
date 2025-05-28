@@ -1,15 +1,16 @@
 ﻿using Castle.DynamicProxy;
+using Core.Model;
 using Core.Utils.CrossCuttingConcerns.Helpers;
 using Core.Utils.ExceptionHandle.Exceptions;
 using System.Reflection;
 
 namespace Core.Utils.CrossCuttingConcerns;
 
-public class DataAccessExceptionInterceptor : IInterceptor
+public class ExceptionHandlerInterceptor : IInterceptor
 {
     public void Intercept(IInvocation invocation)
     {
-        if (invocation.HasAttribute<DataAccessExceptionAttribute>())
+        if (invocation.HasAttribute<ExceptionHandlerAttribute>())
         {
             HandleIntercept(invocation);
         }
@@ -53,7 +54,7 @@ public class DataAccessExceptionInterceptor : IInterceptor
         }
         catch (Exception exception)
         {
-            throw HandleException(exception);
+            throw HandleException(exception, invocation);
         }
     }
 
@@ -67,7 +68,7 @@ public class DataAccessExceptionInterceptor : IInterceptor
         }
         catch (Exception exception)
         {
-            throw HandleException(exception);
+            throw HandleException(exception, invocation);
         }
     }
 
@@ -81,20 +82,22 @@ public class DataAccessExceptionInterceptor : IInterceptor
         }
         catch (Exception exception)
         {
-            throw HandleException(exception);
+            throw HandleException(exception, invocation);
         }
     }
 
-    private DataAccessException HandleException(Exception exception)
+    private Exception HandleException(Exception exception, IInvocation invocation)
     {
-        if (exception.InnerException != null)
-            return new DataAccessException($"{exception.Message} \n Detail: {exception.InnerException.Message})");
-        return new DataAccessException(exception.Message);
+        if (exception is IAppException) return exception;
+
+        var message = exception.InnerException != null ? $"Message: {exception.Message} \n InnerException Message: {exception.InnerException.Message})" : $"Message: {exception.Message} \n ";
+
+        return new GeneralException(message, exception, invocation.GetLocation(), invocation.GetParameters());
     }
 }
 
 
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class | AttributeTargets.Assembly, AllowMultiple = false, Inherited = true)]
-public class DataAccessExceptionAttribute : Attribute
+public class ExceptionHandlerAttribute : Attribute
 {
 }

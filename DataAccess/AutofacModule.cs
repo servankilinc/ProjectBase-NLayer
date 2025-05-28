@@ -18,27 +18,27 @@ public class AutofacModule : Module
         // Repositoy Services
         builder.RegisterType<UserRepository>().As<IUserRepository>()
             .EnableInterfaceInterceptors()
-            .InterceptedBy(typeof(DataAccessExceptionInterceptor))
+            .InterceptedBy(typeof(DataAccessExceptionHandlerInterceptor))
             .InstancePerLifetimeScope();
 
         builder.RegisterType<BlogRepository>().As<IBlogRepository>()
             .EnableInterfaceInterceptors()
-            .InterceptedBy(typeof(DataAccessExceptionInterceptor))
+            .InterceptedBy(typeof(DataAccessExceptionHandlerInterceptor))
             .InstancePerLifetimeScope();
 
         builder.RegisterType<CategoryRepository>().As<ICategoryRepository>()
             .EnableInterfaceInterceptors()
-            .InterceptedBy(typeof(DataAccessExceptionInterceptor))
+            .InterceptedBy(typeof(DataAccessExceptionHandlerInterceptor))
             .InstancePerLifetimeScope();
 
         builder.RegisterType<BlogLikeRepository>().As<IBlogLikeRepository>()
             .EnableInterfaceInterceptors()
-            .InterceptedBy(typeof(DataAccessExceptionInterceptor))
+            .InterceptedBy(typeof(DataAccessExceptionHandlerInterceptor))
             .InstancePerLifetimeScope();
 
         builder.RegisterType<BlogCommentRepository>().As<IBlogCommentRepository>()
             .EnableInterfaceInterceptors()
-            .InterceptedBy(typeof(DataAccessExceptionInterceptor))
+            .InterceptedBy(typeof(DataAccessExceptionHandlerInterceptor))
             .InstancePerLifetimeScope();
     }
 }

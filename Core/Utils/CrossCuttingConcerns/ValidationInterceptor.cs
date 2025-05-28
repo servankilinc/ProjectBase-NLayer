@@ -1,5 +1,6 @@
 ﻿using Castle.DynamicProxy;
 using Core.Utils.CrossCuttingConcerns.Helpers;
+using Core.Utils.ExceptionHandle.Exceptions;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.Extensions.DependencyInjection;
@@ -94,7 +95,7 @@ public class ValidationInterceptor : IInterceptor
             .SelectMany(result => result.Errors)
             .ToList();
 
-        if (failures.Any()) throw new ValidationException(failures);
+        if (failures.Any()) throw new ValidationRuleException(failures, invocation.GetLocation(), invocation.GetParameters());
     }
 }
 

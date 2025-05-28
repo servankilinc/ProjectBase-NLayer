@@ -17,7 +17,7 @@ public static class ServiceRegistration
         {
             Formatting = Formatting.Indented,
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-            MaxDepth = 3,
+            MaxDepth = 7,
         };
 
         #region Distributed Cache 

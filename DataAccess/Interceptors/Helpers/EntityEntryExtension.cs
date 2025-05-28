@@ -57,7 +57,7 @@ public static class EntityEntryExtension
                 Formatting = Formatting.Indented,
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
                 NullValueHandling = NullValueHandling.Ignore,
-                MaxDepth = 1,
+                MaxDepth = 7,
             });
         }
         return data;
@@ -73,7 +73,7 @@ public static class EntityEntryExtension
                 Formatting = Formatting.Indented,
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
                 NullValueHandling = NullValueHandling.Ignore,
-                MaxDepth = 1,
+                MaxDepth = 7,
             });
         }
         return data;

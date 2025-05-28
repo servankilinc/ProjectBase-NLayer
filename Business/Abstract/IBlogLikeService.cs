@@ -3,6 +3,6 @@ using Model.Entities;
 
 namespace Business.Abstract;
 
-public interface IBlogService : IServiceBase<Blog>, IServiceBaseAsync<Blog>
+public interface IBlogLikeService : IServiceBase<BlogLike>, IServiceBaseAsync<BlogLike>
 {
 }

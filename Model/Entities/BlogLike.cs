@@ -4,7 +4,7 @@ namespace Model.Entities;
 
 public class BlogLike : IEntity, ILoggableEntity
 {
-    public Guid BlogId { get; set; } 
+    public Guid BlogId { get; set; }
     public Guid UserId { get; set; }
 
     #region Relations

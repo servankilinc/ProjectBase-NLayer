@@ -3,13 +3,13 @@ using FluentValidation;
 
 namespace Model.Dtos.Category_;
 
-public class BlogLikeCreateDto : IDto
+public class CategoryUpdateDto : IDto
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = null!;
 }
 
-public class CategoryUpdateDtoValidator : AbstractValidator<BlogLikeCreateDto>
+public class CategoryUpdateDtoValidator : AbstractValidator<CategoryUpdateDto>
 {
     public CategoryUpdateDtoValidator()
     {
