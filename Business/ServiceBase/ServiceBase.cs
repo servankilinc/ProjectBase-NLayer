@@ -25,24 +25,24 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
 
     // ############################# Sync Methods #############################
     #region Add
-    public TEntity Add(TEntity entity)
+    public TEntity _Add(TEntity entity)
     {
         return _repository.AddAndSave(entity);
     }
 
-    public TDtoResponse Add<TDtoResponse>(TEntity entity) where TDtoResponse : IDto
+    public TDtoResponse _Add<TDtoResponse>(TEntity entity) where TDtoResponse : IDto
     {
         TEntity insertedEntity = _repository.AddAndSave(entity);
         return _mapper.Map<TDtoResponse>(insertedEntity);
     }
 
-    public TEntity Add<TDtoRequest>(TDtoRequest insertModel) where TDtoRequest : IDto
+    public TEntity _Add<TDtoRequest>(TDtoRequest insertModel) where TDtoRequest : IDto
     {
         TEntity mappedEntity = _mapper.Map<TEntity>(insertModel);
         return _repository.AddAndSave(mappedEntity);
     }
 
-    public TDtoResponse Add<TDtoRequest, TDtoResponse>(TDtoRequest insertModel) where TDtoRequest : IDto where TDtoResponse : IDto
+    public TDtoResponse _Add<TDtoRequest, TDtoResponse>(TDtoRequest insertModel) where TDtoRequest : IDto where TDtoResponse : IDto
     {
         TEntity mappedEntity = _mapper.Map<TEntity>(insertModel);
         TEntity insertedEntity = _repository.AddAndSave(mappedEntity);
@@ -51,24 +51,24 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
     #endregion
 
     #region AddList
-    public List<TEntity> AddList(IEnumerable<TEntity> entityList)
+    public List<TEntity> _AddList(IEnumerable<TEntity> entityList)
     {
         return _repository.AddAndSave(entityList);
     }
 
-    public List<TDtoResponse> AddList<TDtoResponse>(IEnumerable<TEntity> entityList) where TDtoResponse : IDto
+    public List<TDtoResponse> _AddList<TDtoResponse>(IEnumerable<TEntity> entityList) where TDtoResponse : IDto
     {
         List<TEntity> insertedEntityList = _repository.AddAndSave(entityList);
         return _mapper.Map<List<TDtoResponse>>(insertedEntityList);
     }
 
-    public List<TEntity> AddList<TDtoRequest>(IEnumerable<TDtoRequest> insertModelList) where TDtoRequest : IDto
+    public List<TEntity> _AddList<TDtoRequest>(IEnumerable<TDtoRequest> insertModelList) where TDtoRequest : IDto
     {
         IEnumerable<TEntity> mappedEntityList = _mapper.Map<IEnumerable<TEntity>>(insertModelList);
         return _repository.AddAndSave(mappedEntityList);
     }
 
-    public List<TDtoResponse> AddList<TDtoRequest, TDtoResponse>(IEnumerable<TDtoRequest> insertModelList) where TDtoRequest : IDto where TDtoResponse : IDto
+    public List<TDtoResponse> _AddList<TDtoRequest, TDtoResponse>(IEnumerable<TDtoRequest> insertModelList) where TDtoRequest : IDto where TDtoResponse : IDto
     {
         IEnumerable<TEntity> mappedEntityList = _mapper.Map<IEnumerable<TEntity>>(insertModelList);
         List<TEntity> insertedEntityList = _repository.AddAndSave(mappedEntityList);
@@ -77,18 +77,18 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
     #endregion
 
     #region Update
-    public TEntity Update(TEntity entity)
+    public TEntity _Update(TEntity entity)
     {
         return _repository.UpdateAndSave(entity);
     }
 
-    public TDtoResponse Update<TDtoResponse>(TEntity entity) where TDtoResponse : IDto
+    public TDtoResponse _Update<TDtoResponse>(TEntity entity) where TDtoResponse : IDto
     {
         TEntity updatedEntity = _repository.UpdateAndSave(entity);
         return _mapper.Map<TDtoResponse>(updatedEntity);
     }
 
-    public TEntity Update<TDtoRequest>(TDtoRequest updateModel, Expression<Func<TEntity, bool>> where) where TDtoRequest : IDto
+    public TEntity _Update<TDtoRequest>(TDtoRequest updateModel, Expression<Func<TEntity, bool>> where) where TDtoRequest : IDto
     {
         TEntity? entity = _repository.Get(where: where);
         if (entity == null) throw new Exception($"The entity({nameof(TEntity)}) was not found to update. Update model => {JsonConvert.SerializeObject(updateModel)}.");
@@ -97,7 +97,7 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
         return _repository.UpdateAndSave(entityToUpdate);
     }
 
-    public TDtoResponse Update<TDtoRequest, TDtoResponse>(TDtoRequest updateModel, Expression<Func<TEntity, bool>> where) where TDtoRequest : IDto where TDtoResponse : IDto
+    public TDtoResponse _Update<TDtoRequest, TDtoResponse>(TDtoRequest updateModel, Expression<Func<TEntity, bool>> where) where TDtoRequest : IDto where TDtoResponse : IDto
     {
         TEntity? entity = _repository.Get(where: where);
         if (entity == null) throw new Exception($"The entity({nameof(TEntity)}) was not found to update. Update model => {JsonConvert.SerializeObject(updateModel)}.");
@@ -109,12 +109,12 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
     #endregion
 
     #region UpdateList
-    public List<TEntity> UpdateList(IEnumerable<TEntity> entityList)
+    public List<TEntity> _UpdateList(IEnumerable<TEntity> entityList)
     {
         return _repository.UpdateAndSave(entityList);
     }
 
-    public List<TDtoResponse> UpdateList<TDtoResponse>(IEnumerable<TEntity> entityList) where TDtoResponse : IDto
+    public List<TDtoResponse> _UpdateList<TDtoResponse>(IEnumerable<TEntity> entityList) where TDtoResponse : IDto
     {
         List<TEntity> updatedList = _repository.UpdateAndSave(entityList);
         return _mapper.Map<List<TDtoResponse>>(updatedList);
@@ -122,41 +122,41 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
     #endregion
 
     #region Delete
-    public void Delete(TEntity entity)
+    public void _Delete(TEntity entity)
     {
         _repository.DeleteAndSave(entity);
     }
 
-    public void Delete(IEnumerable<TEntity> entityList)
+    public void _Delete(IEnumerable<TEntity> entityList)
     {
         _repository.DeleteAndSave(entityList);
     }
 
-    public void Delete(Expression<Func<TEntity, bool>> where)
+    public void _Delete(Expression<Func<TEntity, bool>> where)
     {
         _repository.DeleteAndSave(where);
     }
     #endregion
 
     #region IsExist & Count
-    public bool IsExist(Filter? filter = null, Expression<Func<TEntity, bool>>? where = null, bool ignoreFilters = false)
+    public bool _IsExist(Filter? filter = null, Expression<Func<TEntity, bool>>? where = null, bool ignoreFilters = false)
     {
         return _repository.IsExist(filter, where, ignoreFilters);
     }
 
-    public int Count(Filter? filter = null, Expression<Func<TEntity, bool>>? where = null, bool ignoreFilters = false)
+    public int _Count(Filter? filter = null, Expression<Func<TEntity, bool>>? where = null, bool ignoreFilters = false)
     {
         return _repository.Count(filter, where, ignoreFilters);
     }
     #endregion
 
     #region Get
-    public TEntity? Get(
+    public TEntity? _Get(
         Filter? filter = null,
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         bool tracking = true)
     {
@@ -172,13 +172,13 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
         return entity;
     }
 
-    public TDtoResponse? Get<TDtoResponse>(
+    public TDtoResponse? _Get<TDtoResponse>(
         Expression<Func<TEntity, TDtoResponse>> select,
         Filter? filter = null,
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         bool tracking = false) where TDtoResponse : IDto
     {
@@ -195,12 +195,12 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
         return responseModel;
     }
 
-    public TDtoResponse? Get<TDtoResponse>(
+    public TDtoResponse? _Get<TDtoResponse>(
         Filter? filter = null,
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         bool tracking = false) where TDtoResponse : IDto
     {
@@ -219,12 +219,12 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
     #endregion
 
     #region GetList
-    public ICollection<TEntity>? GetList(
+    public ICollection<TEntity>? _GetList(
         Filter? filter = null,
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         bool tracking = true)
     {
@@ -240,13 +240,13 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
         return entity;
     }
 
-    public ICollection<TDtoResponse>? GetList<TDtoResponse>(
+    public ICollection<TDtoResponse>? _GetList<TDtoResponse>(
        Expression<Func<TEntity, TDtoResponse>> select,
        Filter? filter = null,
        IEnumerable<Sort>? sorts = null,
        Expression<Func<TEntity, bool>>? where = null,
        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-       Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+       Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
        bool ignoreFilters = false,
        bool tracking = false) where TDtoResponse : IDto
     {
@@ -263,12 +263,12 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
         return responseModel;
     }
 
-    public ICollection<TDtoResponse>? GetList<TDtoResponse>(
+    public ICollection<TDtoResponse>? _GetList<TDtoResponse>(
         Filter? filter = null,
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         bool tracking = false) where TDtoResponse : IDto
     {
@@ -287,13 +287,13 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
     #endregion
 
     #region Datatable Server-Side
-    public DatatableResponseServerSide<TEntity> DatatableServerSide(
+    public DatatableResponseServerSide<TEntity> _DatatableServerSide(
         DatatableRequest datatableRequest,
         Filter? filter = null,
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false)
     {
         return _repository.DatatableServerSide(
@@ -306,14 +306,14 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
             ignoreFilters: ignoreFilters);
     }
 
-    public DatatableResponseServerSide<TDtoResponse> DatatableServerSide<TDtoResponse>(
+    public DatatableResponseServerSide<TDtoResponse> _DatatableServerSide<TDtoResponse>(
        DatatableRequest datatableRequest,
        Expression<Func<TEntity, TDtoResponse>> select,
        Filter? filter = null,
        IEnumerable<Sort>? sorts = null,
        Expression<Func<TEntity, bool>>? where = null,
        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-       Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+       Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
        bool ignoreFilters = false) where TDtoResponse : IDto
     {
         return _repository.DatatableServerSide<TDtoResponse>(
@@ -327,13 +327,13 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
             ignoreFilters: ignoreFilters);
     }
 
-    public DatatableResponseServerSide<TDtoResponse> DatatableServerSide<TDtoResponse>(
+    public DatatableResponseServerSide<TDtoResponse> _DatatableServerSide<TDtoResponse>(
         DatatableRequest datatableRequest,
         Filter? filter = null,
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false) where TDtoResponse : IDto
     {
         return _repository.DatatableServerSide<TDtoResponse>(
@@ -349,12 +349,12 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
     #endregion
 
     #region Datatable Client-Side
-    public DatatableResponseClientSide<TEntity> DatatableClientSide(
+    public DatatableResponseClientSide<TEntity> _DatatableClientSide(
         Filter? filter = null,
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false)
     {
         return _repository.DatatableClientSide(
@@ -366,13 +366,13 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
             ignoreFilters: ignoreFilters);
     }
 
-    public DatatableResponseClientSide<TDtoResponse> DatatableClientSide<TDtoResponse>(
+    public DatatableResponseClientSide<TDtoResponse> _DatatableClientSide<TDtoResponse>(
         Expression<Func<TEntity, TDtoResponse>> select,
         Filter? filter = null,
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false) where TDtoResponse : IDto
     {
         return _repository.DatatableClientSide<TDtoResponse>(
@@ -385,12 +385,12 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
             ignoreFilters: ignoreFilters);
     }
 
-    public DatatableResponseClientSide<TDtoResponse> DatatableClientSide<TDtoResponse>(
+    public DatatableResponseClientSide<TDtoResponse> _DatatableClientSide<TDtoResponse>(
         Filter? filter = null,
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false) where TDtoResponse : IDto
     {
         return _repository.DatatableClientSide<TDtoResponse>(
@@ -405,13 +405,13 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
     #endregion
 
     #region Pagination
-    public PaginationResponse<TEntity> Pagination(
+    public PaginationResponse<TEntity> _Pagination(
         PaginationRequest paginationRequest,
         Filter? filter = null,
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false)
     {
         return _repository.Pagination(
@@ -424,14 +424,14 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
             ignoreFilters: ignoreFilters);
     }
 
-    public PaginationResponse<TDtoResponse> Pagination<TDtoResponse>(
+    public PaginationResponse<TDtoResponse> _Pagination<TDtoResponse>(
         PaginationRequest paginationRequest,
         Expression<Func<TEntity, TDtoResponse>> select,
         Filter? filter = null,
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false) where TDtoResponse : IDto
     {
         return _repository.Pagination<TDtoResponse>(
@@ -445,13 +445,13 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
             ignoreFilters: ignoreFilters);
     }
 
-    public PaginationResponse<TDtoResponse> Pagination<TDtoResponse>(
+    public PaginationResponse<TDtoResponse> _Pagination<TDtoResponse>(
         PaginationRequest paginationRequest,
         Filter? filter = null,
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false) where TDtoResponse : IDto
     {
         return _repository.Pagination<TDtoResponse>(
@@ -468,24 +468,24 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
 
     // ############################# Async Methods #############################
     #region Add
-    public async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default)
+    public async Task<TEntity> _AddAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         return await _repository.AddAndSaveAsync(entity, cancellationToken);
     }
 
-    public async Task<TDtoResponse> AddAsync<TDtoResponse>(TEntity entity, CancellationToken cancellationToken = default) where TDtoResponse : IDto
+    public async Task<TDtoResponse> _AddAsync<TDtoResponse>(TEntity entity, CancellationToken cancellationToken = default) where TDtoResponse : IDto
     {
         TEntity insertedEntity = await _repository.AddAndSaveAsync(entity, cancellationToken);
         return _mapper.Map<TDtoResponse>(insertedEntity);
     }
 
-    public async Task<TEntity> AddAsync<TDtoRequest>(TDtoRequest insertModel, CancellationToken cancellationToken = default) where TDtoRequest : IDto
+    public async Task<TEntity> _AddAsync<TDtoRequest>(TDtoRequest insertModel, CancellationToken cancellationToken = default) where TDtoRequest : IDto
     {
         TEntity mappedEntity = _mapper.Map<TEntity>(insertModel);
         return await _repository.AddAndSaveAsync(mappedEntity, cancellationToken);
     }
 
-    public async Task<TDtoResponse> AddAsync<TDtoRequest, TDtoResponse>(TDtoRequest insertModel, CancellationToken cancellationToken = default) where TDtoRequest : IDto where TDtoResponse : IDto
+    public async Task<TDtoResponse> _AddAsync<TDtoRequest, TDtoResponse>(TDtoRequest insertModel, CancellationToken cancellationToken = default) where TDtoRequest : IDto where TDtoResponse : IDto
     {
         TEntity mappedEntity = _mapper.Map<TEntity>(insertModel);
         TEntity insertedEntity = await _repository.AddAndSaveAsync(mappedEntity, cancellationToken);
@@ -494,24 +494,24 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
     #endregion
 
     #region AddList
-    public async Task<List<TEntity>> AddListAsync(IEnumerable<TEntity> entityList, CancellationToken cancellationToken = default)
+    public async Task<List<TEntity>> _AddListAsync(IEnumerable<TEntity> entityList, CancellationToken cancellationToken = default)
     {
         return await _repository.AddAndSaveAsync(entityList, cancellationToken);
     }
 
-    public async Task<List<TDtoResponse>> AddListAsync<TDtoResponse>(IEnumerable<TEntity> entityList, CancellationToken cancellationToken = default) where TDtoResponse : IDto
+    public async Task<List<TDtoResponse>> _AddListAsync<TDtoResponse>(IEnumerable<TEntity> entityList, CancellationToken cancellationToken = default) where TDtoResponse : IDto
     {
         List<TEntity> insertedEntityList = await _repository.AddAndSaveAsync(entityList, cancellationToken);
         return _mapper.Map<List<TDtoResponse>>(insertedEntityList);
     }
 
-    public async Task<List<TEntity>> AddListAsync<TDtoRequest>(IEnumerable<TDtoRequest> insertModelList, CancellationToken cancellationToken = default) where TDtoRequest : IDto
+    public async Task<List<TEntity>> _AddListAsync<TDtoRequest>(IEnumerable<TDtoRequest> insertModelList, CancellationToken cancellationToken = default) where TDtoRequest : IDto
     {
         IEnumerable<TEntity> mappedEntityList = _mapper.Map<IEnumerable<TEntity>>(insertModelList);
         return await _repository.AddAndSaveAsync(mappedEntityList, cancellationToken);
     }
 
-    public async Task<List<TDtoResponse>> AddListAsync<TDtoRequest, TDtoResponse>(IEnumerable<TDtoRequest> insertModelList, CancellationToken cancellationToken = default) where TDtoRequest : IDto where TDtoResponse : IDto
+    public async Task<List<TDtoResponse>> _AddListAsync<TDtoRequest, TDtoResponse>(IEnumerable<TDtoRequest> insertModelList, CancellationToken cancellationToken = default) where TDtoRequest : IDto where TDtoResponse : IDto
     {
         IEnumerable<TEntity> mappedEntityList = _mapper.Map<IEnumerable<TEntity>>(insertModelList);
         List<TEntity> insertedEntityList = await _repository.AddAndSaveAsync(mappedEntityList, cancellationToken);
@@ -520,18 +520,18 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
     #endregion
 
     #region Update
-    public async Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
+    public async Task<TEntity> _UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         return await _repository.UpdateAndSaveAsync(entity, cancellationToken);
     }
 
-    public async Task<TDtoResponse> UpdateAsync<TDtoResponse>(TEntity entity, CancellationToken cancellationToken = default) where TDtoResponse : IDto
+    public async Task<TDtoResponse> _UpdateAsync<TDtoResponse>(TEntity entity, CancellationToken cancellationToken = default) where TDtoResponse : IDto
     {
         TEntity updatedEntity = await _repository.UpdateAndSaveAsync(entity, cancellationToken);
         return _mapper.Map<TDtoResponse>(updatedEntity);
     }
 
-    public async Task<TEntity> UpdateAsync<TDtoRequest>(TDtoRequest updateModel, Expression<Func<TEntity, bool>> where, CancellationToken cancellationToken = default) where TDtoRequest : IDto
+    public async Task<TEntity> _UpdateAsync<TDtoRequest>(TDtoRequest updateModel, Expression<Func<TEntity, bool>> where, CancellationToken cancellationToken = default) where TDtoRequest : IDto
     {
         TEntity? entity = await _repository.GetAsync(where: where, cancellationToken: cancellationToken);
         if (entity == null) throw new Exception($"The entity({nameof(TEntity)}) was not found to update. Update model => {JsonConvert.SerializeObject(updateModel)}.");
@@ -540,7 +540,7 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
         return await _repository.UpdateAndSaveAsync(entityToUpdate, cancellationToken);
     }
 
-    public async Task<TDtoResponse> UpdateAsync<TDtoRequest, TDtoResponse>(TDtoRequest updateModel, Expression<Func<TEntity, bool>> where, CancellationToken cancellationToken = default) where TDtoRequest : IDto where TDtoResponse : IDto
+    public async Task<TDtoResponse> _UpdateAsync<TDtoRequest, TDtoResponse>(TDtoRequest updateModel, Expression<Func<TEntity, bool>> where, CancellationToken cancellationToken = default) where TDtoRequest : IDto where TDtoResponse : IDto
     {
         TEntity? entity = await _repository.GetAsync(where: where, cancellationToken: cancellationToken);
         if (entity == null) throw new Exception($"The entity({nameof(TEntity)}) was not found to update. Update model => {JsonConvert.SerializeObject(updateModel)}.");
@@ -552,12 +552,12 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
     #endregion
 
     #region UpdateList
-    public async Task<List<TEntity>> UpdateListAsync(IEnumerable<TEntity> entityList, CancellationToken cancellationToken = default)
+    public async Task<List<TEntity>> _UpdateListAsync(IEnumerable<TEntity> entityList, CancellationToken cancellationToken = default)
     {
         return await _repository.UpdateAndSaveAsync(entityList, cancellationToken);
     }
 
-    public async Task<List<TDtoResponse>> UpdateListAsync<TDtoResponse>(IEnumerable<TEntity> entityList, CancellationToken cancellationToken = default) where TDtoResponse : IDto
+    public async Task<List<TDtoResponse>> _UpdateListAsync<TDtoResponse>(IEnumerable<TEntity> entityList, CancellationToken cancellationToken = default) where TDtoResponse : IDto
     {
         List<TEntity> updatedList = await _repository.UpdateAndSaveAsync(entityList, cancellationToken);
         return _mapper.Map<List<TDtoResponse>>(updatedList);
@@ -565,41 +565,41 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
     #endregion
 
     #region Delete
-    public async Task DeleteAsync(TEntity entity, CancellationToken cancellationToken = default)
+    public async Task _DeleteAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         await _repository.DeleteAndSaveAsync(entity, cancellationToken);
     }
 
-    public async Task DeleteAsync(IEnumerable<TEntity> entityList, CancellationToken cancellationToken = default)
+    public async Task _DeleteAsync(IEnumerable<TEntity> entityList, CancellationToken cancellationToken = default)
     {
         await _repository.DeleteAndSaveAsync(entityList, cancellationToken);
     }
 
-    public async Task DeleteAsync(Expression<Func<TEntity, bool>> where, CancellationToken cancellationToken = default)
+    public async Task _DeleteAsync(Expression<Func<TEntity, bool>> where, CancellationToken cancellationToken = default)
     {
         await _repository.DeleteAndSaveAsync(where, cancellationToken);
     }
     #endregion
 
     #region IsExist & Count
-    public async Task<bool> IsExistAsync(Filter? filter = null, Expression<Func<TEntity, bool>>? where = null, bool ignoreFilters = false, CancellationToken cancellationToken = default)
+    public async Task<bool> _IsExistAsync(Filter? filter = null, Expression<Func<TEntity, bool>>? where = null, bool ignoreFilters = false, CancellationToken cancellationToken = default)
     {
         return await _repository.IsExistAsync(filter, where, ignoreFilters, cancellationToken);
     }
 
-    public async Task<int> CountAsync(Filter? filter = null, Expression<Func<TEntity, bool>>? where = null, bool ignoreFilters = false, CancellationToken cancellationToken = default)
+    public async Task<int> _CountAsync(Filter? filter = null, Expression<Func<TEntity, bool>>? where = null, bool ignoreFilters = false, CancellationToken cancellationToken = default)
     {
         return await _repository.CountAsync(filter, where, ignoreFilters, cancellationToken);
     }
     #endregion
 
     #region Get
-    public async Task<TEntity?> GetAsync(
+    public async Task<TEntity?> _GetAsync(
         Filter? filter = null,
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         bool tracking = true,
         CancellationToken cancellationToken = default)
@@ -617,13 +617,13 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
         return entity;
     }
 
-    public async Task<TDtoResponse?> GetAsync<TDtoResponse>(
+    public async Task<TDtoResponse?> _GetAsync<TDtoResponse>(
         Expression<Func<TEntity, TDtoResponse>> select,
         Filter? filter = null,
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         bool tracking = false,
         CancellationToken cancellationToken = default) where TDtoResponse : IDto
@@ -642,12 +642,12 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
         return responseModel;
     }
 
-    public async Task<TDtoResponse?> GetAsync<TDtoResponse>(
+    public async Task<TDtoResponse?> _GetAsync<TDtoResponse>(
         Filter? filter = null,
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         bool tracking = false,
         CancellationToken cancellationToken = default) where TDtoResponse : IDto
@@ -668,12 +668,12 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
     #endregion
 
     #region GetList
-    public async Task<ICollection<TEntity>?> GetListAsync(
+    public async Task<ICollection<TEntity>?> _GetListAsync(
         Filter? filter = null,
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         bool tracking = true,
         CancellationToken cancellationToken = default)
@@ -691,13 +691,13 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
         return entity;
     }
 
-    public async Task<ICollection<TDtoResponse>?> GetListAsync<TDtoResponse>(
+    public async Task<ICollection<TDtoResponse>?> _GetListAsync<TDtoResponse>(
         Expression<Func<TEntity, TDtoResponse>> select,
         Filter? filter = null,
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         bool tracking = false,
         CancellationToken cancellationToken = default) where TDtoResponse : IDto
@@ -716,12 +716,12 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
         return responseModel;
     }
 
-    public async Task<ICollection<TDtoResponse>?> GetListAsync<TDtoResponse>(
+    public async Task<ICollection<TDtoResponse>?> _GetListAsync<TDtoResponse>(
         Filter? filter = null,
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         bool tracking = false,
         CancellationToken cancellationToken = default) where TDtoResponse : IDto
@@ -742,13 +742,13 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
     #endregion
 
     #region Datatable Server-Side
-    public async Task<DatatableResponseServerSide<TEntity>> DatatableServerSideAsync(
+    public async Task<DatatableResponseServerSide<TEntity>> _DatatableServerSideAsync(
         DatatableRequest datatableRequest,
         Filter? filter = null,
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         CancellationToken cancellationToken = default)
     {
@@ -763,13 +763,13 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
             cancellationToken: cancellationToken);
     }
 
-    public async Task<DatatableResponseServerSide<TDtoResponse>> DatatableServerSideAsync<TDtoResponse>(
+    public async Task<DatatableResponseServerSide<TDtoResponse>> _DatatableServerSideAsync<TDtoResponse>(
         DatatableRequest datatableRequest,
         Expression<Func<TEntity, TDtoResponse>> select, Filter? filter = null,
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         CancellationToken cancellationToken = default) where TDtoResponse : IDto
     {
@@ -785,13 +785,13 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
             cancellationToken: cancellationToken);
     }
 
-    public async Task<DatatableResponseServerSide<TDtoResponse>> DatatableServerSideAsync<TDtoResponse>(
+    public async Task<DatatableResponseServerSide<TDtoResponse>> _DatatableServerSideAsync<TDtoResponse>(
         DatatableRequest datatableRequest,
         Filter? filter = null,
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         CancellationToken cancellationToken = default) where TDtoResponse : IDto
     {
@@ -809,12 +809,12 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
     #endregion
 
     #region Datatable Client-Side
-    public async Task<DatatableResponseClientSide<TEntity>> DatatableClientSideAsync(
+    public async Task<DatatableResponseClientSide<TEntity>> _DatatableClientSideAsync(
         Filter? filter = null,
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         CancellationToken cancellationToken = default)
     {
@@ -828,13 +828,13 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
             cancellationToken: cancellationToken);
     }
 
-    public async Task<DatatableResponseClientSide<TDtoResponse>> DatatableClientSideAsync<TDtoResponse>(
+    public async Task<DatatableResponseClientSide<TDtoResponse>> _DatatableClientSideAsync<TDtoResponse>(
         Expression<Func<TEntity, TDtoResponse>> select,
         Filter? filter = null,
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         CancellationToken cancellationToken = default) where TDtoResponse : IDto
     {
@@ -849,12 +849,12 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
             cancellationToken: cancellationToken);
     }
 
-    public async Task<DatatableResponseClientSide<TDtoResponse>> DatatableClientSideAsync<TDtoResponse>(
+    public async Task<DatatableResponseClientSide<TDtoResponse>> _DatatableClientSideAsync<TDtoResponse>(
         Filter? filter = null,
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         CancellationToken cancellationToken = default) where TDtoResponse : IDto
     {
@@ -871,7 +871,15 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
     #endregion
 
     #region Pagination
-    public async Task<PaginationResponse<TEntity>> PaginationAsync(PaginationRequest paginationRequest, Filter? filter = null, IEnumerable<Sort>? sorts = null, Expression<Func<TEntity, bool>>? where = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, bool ignoreFilters = false, CancellationToken cancellationToken = default)
+    public async Task<PaginationResponse<TEntity>> _PaginationAsync(
+        PaginationRequest paginationRequest,
+        Filter? filter = null,
+        IEnumerable<Sort>? sorts = null,
+        Expression<Func<TEntity, bool>>? where = null,
+        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
+        bool ignoreFilters = false,
+        CancellationToken cancellationToken = default)
     {
         return await _repository.PaginationAsync(
             paginationRequest: paginationRequest,
@@ -884,7 +892,16 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
             cancellationToken: cancellationToken);
     }
 
-    public async Task<PaginationResponse<TDtoResponse>> PaginationAsync<TDtoResponse>(PaginationRequest paginationRequest, Expression<Func<TEntity, TDtoResponse>> select, Filter? filter = null, IEnumerable<Sort>? sorts = null, Expression<Func<TEntity, bool>>? where = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, bool ignoreFilters = false, CancellationToken cancellationToken = default) where TDtoResponse : IDto
+    public async Task<PaginationResponse<TDtoResponse>> _PaginationAsync<TDtoResponse>(
+        PaginationRequest paginationRequest,
+        Expression<Func<TEntity, TDtoResponse>> select,
+        Filter? filter = null,
+        IEnumerable<Sort>? sorts = null,
+        Expression<Func<TEntity, bool>>? where = null,
+        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
+        bool ignoreFilters = false,
+        CancellationToken cancellationToken = default) where TDtoResponse : IDto
     {
         return await _repository.PaginationAsync<TDtoResponse>(
             paginationRequest: paginationRequest,
@@ -898,7 +915,15 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
             cancellationToken: cancellationToken);
     }
 
-    public async Task<PaginationResponse<TDtoResponse>> PaginationAsync<TDtoResponse>(PaginationRequest paginationRequest, Filter? filter = null, IEnumerable<Sort>? sorts = null, Expression<Func<TEntity, bool>>? where = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null, bool ignoreFilters = false, CancellationToken cancellationToken = default) where TDtoResponse : IDto
+    public async Task<PaginationResponse<TDtoResponse>> _PaginationAsync<TDtoResponse>(
+        PaginationRequest paginationRequest,
+        Filter? filter = null,
+        IEnumerable<Sort>? sorts = null,
+        Expression<Func<TEntity, bool>>? where = null,
+        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
+        bool ignoreFilters = false,
+        CancellationToken cancellationToken = default) where TDtoResponse : IDto
     {
         return await _repository.PaginationAsync<TDtoResponse>(
             paginationRequest: paginationRequest,

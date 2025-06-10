@@ -20,8 +20,8 @@ public static class ServiceRegistration
             MaxDepth = 7,
         };
 
-        #region Distributed Cache 
-        services.AddDistributedMemoryCache(); // In Memory
+        #region Distributed Cache In Memory
+        services.AddDistributedMemoryCache();
         // services.AddStackExchangeRedisCache(options =>
         // {
         //     options.Configuration = configuration["Redis:ConnectionString"];

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Model.Auth.SignUp;
 using Model.Dtos.Blog_;
 using Model.Dtos.BlogComment_;
 using Model.Dtos.BlogLike_;
@@ -44,7 +45,7 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.CommentList, opt => opt.MapFrom(src => src.BlogComments))
             .ReverseMap();
 
-        CreateMap<Blog, BlogLikesResponseDto>()
+        CreateMap<Blog, BlogLikeListResponseDto>()
             .ForMember(dest => dest.BlogId, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.LikeCount, opt => opt.MapFrom(src => src.LikeCount))
             .ForMember(dest => dest.UserList, opt => opt.MapFrom(src => src.BlogLikes != default ? src.BlogLikes.Select(x => x.User) : default))
@@ -139,6 +140,12 @@ public class MappingProfiles : Profile
         #endregion
 
         #region User
+        CreateMap<SignUpRequest, User>()
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.FirstName))
+            .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+            .ReverseMap();
+
         CreateMap<User, UserBasicResponseDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))

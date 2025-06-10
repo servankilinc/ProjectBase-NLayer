@@ -93,7 +93,7 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
 
     public void Delete(Expression<Func<TEntity, bool>> where)
     {
-        var entitiesToDelete = _context.Set<TEntity>().Where(where).ToList();
+        var entitiesToDelete = _context.Set<TEntity>().Where(where);
         _context.Set<TEntity>().RemoveRange(entitiesToDelete);
     }
 
@@ -111,7 +111,7 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
 
     public void DeleteAndSave(Expression<Func<TEntity, bool>> where)
     {
-        var entitiesToDelete = _context.Set<TEntity>().Where(where).ToList();
+        var entitiesToDelete = _context.Set<TEntity>().Where(where);
         _context.Set<TEntity>().RemoveRange(entitiesToDelete);
         _context.SaveChanges();
     }
@@ -139,14 +139,14 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
         return query.Count();
     }
     #endregion
-    
+
     #region Get
     public TEntity? Get(
         Filter? filter = null,
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         bool tracking = true)
     {
@@ -160,7 +160,7 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
         if (ignoreFilters) query = query.IgnoreQueryFilters();
         if (!tracking) query = query.AsNoTracking();
 
-        return query.FirstOrDefault();
+        return query.SingleOrDefault();
     }
 
     public TResult? Get<TResult>(
@@ -169,7 +169,7 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         bool tracking = false)
     {
@@ -185,7 +185,7 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
         if (ignoreFilters) query = query.IgnoreQueryFilters();
         if (!tracking) query = query.AsNoTracking();
 
-        return query.Select(select).FirstOrDefault();
+        return query.Select(select).SingleOrDefault();
     }
 
     public TResult? Get<TResult>(
@@ -194,7 +194,7 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         bool tracking = false
     )
@@ -211,7 +211,7 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
         if (ignoreFilters) query = query.IgnoreQueryFilters();
         if (!tracking) query = query.AsNoTracking();
 
-        return query.ProjectTo<TResult>(configurationProvider).FirstOrDefault();
+        return query.ProjectTo<TResult>(configurationProvider).SingleOrDefault();
     }
     #endregion
 
@@ -221,7 +221,7 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         bool tracking = true)
     {
@@ -244,7 +244,7 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         bool tracking = false)
     {
@@ -269,7 +269,7 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         bool tracking = false)
     {
@@ -296,7 +296,7 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false)
     {
         if (datatableRequest == null) throw new ArgumentNullException(nameof(datatableRequest));
@@ -321,7 +321,7 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false)
     {
         if (datatableRequest == null) throw new ArgumentNullException(nameof(datatableRequest));
@@ -347,7 +347,7 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false)
     {
         if (datatableRequest == null) throw new ArgumentNullException(nameof(datatableRequest));
@@ -373,7 +373,7 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false)
     {
         var query = _context.Set<TEntity>().AsQueryable();
@@ -395,7 +395,7 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
       IEnumerable<Sort>? sorts = null,
       Expression<Func<TEntity, bool>>? where = null,
       Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-      Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+      Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
       bool ignoreFilters = false)
     {
         if (select == null) throw new ArgumentNullException(nameof(select));
@@ -419,7 +419,7 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false)
     {
         if (configurationProvider == null) throw new ArgumentNullException(nameof(configurationProvider));
@@ -445,7 +445,7 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false)
     {
         if (paginationRequest == null) throw new ArgumentNullException(nameof(paginationRequest));
@@ -470,7 +470,7 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false)
     {
         if (paginationRequest == null) throw new ArgumentNullException(nameof(paginationRequest));
@@ -496,7 +496,7 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false)
     {
         if (paginationRequest == null) throw new ArgumentNullException(nameof(paginationRequest));
@@ -565,7 +565,7 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
 
     public async Task DeleteAndSaveAsync(Expression<Func<TEntity, bool>> where, CancellationToken cancellationToken = default)
     {
-        var entitiesToDelete = _context.Set<TEntity>().Where(where).ToList();
+        var entitiesToDelete = _context.Set<TEntity>().Where(where);
         _context.Set<TEntity>().RemoveRange(entitiesToDelete);
         await _context.SaveChangesAsync(cancellationToken);
     }
@@ -609,7 +609,7 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         bool tracking = true,
         CancellationToken cancellationToken = default)
@@ -624,7 +624,7 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
         if (ignoreFilters) query = query.IgnoreQueryFilters();
         if (!tracking) query = query.AsNoTracking();
 
-        return await query.FirstOrDefaultAsync(cancellationToken);
+        return await query.SingleOrDefaultAsync(cancellationToken);
     }
 
     public async Task<TResult?> GetAsync<TResult>(
@@ -633,7 +633,7 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         bool tracking = false,
         CancellationToken cancellationToken = default)
@@ -650,7 +650,7 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
         if (ignoreFilters) query = query.IgnoreQueryFilters();
         if (!tracking) query = query.AsNoTracking();
 
-        return await query.Select(select).FirstOrDefaultAsync(cancellationToken);
+        return await query.Select(select).SingleOrDefaultAsync(cancellationToken);
     }
 
     public async Task<TResult?> GetAsync<TResult>(
@@ -659,7 +659,7 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         bool tracking = false,
         CancellationToken cancellationToken = default
@@ -677,7 +677,7 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
         if (ignoreFilters) query = query.IgnoreQueryFilters();
         if (!tracking) query = query.AsNoTracking();
 
-        return await query.ProjectTo<TResult>(configurationProvider).FirstOrDefaultAsync(cancellationToken);
+        return await query.ProjectTo<TResult>(configurationProvider).SingleOrDefaultAsync(cancellationToken);
     }
     #endregion
 
@@ -687,7 +687,7 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         bool tracking = true,
         CancellationToken cancellationToken = default)
@@ -711,7 +711,7 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         bool tracking = false,
         CancellationToken cancellationToken = default)
@@ -737,7 +737,7 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         bool tracking = false,
         CancellationToken cancellationToken = default
@@ -766,7 +766,7 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         CancellationToken cancellationToken = default)
     {
@@ -792,7 +792,7 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         CancellationToken cancellationToken = default)
     {
@@ -819,7 +819,7 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         CancellationToken cancellationToken = default)
     {
@@ -846,7 +846,7 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         CancellationToken cancellationToken = default)
     {
@@ -869,7 +869,7 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         CancellationToken cancellationToken = default)
     {
@@ -894,7 +894,7 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         CancellationToken cancellationToken = default)
     {
@@ -921,7 +921,7 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         CancellationToken cancellationToken = default)
     {
@@ -947,7 +947,7 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         CancellationToken cancellationToken = default)
     {
@@ -974,7 +974,7 @@ public class RepositoryBase<TEntity, TContext> : IRepository<TEntity>, IReposito
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         CancellationToken cancellationToken = default)
     {

@@ -47,7 +47,7 @@ public interface IRepositoryAsync<TEntity> where TEntity : IEntity
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         bool tracking = true,
         CancellationToken cancellationToken = default
@@ -58,7 +58,7 @@ public interface IRepositoryAsync<TEntity> where TEntity : IEntity
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         bool tracking = false,
         CancellationToken cancellationToken = default
@@ -69,7 +69,7 @@ public interface IRepositoryAsync<TEntity> where TEntity : IEntity
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         bool tracking = false,
         CancellationToken cancellationToken = default);
@@ -81,7 +81,7 @@ public interface IRepositoryAsync<TEntity> where TEntity : IEntity
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         bool tracking = true,
         CancellationToken cancellationToken = default
@@ -92,7 +92,7 @@ public interface IRepositoryAsync<TEntity> where TEntity : IEntity
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         bool tracking = false,
         CancellationToken cancellationToken = default
@@ -103,7 +103,7 @@ public interface IRepositoryAsync<TEntity> where TEntity : IEntity
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         bool tracking = false,
         CancellationToken cancellationToken = default
@@ -117,7 +117,7 @@ public interface IRepositoryAsync<TEntity> where TEntity : IEntity
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         CancellationToken cancellationToken = default
     );
@@ -128,7 +128,7 @@ public interface IRepositoryAsync<TEntity> where TEntity : IEntity
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         CancellationToken cancellationToken = default
     );
@@ -139,7 +139,7 @@ public interface IRepositoryAsync<TEntity> where TEntity : IEntity
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         CancellationToken cancellationToken = default
     );
@@ -151,7 +151,7 @@ public interface IRepositoryAsync<TEntity> where TEntity : IEntity
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         CancellationToken cancellationToken = default
     );
@@ -161,7 +161,7 @@ public interface IRepositoryAsync<TEntity> where TEntity : IEntity
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         CancellationToken cancellationToken = default
     );
@@ -171,7 +171,7 @@ public interface IRepositoryAsync<TEntity> where TEntity : IEntity
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         CancellationToken cancellationToken = default
     );
@@ -184,7 +184,7 @@ public interface IRepositoryAsync<TEntity> where TEntity : IEntity
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         CancellationToken cancellationToken = default
     );
@@ -195,7 +195,7 @@ public interface IRepositoryAsync<TEntity> where TEntity : IEntity
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         CancellationToken cancellationToken = default
     );
@@ -206,7 +206,7 @@ public interface IRepositoryAsync<TEntity> where TEntity : IEntity
         IEnumerable<Sort>? sorts = null,
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         CancellationToken cancellationToken = default
     );

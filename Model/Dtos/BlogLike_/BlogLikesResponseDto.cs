@@ -1,9 +1,9 @@
 ﻿using Core.Model;
 using Model.Dtos.User_;
 
-namespace Model.Dtos.Blog_;
+namespace Model.Dtos.BlogLike_;
 
-public class BlogLikesResponseDto : IDto
+public class BlogLikeListResponseDto : IDto
 {
     public Guid BlogId { get; set; }
     public int LikeCount { get; set; }

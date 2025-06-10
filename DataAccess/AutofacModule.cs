@@ -16,6 +16,11 @@ public class AutofacModule : Module
             .InstancePerLifetimeScope();
 
         // Repositoy Services
+        builder.RegisterType<RefreshTokenRepository>().As<IRefreshTokenRepository>()
+            .EnableInterfaceInterceptors()
+            .InterceptedBy(typeof(DataAccessExceptionHandlerInterceptor))
+            .InstancePerLifetimeScope();
+
         builder.RegisterType<UserRepository>().As<IUserRepository>()
             .EnableInterfaceInterceptors()
             .InterceptedBy(typeof(DataAccessExceptionHandlerInterceptor))

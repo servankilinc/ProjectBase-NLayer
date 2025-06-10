@@ -88,7 +88,13 @@ public class ExceptionHandlerInterceptor : IInterceptor
 
     private Exception HandleException(Exception exception, IInvocation invocation)
     {
-        if (exception is IAppException) return exception;
+        if (exception is IAppException appException)
+        {
+            appException.LocationName ??= invocation.GetLocation();
+            appException.Parameters ??= invocation.GetParameters();
+
+            return exception;
+        }
 
         var message = exception.InnerException != null ? $"Message: {exception.Message} \n InnerException Message: {exception.InnerException.Message})" : $"Message: {exception.Message} \n ";
 

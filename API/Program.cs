@@ -1,0 +1,169 @@
+using API.ExceptionHandler;
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using Business;
+using Core;
+using Core.Utils.Auth;
+using DataAccess;
+using DataAccess.Contexts;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.IdentityModel.Tokens;
+using Model;
+using Model.Entities;
+using Serilog;
+using System.Threading.RateLimiting;
+
+var builder = WebApplication.CreateBuilder(args);
+
+
+// ------- CORS -------
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("policy_cors", builder =>
+    {
+        builder
+            .AllowAnyOrigin()
+            //.WithOrigins("https://www.frontend.com")
+            //.AllowCredentials() // AllowAnyOrigin and AllowCredentials cannot using together use with WithOrigins option 
+            .WithHeaders("Content-Type", "Authorization")
+            .AllowAnyMethod()
+            .SetPreflightMaxAge(TimeSpan.FromMinutes(10));
+    });
+});
+// ------- CORS -------
+
+
+// ------- Rate Limiter -------
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddSlidingWindowLimiter(policyName: "policy_rate_limiter", slidingOptions =>
+    {
+        slidingOptions.PermitLimit = 15;
+        slidingOptions.Window = TimeSpan.FromSeconds(10);
+        slidingOptions.SegmentsPerWindow = 4;
+        slidingOptions.QueueLimit = 5;
+        slidingOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+    });
+});
+// ------- Rate Limiter -------
+
+
+// ------- Logger Implementation -------
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .Enrich.FromLogContext()
+    .CreateLogger();
+
+builder.Host.UseSerilog();
+// ------- Logger Implementation -------
+
+
+// ------- IDENTITY -------
+builder.Services.AddAuthorization();
+
+builder.Services
+    .AddIdentity<User, IdentityRole<Guid>>(options =>
+    {
+        // Default Lockout settings.
+        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+        options.Lockout.MaxFailedAccessAttempts = 5;
+        options.Lockout.AllowedForNewUsers = true;
+
+        options.SignIn.RequireConfirmedEmail = false;
+
+        options.Password.RequiredLength = 6;
+        options.Password.RequireDigit = false;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequireLowercase = false;
+        options.Password.RequireUppercase = false;
+
+        options.User.RequireUniqueEmail = true;
+        options.User.AllowedUserNameCharacters = "abcçdefgðhiýjklmnoöpqrsþtuüvwxyzABCÇDEFGÐHIÝJKLMNOÖPQRSÞTUÜVWXYZ0123456789-._@+/*|!,;:()&#?[] ";
+    })
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
+
+// ------- IDENTITY -------
+
+
+// ------- JWT Implementation -------
+TokenSettings tokenSettings = builder.Configuration.GetSection("TokenSettings").Get<TokenSettings>()!;
+builder.Services.AddSingleton(tokenSettings);
+
+builder.Services
+    .AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            ValidateLifetime = true,
+            ValidateAudience = true,
+            ValidateIssuer = true,
+            ValidIssuer = tokenSettings.Issuer,
+            ValidAudience = tokenSettings.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(tokenSettings.SecurityKey))
+        };
+    });
+// ------- JWT Implementation -------
+
+
+// ------- Layer Registrations -------
+builder.Services.AddModelServices();
+builder.Services.AddCoreServices(builder.Configuration);
+builder.Services.AddDataAccessServices(builder.Configuration);
+builder.Services.AddBusinessServices(builder.Configuration);
+// ------- Layer Registrations -------
+
+
+// ------- Autofac Modules -------
+builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory())
+    .ConfigureContainer<ContainerBuilder>(builder =>
+    {
+        builder.RegisterModule(new Core.AutofacModule());
+        builder.RegisterModule(new DataAccess.AutofacModule());
+        builder.RegisterModule(new Business.AutofacModule());
+    });
+// ------- Autofac Modules -------
+
+
+builder.Services.AddHealthChecks();
+
+builder.Services.AddControllers();
+
+builder.Services.AddOpenApi();
+
+var app = builder.Build();
+
+app.UseMiddleware<ExceptionHandleMiddleware>();
+
+//app.UseStaticFiles();
+
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+}
+
+app.UseHttpsRedirection();
+
+app.UseCors("policy_cors");
+
+app.UseAuthentication();
+
+app.UseAuthorization();
+
+app.UseRateLimiter();
+
+app.MapControllers().RequireRateLimiting("policy_rate_limiter");
+
+app.MapHealthChecks("/health");
+
+app.Run();

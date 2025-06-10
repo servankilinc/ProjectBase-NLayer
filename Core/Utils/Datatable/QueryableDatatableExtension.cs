@@ -37,7 +37,6 @@ public static class QueryableDatatableExtension
         };
     }
 
-
     // ***************** Async Version *****************
     public static async Task<DatatableResponseServerSide<TData>> ToDatatableServerSideAsync<TData>(this IQueryable<TData> query, DatatableRequest dataTableRequest, CancellationToken cancellationToken = default)
     {
@@ -95,7 +94,7 @@ public static class QueryableDatatableExtension
     #endregion
 
 
-    // ############################################ Helper Methods ############################################
+    // ################# Helper Methods #################
     private static string? GenerateSearchPredicate<TData>(DatatableRequest dataTableRequest)
     {
         if (dataTableRequest.Search == null || string.IsNullOrEmpty(dataTableRequest.Search.Value) || dataTableRequest.Columns == null) return null;
@@ -141,5 +140,4 @@ public static class QueryableDatatableExtension
         if (orderList.Any()) return orderPredicate;
         return null;
     }
-    // ############################################ Helper Methods ############################################
 }

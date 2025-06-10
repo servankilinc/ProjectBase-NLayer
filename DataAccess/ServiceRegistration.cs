@@ -14,7 +14,7 @@ public static class ServiceRegistration
         services.AddSingleton<ArchiveInterceptor>();
         services.AddSingleton<LogInterceptor>();
         services.AddSingleton<SoftDeleteInterceptor>();
-
+  
         services.AddDbContext<AppDbContext>((serviceProvider, opt) =>
         {
             opt.UseSqlServer(configuration.GetConnectionString("Database"))

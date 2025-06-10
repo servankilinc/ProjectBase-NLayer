@@ -8,7 +8,7 @@ public class BlogLike : IEntity, ILoggableEntity
     public Guid UserId { get; set; }
 
     #region Relations
-    public Blog? Blog { get; set; }
-    public User? User { get; set; }
+    public virtual Blog? Blog { get; set; }
+    public virtual User? User { get; set; }
     #endregion
 }

@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Model", "Model\Model.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Business", "Business\Business.csproj", "{AE4745BC-3F3D-4636-B70E-16C6438F237E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API", "API\API.csproj", "{8D90F7AA-8B39-44DE-B9F4-DE01041C1F1E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,8 +35,15 @@ Global
 		{AE4745BC-3F3D-4636-B70E-16C6438F237E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE4745BC-3F3D-4636-B70E-16C6438F237E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AE4745BC-3F3D-4636-B70E-16C6438F237E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D90F7AA-8B39-44DE-B9F4-DE01041C1F1E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D90F7AA-8B39-44DE-B9F4-DE01041C1F1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D90F7AA-8B39-44DE-B9F4-DE01041C1F1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D90F7AA-8B39-44DE-B9F4-DE01041C1F1E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {99039654-4B80-4C05-B51E-17E082A27B55}
 	EndGlobalSection
 EndGlobal

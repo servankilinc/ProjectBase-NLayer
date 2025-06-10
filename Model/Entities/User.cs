@@ -18,6 +18,7 @@ public class User: IdentityUser<Guid>, IEntity, ISoftDeletableEntity, IAuditable
     public virtual ICollection<Blog>? Blogs { get; set; }
     public virtual ICollection<BlogLike>? BlogLikes { get; set; }
     public virtual ICollection<BlogComment>? BlogComments { get; set; }
+    public virtual ICollection<RefreshToken>? RefreshTokens { get; set; }
     #endregion
 
     #region Legacy Props

@@ -10,6 +10,7 @@ public class UnitOfWork : IUnitOfWork
     private IDbContextTransaction? _transaction;
 
     #region Repositories
+    public IRefreshTokenRepository RefreshTokens { get; private set; }
     public IUserRepository Users { get; private set; }
     public IBlogRepository Blogs { get; private set; }
     public ICategoryRepository Categories { get; private set; }
@@ -20,7 +21,7 @@ public class UnitOfWork : IUnitOfWork
 
     public UnitOfWork(
         AppDbContext context,
-
+        IRefreshTokenRepository refreshTokens,
         IUserRepository userRepository,
         IBlogRepository blogRepository,
         ICategoryRepository categoryRepository,
@@ -28,7 +29,7 @@ public class UnitOfWork : IUnitOfWork
         IBlogCommentRepository blogCommentRepository)
     {
         _context = context;
-
+        RefreshTokens = refreshTokens;
         Users = userRepository;
         Blogs = blogRepository;
         Categories = categoryRepository;

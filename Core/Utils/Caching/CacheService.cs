@@ -40,6 +40,7 @@ public class CacheService : ICacheService
         string serializedData = JsonConvert.SerializeObject(data, new JsonSerializerSettings
         {
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+            MaxDepth = 7
         });
         byte[]? bytedData = Encoding.UTF8.GetBytes(serializedData);
 
@@ -57,17 +58,14 @@ public class CacheService : ICacheService
 
     public void RemoveCacheGroupKeys(string[] cacheGroupKeyList)
     {
-        if (cacheGroupKeyList == null || cacheGroupKeyList.Length == 0) throw new ArgumentNullException(nameof(cacheGroupKeyList));
+        if (cacheGroupKeyList == null) throw new ArgumentNullException(nameof(cacheGroupKeyList));
 
         foreach (string cacheGroupKey in cacheGroupKeyList)
         {
             byte[]? keyListFromCache = _distributedCache.Get(cacheGroupKey);
             _distributedCache.Remove(cacheGroupKey);
 
-            if (keyListFromCache == null)
-            {
-                continue;
-            }
+            if (keyListFromCache == null) continue;
 
             string stringKeyList = Encoding.UTF8.GetString(keyListFromCache);
             HashSet<string>? keyListInGroup = JsonConvert.DeserializeObject<HashSet<string>>(stringKeyList);
@@ -102,6 +100,7 @@ public class CacheService : ICacheService
             string serializedData = JsonConvert.SerializeObject(keyListInGroup, new JsonSerializerSettings
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                MaxDepth = 7
             });
             byte[]? bytedKeyList = Encoding.UTF8.GetBytes(serializedData);
             _distributedCache.Set(cacheGroupKey, bytedKeyList, groupCacheEntryOptions);

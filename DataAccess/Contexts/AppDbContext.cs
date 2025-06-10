@@ -5,7 +5,7 @@ using Model.Entities;
 
 namespace DataAccess.Contexts;
 
-public class AppDbContext: IdentityDbContext<User, IdentityRole<Guid>, Guid> // DbContext
+public class AppDbContext : IdentityDbContext<User, IdentityRole<Guid>, Guid> // DbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
@@ -16,6 +16,7 @@ public class AppDbContext: IdentityDbContext<User, IdentityRole<Guid>, Guid> // 
     public DbSet<Blog> Blogs { get; set; }
     public DbSet<BlogLike> BlogLikes { get; set; }
     public DbSet<BlogComment> BlogComments { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -26,7 +27,9 @@ public class AppDbContext: IdentityDbContext<User, IdentityRole<Guid>, Guid> // 
         modelBuilder.Entity<User>(u =>
         {
             u.ToTable("dbo_user");
- 
+
+            u.HasKey(u => u.Id);
+
             u.HasMany(u => u.Blogs)
                 .WithOne(b => b.Author)
                 .HasForeignKey(b => b.AuthorId)
@@ -42,14 +45,20 @@ public class AppDbContext: IdentityDbContext<User, IdentityRole<Guid>, Guid> // 
                .HasForeignKey(b => b.UserId)
                .OnDelete(DeleteBehavior.SetNull);
 
+            u.HasMany(u => u.RefreshTokens)
+                .WithOne(r => r.User)
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             // ****** If SoftDeletable is used, the filter should be applied to all entities
             u.HasQueryFilter(f => !f.IsDeleted);
         });
 
-
         modelBuilder.Entity<Blog>(b =>
         {
             b.ToTable("dbo_blog");
+
+            b.HasKey(b => b.Id);
 
             b.HasOne(b => b.Author)
                .WithMany(a => a.Blogs)
@@ -65,23 +74,24 @@ public class AppDbContext: IdentityDbContext<User, IdentityRole<Guid>, Guid> // 
                 .WithOne(b => b.Blog)
                 .HasForeignKey(b => b.BlogId)
                 .OnDelete(DeleteBehavior.SetNull);
-             
+
             b.HasMany(b => b.BlogComments)
                .WithOne(b => b.Blog)
                .HasForeignKey(b => b.BlogId)
                .OnDelete(DeleteBehavior.SetNull);
-            
+
             b.HasQueryFilter(f => !f.IsDeleted);
         });
-
 
         modelBuilder.Entity<Category>(c =>
         {
             c.ToTable("dbo_category");
 
+            c.HasKey(c => c.Id);
+
             c.HasMany(c => c.Blogs)
                .WithOne(b => b.Category)
-               .HasForeignKey(b=> b.CategoryId)
+               .HasForeignKey(b => b.CategoryId)
                .OnDelete(DeleteBehavior.SetNull);
 
             c.HasQueryFilter(f => !f.IsDeleted);
@@ -90,6 +100,8 @@ public class AppDbContext: IdentityDbContext<User, IdentityRole<Guid>, Guid> // 
         modelBuilder.Entity<BlogLike>(b =>
         {
             b.ToTable("dbo_blogLike");
+
+            b.HasKey(b => new { b.BlogId, b.UserId });
 
             b.HasOne(b => b.Blog)
                .WithMany(b => b.BlogLikes)
@@ -102,10 +114,11 @@ public class AppDbContext: IdentityDbContext<User, IdentityRole<Guid>, Guid> // 
                .OnDelete(DeleteBehavior.SetNull);
         });
 
-
         modelBuilder.Entity<BlogComment>(b =>
         {
             b.ToTable("dbo_blogComment");
+
+            b.HasKey(b => b.Id);
 
             b.HasOne(b => b.User)
                .WithMany(u => u.BlogComments)
@@ -118,10 +131,56 @@ public class AppDbContext: IdentityDbContext<User, IdentityRole<Guid>, Guid> // 
                .OnDelete(DeleteBehavior.SetNull);
         });
 
+        modelBuilder.Entity<RefreshToken>(r =>
+        {
+            r.ToTable("dbo_refreshToken");
+
+            r.HasKey(r => r.Id);
+
+            r.HasOne(r => r.User)
+                .WithMany(u => u.RefreshTokens)
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
 
         // If Identity Exist 
         // Remove IdentityRole defiantion if Custom Role Entity Exist
-        modelBuilder.Entity<IdentityRole<Guid>>(entity => { entity.ToTable("Roles"); });
+        modelBuilder.Entity<IdentityRole<Guid>>(entity =>
+        {
+            entity.ToTable("Roles");
+
+            entity.HasData(
+                new IdentityRole<Guid>
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "User",
+                    NormalizedName = "USER",
+                    ConcurrencyStamp = Guid.NewGuid().ToString()
+                },
+                new IdentityRole<Guid>
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Manager",
+                    NormalizedName = "MANAGER",
+                    ConcurrencyStamp = Guid.NewGuid().ToString()
+                },
+                new IdentityRole<Guid>
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Admin",
+                    NormalizedName = "ADMIN",
+                    ConcurrencyStamp = Guid.NewGuid().ToString()
+                },
+                new IdentityRole<Guid>
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Owner",
+                    NormalizedName = "OWNER",
+                    ConcurrencyStamp = Guid.NewGuid().ToString()
+                }
+            );
+        });
 
         modelBuilder.Entity<IdentityUserClaim<Guid>>(entity => { entity.ToTable("UserClaims"); });
 

@@ -5,6 +5,7 @@ namespace DataAccess.UoW;
 public interface IUnitOfWork : IDisposable, IAsyncDisposable
 {
     #region Repositories
+    IRefreshTokenRepository RefreshTokens { get; }
     IUserRepository Users { get; }
     IBlogRepository Blogs { get; }
     ICategoryRepository Categories { get; }
