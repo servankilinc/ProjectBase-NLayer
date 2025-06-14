@@ -46,54 +46,82 @@ public class ExceptionHandleMiddleware
 
     private Task HandleValidationException(HttpResponse response, ValidationRuleException exception)
     {
-        _logger.LogError(exception, $"Error(Validation) => Location: {exception.LocationName} \n Detail: {exception.Message} \n Description:{exception.Description} \n Parameters: {exception.Parameters} \n");
+        _logger.LogError(
+            $"\n\n------- ------- ------- Start ------- ------- ------- \n" +
+            $"Type(Validation) \n" +
+            $"Location: {exception.LocationName} \n" +
+            $"Detail: {exception.Message} \n" +
+            $"Description:{exception.Description} \n" +
+            $"Parameters: {exception.Parameters} \n" +
+            $"------- ------- ------- FINISH ------- ------- -------\n\n");
 
         response.StatusCode = StatusCodes.Status400BadRequest;
         IEnumerable<ValidationFailure> errors = exception.Errors;
 
-        return response.WriteAsync(new ValidationProblemDetails
+        return response.WriteAsync(JsonConvert.SerializeObject(new ValidationProblemDetails
         {
             Status = StatusCodes.Status400BadRequest,
             Type = ProblemDetailTypes.Validation.ToString(),
             Title = "Validation error(s)",
             Detail = exception.Message,
             Errors = errors
-        }.ToString());
+        }));
     }
 
     private Task HandleBusinessException(HttpResponse response, BusinessException exception)
     {
-        _logger.LogError(exception, $"Error(Business) => Location: {exception.LocationName} \n Detail: {exception.Message} \n Description:{exception.Description} \n Parameters: {exception.Parameters} \n");
+        _logger.LogError(
+            $"\n\n------- ------- ------- Start ------- ------- ------- \n" +
+            $"Type(Business) \n" +
+            $"Location: {exception.LocationName} \n" +
+            $"Detail: {exception.Message} \n" +
+            $"Description:{exception.Description} \n" +
+            $"Parameters: {exception.Parameters} \n" +
+            $"------- ------- ------- FINISH ------- ------- -------\n\n");
 
         response.StatusCode = StatusCodes.Status409Conflict;
 
-        return response.WriteAsync(new BusinessProblemDetails
+        return response.WriteAsync(JsonConvert.SerializeObject(new BusinessProblemDetails
         {
             Status = StatusCodes.Status409Conflict,
             Type = ProblemDetailTypes.Business.ToString(),
             Title = "Business Workflow Exception",
             Detail = exception.Message
-        }.ToString());
+        }));
     }
 
     private Task HandleDataAccessException(HttpResponse response, DataAccessException exception)
     {
-        _logger.LogError(exception, $"Error(DataAccess) => Location: {exception.LocationName} \n Detail: {exception.Message} \n Description:{exception.Description} \n Parameters: {exception.Parameters} \n");
+        _logger.LogError(exception,
+            $"\n\n------- ------- ------- Start ------- ------- ------- \n" +
+            $"Type(DataAccess) \n" +
+            $"Location: {exception.LocationName} \n" +
+            $"Detail: {exception.Message} \n" +
+            $"Description:{exception.Description} \n" +
+            $"Parameters: {exception.Parameters} \n" +
+            $"------- ------- ------- FINISH ------- ------- -------\n\n");
 
         response.StatusCode = StatusCodes.Status500InternalServerError;
 
-        return response.WriteAsync(new DataAccessProblemDetails
+        return response.WriteAsync(JsonConvert.SerializeObject(new DataAccessProblemDetails
         {
             Status = StatusCodes.Status500InternalServerError,
             Type = ProblemDetailTypes.DataAccess.ToString(),
             Title = "Data Access Exception",
             Detail = "An error occurred during the process",
-        }.ToString());
+        }));
     }
 
     private Task HandleGeneralException(HttpResponse response, GeneralException exception)
     {
-        _logger.LogError(exception, $"Error(General) => Location: {exception.LocationName} \n Detail: {exception.Message} \n Description:{exception.Description} \n Parameters: {exception.Parameters} \n");
+        _logger.LogError(exception, 
+            $"\n\n------- ------- ------- Start ------- ------- ------- \n" +
+            $"Type(General) \n" +
+            $"Location: {exception.LocationName} \n" +
+            $"Detail: {exception.Message} \n" +
+            $"Description:{exception.Description} \n" +
+            $"Parameters: {exception.Parameters} \n" +
+            $"------- ------- ------- FINISH ------- ------- -------\n\n");
 
         response.StatusCode = StatusCodes.Status500InternalServerError; // 500
 
@@ -108,7 +136,11 @@ public class ExceptionHandleMiddleware
 
     private Task HandleOtherException(HttpResponse response, Exception exception)
     {
-        _logger.LogError(exception, $"Error(Others) => \n Detail: {exception.Message} \n");
+        _logger.LogError(exception, 
+            $"\n\n------- ------- ------- Start ------- ------- ------- \n" +
+            $"Type(Others) \n" +
+            $"Detail: {exception.Message} \n" +
+            $"------- ------- ------- FINISH ------- ------- -------\n\n");
 
         response.StatusCode = StatusCodes.Status500InternalServerError; // 500
 

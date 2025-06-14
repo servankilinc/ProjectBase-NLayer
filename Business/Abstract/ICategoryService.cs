@@ -22,7 +22,7 @@ public interface ICategoryService : IServiceBase<Category>, IServiceBaseAsync<Ca
     #endregion
 
     #region Create
-    Task<Category> CreateAsync(CategoryCreateDto request, CancellationToken cancellationToken = default);
+    Task<CategoryResponseDto> CreateAsync(CategoryCreateDto request, CancellationToken cancellationToken = default);
     #endregion
 
     #region Update

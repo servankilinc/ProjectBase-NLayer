@@ -1,8 +1,9 @@
 ﻿using DataAccess.Contexts;
+using DataAccess.Interceptors;
+using DataAccess.UoW;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
-using DataAccess.Interceptors;
 
 namespace DataAccess;
 
@@ -14,7 +15,7 @@ public static class ServiceRegistration
         services.AddSingleton<ArchiveInterceptor>();
         services.AddSingleton<LogInterceptor>();
         services.AddSingleton<SoftDeleteInterceptor>();
-  
+
         services.AddDbContext<AppDbContext>((serviceProvider, opt) =>
         {
             opt.UseSqlServer(configuration.GetConnectionString("Database"))
@@ -23,6 +24,8 @@ public static class ServiceRegistration
                 .AddInterceptors(serviceProvider.GetRequiredService<LogInterceptor>())
                 .AddInterceptors(serviceProvider.GetRequiredService<SoftDeleteInterceptor>());
         });
+
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         return services;
     }

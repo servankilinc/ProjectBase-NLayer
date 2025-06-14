@@ -97,7 +97,7 @@ public class ValidationInterceptor : IInterceptor
 
         
         if (failures.Any()){
-            string message = "Validation Error(s):" + string.Join(", \n", failures.Select(f => $"{f.PropertyName}: {f.ErrorMessage}"));
+            string message = "Validation Error(s):\n\t" + string.Join(",\n\t", failures.Select(f => $"{f.PropertyName}: {f.ErrorMessage}"));
             throw new ValidationRuleException(message, failures, invocation.GetLocation(), invocation.GetParameters());
         }
     }

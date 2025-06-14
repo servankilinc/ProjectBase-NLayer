@@ -8,14 +8,14 @@ namespace API.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class BlogCommentController : ControllerBase
 {
     private readonly IBlogCommentService _blogCommentService;
     public BlogCommentController(IBlogCommentService blogCommentService) => _blogCommentService = blogCommentService;
 
     #region GetBasic
-    [HttpGet]
+    [HttpGet("Get")]
     public async Task<IActionResult> Get(Guid Id)
     {
         var result = await _blogCommentService.GetAsync(Id);
@@ -25,7 +25,7 @@ public class BlogCommentController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost]
+    [HttpPost("GetAll")]
     public async Task<IActionResult> GetAll(DynamicRequest? request)
     {
         var result = await _blogCommentService.GetAllAsync(request);
@@ -35,7 +35,7 @@ public class BlogCommentController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost]
+    [HttpPost("GetList")]
     public async Task<IActionResult> GetList(DynamicPaginationRequest request)
     {
         var result = await _blogCommentService.GetListAsync(request);
@@ -47,7 +47,7 @@ public class BlogCommentController : ControllerBase
     #endregion
 
     #region GetDetail
-    [HttpGet]
+    [HttpGet("GetByDetail")]
     public async Task<IActionResult> GetByDetail(Guid Id)
     {
         var result = await _blogCommentService.GetByDetailAsync(Id);
@@ -57,7 +57,7 @@ public class BlogCommentController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost]
+    [HttpPost("GetAllByDetail")]
     public async Task<IActionResult> GetAllByDetail(DynamicRequest? request)
     {
         var result = await _blogCommentService.GetAllByDetailAsync(request);
@@ -67,7 +67,7 @@ public class BlogCommentController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost]
+    [HttpPost("GetListByDetail")]
     public async Task<IActionResult> GetListByDetail(DynamicPaginationRequest request)
     {
         var result = await _blogCommentService.GetListByDetailAsync(request);
@@ -79,7 +79,7 @@ public class BlogCommentController : ControllerBase
     #endregion
 
     #region Create
-    [HttpPost]
+    [HttpPost("Create")]
     public async Task<IActionResult> Create(BlogCommentCreateDto request)
     {
         var result = await _blogCommentService.CreateAsync(request);
@@ -89,7 +89,7 @@ public class BlogCommentController : ControllerBase
     #endregion
 
     #region Update
-    [HttpPatch]
+    [HttpPatch("Update")]
     public async Task<IActionResult> Update(BlogCommentUpdateDto request)
     {
         var result = await _blogCommentService.UpdateAsync(request);
@@ -99,7 +99,7 @@ public class BlogCommentController : ControllerBase
     #endregion
 
     #region Delete
-    [HttpDelete]
+    [HttpDelete("Delete")]
     public async Task<IActionResult> Delete(Guid Id)
     {
         await _blogCommentService.DeleteAsync(Id);
@@ -109,7 +109,7 @@ public class BlogCommentController : ControllerBase
     #endregion
 
     #region Datatable Methods
-    [HttpPost]
+    [HttpPost("DatatableClientSide")]
     public async Task<IActionResult> DatatableClientSide(DynamicRequest request)
     {
         var result = await _blogCommentService.DatatableClientSideAsync(request);
@@ -117,7 +117,7 @@ public class BlogCommentController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost]
+    [HttpPost("DatatableServerSide")]
     public async Task<IActionResult> DatatableServerSide(DynamicDatatableServerSideRequest request)
     {
         var result = await _blogCommentService.DatatableServerSideAsync(request);

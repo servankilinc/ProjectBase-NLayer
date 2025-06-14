@@ -2,14 +2,14 @@
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
-using Core.Utils.RequestInfoProvider;
+using Core.Utils.HttpContextManager;
 
 namespace DataAccess.Interceptors;
 
 public sealed class SoftDeleteInterceptor : SaveChangesInterceptor
 {
-    private readonly RequestInfoProvider _requestInfoProvider;
-    public SoftDeleteInterceptor(RequestInfoProvider requestInfoProvider) => _requestInfoProvider = requestInfoProvider;
+    private readonly HttpContextManager _httpContextManager;
+    public SoftDeleteInterceptor(HttpContextManager httpContextManager) => _httpContextManager = httpContextManager;
 
 
     //  ****************************** SYNC VERSION ******************************
@@ -25,7 +25,7 @@ public sealed class SoftDeleteInterceptor : SaveChangesInterceptor
             foreach (EntityEntry<ISoftDeletableEntity> entry in softDeletableEntries)
             {
                 entry.State = EntityState.Modified;
-                entry.Entity.DeletedBy = _requestInfoProvider.GetUserId();
+                entry.Entity.DeletedBy = _httpContextManager.GetUserId();
                 entry.Entity.IsDeleted = true;
                 entry.Entity.DeletedDateUtc = DateTime.UtcNow;
             }
@@ -48,7 +48,7 @@ public sealed class SoftDeleteInterceptor : SaveChangesInterceptor
             foreach (EntityEntry<ISoftDeletableEntity> entry in softDeletableEntries)
             {
                 entry.State = EntityState.Modified;
-                entry.Entity.DeletedBy = _requestInfoProvider.GetUserId();
+                entry.Entity.DeletedBy = _httpContextManager.GetUserId();
                 entry.Entity.IsDeleted = true;
                 entry.Entity.DeletedDateUtc = DateTime.UtcNow;
             }

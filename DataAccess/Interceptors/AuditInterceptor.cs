@@ -2,14 +2,14 @@
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
-using Core.Utils.RequestInfoProvider;
+using Core.Utils.HttpContextManager;
 
 namespace DataAccess.Interceptors;
 
 public sealed class AuditInterceptor : SaveChangesInterceptor
 {
-    private readonly RequestInfoProvider _requestInfoProvider;
-    public AuditInterceptor(RequestInfoProvider requestInfoProvider) => _requestInfoProvider = requestInfoProvider;
+    private readonly HttpContextManager _httpContextManager;
+    public AuditInterceptor(HttpContextManager httpContextManager) => _httpContextManager = httpContextManager;
 
 
     //  ****************************** SYNC VERSION ******************************
@@ -26,12 +26,12 @@ public sealed class AuditInterceptor : SaveChangesInterceptor
             {
                 if (entry.State == EntityState.Added)
                 {
-                    entry.Entity.CreatedBy = _requestInfoProvider.GetUserId();
+                    entry.Entity.CreatedBy = _httpContextManager.GetUserId();
                     entry.Entity.CreateDateUtc = DateTime.UtcNow;
                 }
                 else if (entry.State == EntityState.Modified)
                 {
-                    entry.Entity.UpdatedBy = _requestInfoProvider.GetUserId();
+                    entry.Entity.UpdatedBy = _httpContextManager.GetUserId();
                     entry.Entity.UpdateDateUtc = DateTime.UtcNow;
                 }
             }
@@ -55,12 +55,12 @@ public sealed class AuditInterceptor : SaveChangesInterceptor
             {
                 if (entry.State == EntityState.Added)
                 {
-                    entry.Entity.CreatedBy = _requestInfoProvider.GetUserId();
+                    entry.Entity.CreatedBy = _httpContextManager.GetUserId();
                     entry.Entity.CreateDateUtc = DateTime.UtcNow;
                 }
                 else if (entry.State == EntityState.Modified)
                 {
-                    entry.Entity.UpdatedBy = _requestInfoProvider.GetUserId();
+                    entry.Entity.UpdatedBy = _httpContextManager.GetUserId();
                     entry.Entity.UpdateDateUtc = DateTime.UtcNow;
                 }
             }

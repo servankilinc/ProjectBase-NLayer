@@ -1,5 +1,5 @@
 ﻿using Core.Model;
-using Core.Utils.RequestInfoProvider;
+using Core.Utils.HttpContextManager;
 using DataAccess.Interceptors.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -10,8 +10,8 @@ namespace DataAccess.Interceptors;
 
 public sealed class ArchiveInterceptor : SaveChangesInterceptor
 {
-    private readonly RequestInfoProvider _requestInfoProvider;
-    public ArchiveInterceptor(RequestInfoProvider requestInfoProvider) => _requestInfoProvider = requestInfoProvider;
+    private readonly HttpContextManager _httpContextManager;
+    public ArchiveInterceptor(HttpContextManager httpContextManager) => _httpContextManager = httpContextManager;
 
 
     //  ****************************** SYNC VERSION ******************************
@@ -31,9 +31,9 @@ public sealed class ArchiveInterceptor : SaveChangesInterceptor
                 {
                     TableName = entry.GetTableName(),
                     EntityId = entry.GetEntityId(),
-                    RequesterId = _requestInfoProvider.GetUserId(),
-                    ClientIp = _requestInfoProvider.GetClientIp(),
-                    UserAgent = _requestInfoProvider.GetUserAgent(),
+                    RequesterId = _httpContextManager.GetUserId(),
+                    ClientIp = _httpContextManager.GetClientIp(),
+                    UserAgent = _httpContextManager.GetUserAgent(),
                     Action = entry.GetActionType(),
                     DateUtc = DateTime.UtcNow,
                     Data = entry.GetOriginalData(),
@@ -63,9 +63,9 @@ public sealed class ArchiveInterceptor : SaveChangesInterceptor
                 {
                     TableName = entry.GetTableName(),
                     EntityId = entry.GetEntityId(),
-                    RequesterId = _requestInfoProvider.GetUserId(),
-                    ClientIp = _requestInfoProvider.GetClientIp(),
-                    UserAgent = _requestInfoProvider.GetUserAgent(),
+                    RequesterId = _httpContextManager.GetUserId(),
+                    ClientIp = _httpContextManager.GetClientIp(),
+                    UserAgent = _httpContextManager.GetUserAgent(),
                     Action = entry.GetActionType(),
                     DateUtc = DateTime.UtcNow,
                     Data = entry.GetOriginalData(),

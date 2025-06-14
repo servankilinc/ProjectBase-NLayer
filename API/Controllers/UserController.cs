@@ -8,14 +8,14 @@ namespace API.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
     public UserController(IUserService userService) => _userService = userService;
 
     #region GetBasic
-    [HttpGet]
+    [HttpGet("Get")]
     public async Task<IActionResult> Get(Guid Id)
     {
         var result = await _userService.GetAsync(Id);
@@ -25,7 +25,7 @@ public class UserController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost]
+    [HttpPost("GetAll")]
     public async Task<IActionResult> GetAll(DynamicRequest? request)
     {
         var result = await _userService.GetAllAsync(request);
@@ -35,7 +35,7 @@ public class UserController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost]
+    [HttpPost("GetList")]
     public async Task<IActionResult> GetList(DynamicPaginationRequest request)
     {
         var result = await _userService.GetListAsync(request);
@@ -47,7 +47,7 @@ public class UserController : ControllerBase
     #endregion
 
     #region GetDetail
-    [HttpGet]
+    [HttpGet("GetByDetail")]
     public async Task<IActionResult> GetByDetail(Guid Id)
     {
         var result = await _userService.GetByDetailAsync(Id);
@@ -57,7 +57,7 @@ public class UserController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost]
+    [HttpPost("GetAllByDetail")]
     public async Task<IActionResult> GetAllByDetail(DynamicRequest? request)
     {
         var result = await _userService.GetAllByDetailAsync(request);
@@ -67,7 +67,7 @@ public class UserController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost]
+    [HttpPost("GetListByDetail")]
     public async Task<IActionResult> GetListByDetail(DynamicPaginationRequest request)
     {
         var result = await _userService.GetListByDetailAsync(request);
@@ -79,7 +79,7 @@ public class UserController : ControllerBase
     #endregion
 
     #region Get-UserBlogsResponseDto
-    [HttpGet]
+    [HttpGet("GetUserBlogsResponseDto")]
     public async Task<IActionResult> GetUserBlogsResponseDto(Guid Id)
     {
         var result = await _userService.GetUserBlogsResponseDtoAsync(Id);
@@ -89,7 +89,7 @@ public class UserController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost]
+    [HttpPost("GetAllUserBlogsResponseDto")]
     public async Task<IActionResult> GetAllUserBlogsResponseDto(DynamicRequest? request)
     {
         var result = await _userService.GetAllUserBlogsResponseDtoAsync(request);
@@ -99,7 +99,7 @@ public class UserController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost]
+    [HttpPost("GetListUserBlogsResponseDto")]
     public async Task<IActionResult> GetListUserBlogsResponseDto(DynamicPaginationRequest request)
     {
         var result = await _userService.GetListUserBlogsResponseDtoAsync(request);
@@ -111,7 +111,7 @@ public class UserController : ControllerBase
     #endregion
 
     #region Create
-    [HttpPost]
+    [HttpPost("Create")]
     public async Task<IActionResult> Create(UserCreateDto request)
     {
         var result = await _userService.CreateAsync(request);
@@ -121,7 +121,7 @@ public class UserController : ControllerBase
     #endregion
 
     #region Update
-    [HttpPatch]
+    [HttpPatch("Update")]
     public async Task<IActionResult> Update(UserUpdateDto request)
     {
         var result = await _userService.UpdateAsync(request);
@@ -131,7 +131,7 @@ public class UserController : ControllerBase
     #endregion
 
     #region Delete
-    [HttpDelete]
+    [HttpDelete("Delete")]
     public async Task<IActionResult> Delete(Guid Id)
     {
         await _userService.DeleteAsync(Id);
@@ -141,7 +141,7 @@ public class UserController : ControllerBase
     #endregion
 
     #region Datatable Methods
-    [HttpPost]
+    [HttpPost("DatatableClientSide")]
     public async Task<IActionResult> DatatableClientSide(DynamicRequest request)
     {
         var result = await _userService.DatatableClientSideAsync(request);
@@ -149,7 +149,7 @@ public class UserController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost]
+    [HttpPost("DatatableServerSide")]
     public async Task<IActionResult> DatatableServerSide(DynamicDatatableServerSideRequest request)
     {
         var result = await _userService.DatatableServerSideAsync(request);

@@ -173,7 +173,6 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
             .ForMember(dest => dest.Addres, opt => opt.MapFrom(src => src.Addres))
             .ForMember(dest => dest.BirthDate, opt => opt.MapFrom(src => src.BirthDate))
-            .ForMember(dest => dest.Password, opt => opt.MapFrom(src => src.Password))
             .ReverseMap();
 
         CreateMap<UserUpdateDto, User>()

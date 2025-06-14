@@ -1,5 +1,5 @@
 ﻿using Core.Model;
-using Core.Utils.RequestInfoProvider;
+using Core.Utils.HttpContextManager;
 using DataAccess.Interceptors.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -10,9 +10,9 @@ namespace DataAccess.Interceptors;
 
 public sealed class LogInterceptor : SaveChangesInterceptor
 {
-    private readonly RequestInfoProvider _requestInfoProvider;
+    private readonly HttpContextManager _httpContextManager;
     private readonly List<(Log LogEntry, EntityEntry EntityEntry)> _pendingLogs = new();
-    public LogInterceptor(RequestInfoProvider requestInfoProvider) => _requestInfoProvider = requestInfoProvider;
+    public LogInterceptor(HttpContextManager httpContextManager) => _httpContextManager = httpContextManager;
 
 
     //  ****************************** SYNC VERSION ******************************
@@ -31,9 +31,9 @@ public sealed class LogInterceptor : SaveChangesInterceptor
                 Log log = new Log
                 {
                     TableName = entry.GetTableName(),
-                    RequesterId = _requestInfoProvider.GetUserId(),
-                    ClientIp = _requestInfoProvider.GetClientIp(),
-                    UserAgent = _requestInfoProvider.GetUserAgent(),
+                    RequesterId = _httpContextManager.GetUserId(),
+                    ClientIp = _httpContextManager.GetClientIp(),
+                    UserAgent = _httpContextManager.GetUserAgent(),
                     Action = entry.GetActionType(),
                     DateUtc = DateTime.UtcNow,
                 };
@@ -81,9 +81,9 @@ public sealed class LogInterceptor : SaveChangesInterceptor
                 Log log = new Log
                 {
                     TableName = entry.GetTableName(),
-                    RequesterId = _requestInfoProvider.GetUserId(),
-                    ClientIp = _requestInfoProvider.GetClientIp(),
-                    UserAgent = _requestInfoProvider.GetUserAgent(),
+                    RequesterId = _httpContextManager.GetUserId(),
+                    ClientIp = _httpContextManager.GetClientIp(),
+                    UserAgent = _httpContextManager.GetUserAgent(),
                     Action = entry.GetActionType(),
                     DateUtc = DateTime.UtcNow,
                 };
@@ -156,10 +156,9 @@ public sealed class LogInterceptor : SaveChangesInterceptor
 
             eventData.Context.ChangeTracker.AutoDetectChangesEnabled = false;
             eventData.Context.Set<Log>().AddRange(_pendingLogs.Select(p => p.LogEntry));
+            _pendingLogs.Clear();
             eventData.Context.SaveChanges();
             eventData.Context.ChangeTracker.AutoDetectChangesEnabled = true;
-
-            _pendingLogs.Clear();
         }
 
         return base.SavedChangesAsync(eventData, result, cancellationToken);

@@ -1,4 +1,5 @@
 ﻿using Castle.DynamicProxy;
+using Core.Utils.CriticalData;
 using Newtonsoft.Json;
 using System.Reflection;
 
@@ -58,6 +59,8 @@ public static class Extensions
 
         var parameters = methodInfo.GetParameters();
         var arguments = invocation.Arguments;
+        
+        if (parameters.Length == 0) return "not found any parameter.";
 
         var paramsByArgs = parameters.Select((p, i) =>
         {
@@ -65,18 +68,22 @@ public static class Extensions
             if (arg == null) return "null";
 
             Type type = arg.GetType();
-            if (type.IsSimpleType()) return arg.ToString();
+            
+            if (type == typeof(CancellationToken)) return $"CancellationToken = ...";
+
+            if (type.IsSimpleType()) return $"{p.Name} = {arg.ToString()}";
 
             string serialized = JsonConvert.SerializeObject(arg, new JsonSerializerSettings
             {
                 Formatting = Formatting.Indented,
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
                 MaxDepth = 7,
+                ContractResolver = new IgnoreCriticalDataResolver()
             });
-            return $"Parameter Detail: {p.Name} = {serialized}";
+            return $"{p.Name} = {serialized}";
         }).ToArray();
 
-        return string.Join(", \n", paramsByArgs);
+        return "\n" + string.Join(", \n\t", paramsByArgs);
     }
 
     public static bool IsSimpleType(this Type type)

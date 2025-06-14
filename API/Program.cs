@@ -1,4 +1,5 @@
 using API.ExceptionHandler;
+using API.Utils;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Business;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using Model;
 using Model.Entities;
+using Scalar.AspNetCore;
 using Serilog;
 using System.Threading.RateLimiting;
 
@@ -61,6 +63,25 @@ builder.Host.UseSerilog();
 // ------- Logger Implementation -------
 
 
+// ------- Layer Registrations -------
+builder.Services.AddModelServices();
+builder.Services.AddCoreServices(builder.Configuration);
+builder.Services.AddDataAccessServices(builder.Configuration);
+builder.Services.AddBusinessServices(builder.Configuration);
+// ------- Layer Registrations -------
+
+
+// ------- Autofac Modules -------
+builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory())
+    .ConfigureContainer<ContainerBuilder>(builder =>
+    {
+        builder.RegisterModule(new Core.AutofacModule());
+        builder.RegisterModule(new DataAccess.AutofacModule());
+        builder.RegisterModule(new Business.AutofacModule());
+    });
+// ------- Autofac Modules -------
+
+
 // ------- IDENTITY -------
 builder.Services.AddAuthorization();
 
@@ -80,12 +101,11 @@ builder.Services
         options.Password.RequireLowercase = false;
         options.Password.RequireUppercase = false;
 
-        options.User.RequireUniqueEmail = true;
+        options.User.RequireUniqueEmail = false;
         options.User.AllowedUserNameCharacters = "abcçdefgðhiýjklmnoöpqrsþtuüvwxyzABCÇDEFGÐHIÝJKLMNOÖPQRSÞTUÜVWXYZ0123456789-._@+/*|!,;:()&#?[] ";
     })
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
-
 // ------- IDENTITY -------
 
 
@@ -116,30 +136,15 @@ builder.Services
 // ------- JWT Implementation -------
 
 
-// ------- Layer Registrations -------
-builder.Services.AddModelServices();
-builder.Services.AddCoreServices(builder.Configuration);
-builder.Services.AddDataAccessServices(builder.Configuration);
-builder.Services.AddBusinessServices(builder.Configuration);
-// ------- Layer Registrations -------
-
-
-// ------- Autofac Modules -------
-builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory())
-    .ConfigureContainer<ContainerBuilder>(builder =>
-    {
-        builder.RegisterModule(new Core.AutofacModule());
-        builder.RegisterModule(new DataAccess.AutofacModule());
-        builder.RegisterModule(new Business.AutofacModule());
-    });
-// ------- Autofac Modules -------
 
 
 builder.Services.AddHealthChecks();
 
 builder.Services.AddControllers();
 
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options => {
+    options.AddDocumentTransformer<ScalarSecuritySchemeTransformer>();
+});
 
 var app = builder.Build();
 
@@ -150,6 +155,8 @@ app.UseMiddleware<ExceptionHandleMiddleware>();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+
+    app.MapScalarApiReference();
 }
 
 app.UseHttpsRedirection();

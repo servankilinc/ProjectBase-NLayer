@@ -1,10 +1,13 @@
-﻿using FluentValidation;
+﻿using Core.Utils.CriticalData;
+using FluentValidation;
 
 namespace Model.Auth.Login;
 
 public class LoginRequest
 {
     public string Email { get; set; } = null!;
+
+    [CriticalData]
     public string Password { get; set; } = null!;
 }
 

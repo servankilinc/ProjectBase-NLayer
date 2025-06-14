@@ -8,14 +8,14 @@ namespace API.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class BlogController : ControllerBase
 {
     private readonly IBlogService _blogService;
     public BlogController(IBlogService blogService) => _blogService = blogService;
 
     #region GetBasic
-    [HttpGet]
+    [HttpGet("Get")]
     public async Task<IActionResult> Get(Guid Id)
     {
         var result = await _blogService.GetAsync(Id);
@@ -25,7 +25,7 @@ public class BlogController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost]
+    [HttpPost("GetAll")]
     public async Task<IActionResult> GetAll(DynamicRequest? request)
     {
         var result = await _blogService.GetAllAsync(request);
@@ -35,7 +35,7 @@ public class BlogController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost]
+    [HttpPost("GetList")]
     public async Task<IActionResult> GetList(DynamicPaginationRequest request)
     {
         var result = await _blogService.GetListAsync(request);
@@ -47,7 +47,7 @@ public class BlogController : ControllerBase
     #endregion
 
     #region GetDetail
-    [HttpGet]
+    [HttpGet("GetByDetail")]
     public async Task<IActionResult> GetByDetail(Guid Id)
     {
         var result = await _blogService.GetByDetailAsync(Id);
@@ -57,7 +57,7 @@ public class BlogController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost]
+    [HttpPost("GetAllByDetail")]
     public async Task<IActionResult> GetAllByDetail(DynamicRequest? request)
     {
         var result = await _blogService.GetAllByDetailAsync(request);
@@ -67,7 +67,7 @@ public class BlogController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost]
+    [HttpPost("GetListByDetail")]
     public async Task<IActionResult> GetListByDetail(DynamicPaginationRequest request)
     {
         var result = await _blogService.GetListByDetailAsync(request);
@@ -79,7 +79,7 @@ public class BlogController : ControllerBase
     #endregion
 
     #region Create
-    [HttpPost]
+    [HttpPost("Create")]
     public async Task<IActionResult> Create(BlogCreateDto request)
     {
         var result = await _blogService.CreateAsync(request);
@@ -89,7 +89,7 @@ public class BlogController : ControllerBase
     #endregion
 
     #region Update
-    [HttpPatch]
+    [HttpPatch("Update")]
     public async Task<IActionResult> Update(BlogUpdateDto request)
     {
         var result = await _blogService.UpdateAsync(request);
@@ -99,7 +99,7 @@ public class BlogController : ControllerBase
     #endregion
 
     #region Delete
-    [HttpDelete]
+    [HttpDelete("Delete")]
     public async Task<IActionResult> Delete(Guid Id)
     {
         await _blogService.DeleteAsync(Id);
@@ -109,7 +109,7 @@ public class BlogController : ControllerBase
     #endregion
 
     #region Datatable Methods
-    [HttpPost]
+    [HttpPost("DatatableClientSide")]
     public async Task<IActionResult> DatatableClientSide(DynamicRequest request)
     {
         var result = await _blogService.DatatableClientSideAsync(request);
@@ -117,7 +117,7 @@ public class BlogController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost]
+    [HttpPost("DatatableServerSide")]
     public async Task<IActionResult> DatatableServerSide(DynamicDatatableServerSideRequest request)
     {
         var result = await _blogService.DatatableServerSideAsync(request);

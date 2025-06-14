@@ -1,10 +1,11 @@
 ﻿using Core.Utils.Auth;
 using Model.Entities;
+using System.Security.Claims;
 
 namespace Business.Utils.TokenService;
 
 public interface ITokenService
 {
-    Task<AccessToken> CreateAccessToken(User user, IList<string> roles);
-    RefreshToken CreateRefreshToken(User user);
+    AccessToken GenerateAccessToken(IList<Claim> claims);
+    RefreshToken GenerateRefreshToken(User user);
 }

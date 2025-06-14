@@ -8,14 +8,14 @@ namespace API.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class BlogLikeController : ControllerBase
 {
     private readonly IBlogLikeService _blogLikeService;
     public BlogLikeController(IBlogLikeService blogLikeService) => _blogLikeService = blogLikeService;
 
     #region GetBasic
-    [HttpGet]
+    [HttpGet("Get")]
     public async Task<IActionResult> Get(Guid BlogId, Guid UserId)
     {
         var result = await _blogLikeService.GetAsync(BlogId, UserId);
@@ -25,7 +25,7 @@ public class BlogLikeController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost]
+    [HttpPost("GetAll")]
     public async Task<IActionResult> GetAll(DynamicRequest? request)
     {
         var result = await _blogLikeService.GetAllAsync(request);
@@ -35,7 +35,7 @@ public class BlogLikeController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost]
+    [HttpPost("GetList")]
     public async Task<IActionResult> GetList(DynamicPaginationRequest request)
     {
         var result = await _blogLikeService.GetListAsync(request);
@@ -47,7 +47,7 @@ public class BlogLikeController : ControllerBase
     #endregion
 
     #region GetDetail
-    [HttpGet]
+    [HttpGet("GetByDetail")]
     public async Task<IActionResult> GetByDetail(Guid BlogId, Guid UserId)
     {
         var result = await _blogLikeService.GetByDetailAsync(BlogId, UserId);
@@ -57,7 +57,7 @@ public class BlogLikeController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost]
+    [HttpPost("GetAllByDetail")]
     public async Task<IActionResult> GetAllByDetail(DynamicRequest? request)
     {
         var result = await _blogLikeService.GetAllByDetailAsync(request);
@@ -67,7 +67,7 @@ public class BlogLikeController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost]
+    [HttpPost("GetListByDetail")]
     public async Task<IActionResult> GetListByDetail(DynamicPaginationRequest request)
     {
         var result = await _blogLikeService.GetListByDetailAsync(request);
@@ -79,7 +79,7 @@ public class BlogLikeController : ControllerBase
     #endregion
 
     #region Create
-    [HttpPost]
+    [HttpPost("Create")]
     public async Task<IActionResult> Create(BlogLikeCreateDto request)
     {
         var result = await _blogLikeService.CreateAsync(request);
@@ -89,7 +89,7 @@ public class BlogLikeController : ControllerBase
     #endregion
 
     #region Delete
-    [HttpPost]
+    [HttpPost("Delete")]
     public async Task<IActionResult> Delete(BlogLikeDeleteDto request)
     {
         await _blogLikeService.DeleteAsync(request);
@@ -99,7 +99,7 @@ public class BlogLikeController : ControllerBase
     #endregion
 
     #region Datatable Methods
-    [HttpPost]
+    [HttpPost("DatatableClientSide")]
     public async Task<IActionResult> DatatableClientSide(DynamicRequest request)
     {
         var result = await _blogLikeService.DatatableClientSideAsync(request);
@@ -107,7 +107,7 @@ public class BlogLikeController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost]
+    [HttpPost("DatatableServerSide")]
     public async Task<IActionResult> DatatableServerSide(DynamicDatatableServerSideRequest request)
     {
         var result = await _blogLikeService.DatatableServerSideAsync(request);

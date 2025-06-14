@@ -8,14 +8,14 @@ namespace API.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class CategoryController : ControllerBase
 {
     private readonly ICategoryService _categoryService;
     public CategoryController(ICategoryService categoryService) => _categoryService = categoryService;
 
     #region GetBasic
-    [HttpGet]
+    [HttpGet("Get")]
     public async Task<IActionResult> Get(Guid Id)
     {
         var result = await _categoryService.GetAsync(Id);
@@ -25,7 +25,7 @@ public class CategoryController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost]
+    [HttpPost("GetAll")]
     public async Task<IActionResult> GetAll(DynamicRequest? request)
     {
         var result = await _categoryService.GetAllAsync(request);
@@ -35,7 +35,7 @@ public class CategoryController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost]
+    [HttpPost("GetList")]
     public async Task<IActionResult> GetList(DynamicPaginationRequest request)
     {
         var result = await _categoryService.GetListAsync(request);
@@ -47,7 +47,7 @@ public class CategoryController : ControllerBase
     #endregion
 
     #region GetDetail
-    [HttpGet]
+    [HttpGet("GetByDetail")]
     public async Task<IActionResult> GetByDetail(Guid Id)
     {
         var result = await _categoryService.GetByDetailAsync(Id);
@@ -57,7 +57,7 @@ public class CategoryController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost]
+    [HttpPost("GetAllByDetail")]
     public async Task<IActionResult> GetAllByDetail(DynamicRequest? request)
     {
         var result = await _categoryService.GetAllByDetailAsync(request);
@@ -67,7 +67,7 @@ public class CategoryController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost]
+    [HttpPost("GetListByDetail")]
     public async Task<IActionResult> GetListByDetail(DynamicPaginationRequest request)
     {
         var result = await _categoryService.GetListByDetailAsync(request);
@@ -79,7 +79,7 @@ public class CategoryController : ControllerBase
     #endregion
 
     #region Create
-    [HttpPost]
+    [HttpPost("Create")]
     public async Task<IActionResult> Create(CategoryCreateDto request)
     {
         var result = await _categoryService.CreateAsync(request);
@@ -89,7 +89,7 @@ public class CategoryController : ControllerBase
     #endregion
 
     #region Update
-    [HttpPatch]
+    [HttpPatch("Update")]
     public async Task<IActionResult> Update(CategoryUpdateDto request)
     {
         var result = await _categoryService.UpdateAsync(request);
@@ -99,7 +99,7 @@ public class CategoryController : ControllerBase
     #endregion
 
     #region Delete
-    [HttpDelete]
+    [HttpDelete("Delete")]
     public async Task<IActionResult> Delete(Guid Id)
     {
         if (Id == default) return BadRequest("Id parameter cannot be empty.");
@@ -111,7 +111,7 @@ public class CategoryController : ControllerBase
     #endregion
 
     #region Datatable Methods
-    [HttpPost]
+    [HttpPost("DatatableClientSide")]
     public async Task<IActionResult> DatatableClientSide(DynamicRequest request)
     {
         var result = await _categoryService.DatatableClientSideAsync(request);
@@ -119,7 +119,7 @@ public class CategoryController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost]
+    [HttpPost("DatatableServerSide")]
     public async Task<IActionResult> DatatableServerSide(DynamicDatatableServerSideRequest request)
     {
         var result = await _categoryService.DatatableServerSideAsync(request);

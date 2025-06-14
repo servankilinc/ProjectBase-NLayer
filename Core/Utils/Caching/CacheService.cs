@@ -39,6 +39,7 @@ public class CacheService : ICacheService
 
         string serializedData = JsonConvert.SerializeObject(data, new JsonSerializerSettings
         {
+            Formatting = Formatting.None,
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
             MaxDepth = 7
         });

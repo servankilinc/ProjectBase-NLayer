@@ -18,7 +18,7 @@ public interface IUserService : IServiceBase<User>, IServiceBaseAsync<User>
     #region GetDetail
     Task<UserDetailResponseDto?> GetByDetailAsync(Guid Id, CancellationToken cancellationToken = default);
     Task<ICollection<UserDetailResponseDto>?> GetAllByDetailAsync(DynamicRequest? request, CancellationToken cancellationToken = default);
-    Task<PaginationResponse<UserDetailResponseDto>> GetListByDetailAsync(DynamicPaginationRequest request, CancellationToken cancellationToken = default)
+    Task<PaginationResponse<UserDetailResponseDto>> GetListByDetailAsync(DynamicPaginationRequest request, CancellationToken cancellationToken = default);
     #endregion;
 
     #region Get-UserBlogsResponseDto

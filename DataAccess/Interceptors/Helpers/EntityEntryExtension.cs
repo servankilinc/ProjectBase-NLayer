@@ -1,4 +1,5 @@
 ﻿using Core.Enums;
+using Core.Utils.CriticalData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Newtonsoft.Json;
@@ -54,10 +55,11 @@ public static class EntityEntryExtension
         {
             data = JsonConvert.SerializeObject(entry.OriginalValues.ToObject(), new JsonSerializerSettings
             {
-                Formatting = Formatting.Indented,
+                Formatting = Formatting.None,
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
                 NullValueHandling = NullValueHandling.Ignore,
                 MaxDepth = 7,
+                ContractResolver = new IgnoreCriticalDataResolver()
             });
         }
         return data;
@@ -70,10 +72,11 @@ public static class EntityEntryExtension
         {
             data = JsonConvert.SerializeObject(entry.CurrentValues.ToObject(), new JsonSerializerSettings
             {
-                Formatting = Formatting.Indented,
+                Formatting = Formatting.None,
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
                 NullValueHandling = NullValueHandling.Ignore,
                 MaxDepth = 7,
+                ContractResolver = new IgnoreCriticalDataResolver()
             });
         }
         return data;

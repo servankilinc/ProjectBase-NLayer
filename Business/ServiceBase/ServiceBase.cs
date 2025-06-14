@@ -2,6 +2,7 @@
 using Core.Model;
 using Core.Utils.Datatable;
 using Core.Utils.DynamicQuery;
+using Core.Utils.ExceptionHandle.Exceptions;
 using Core.Utils.Pagination;
 using DataAccess.Repository;
 using Microsoft.EntityFrameworkCore.Query;
@@ -91,7 +92,7 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
     public TEntity _Update<TDtoRequest>(TDtoRequest updateModel, Expression<Func<TEntity, bool>> where) where TDtoRequest : IDto
     {
         TEntity? entity = _repository.Get(where: where);
-        if (entity == null) throw new Exception($"The entity({nameof(TEntity)}) was not found to update. Update model => {JsonConvert.SerializeObject(updateModel)}.");
+        if (entity == null) throw new GeneralException($"The entity({nameof(TEntity)}) was not found to update.");
 
         TEntity entityToUpdate = _mapper.Map(updateModel, entity);
         return _repository.UpdateAndSave(entityToUpdate);
@@ -100,7 +101,7 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
     public TDtoResponse _Update<TDtoRequest, TDtoResponse>(TDtoRequest updateModel, Expression<Func<TEntity, bool>> where) where TDtoRequest : IDto where TDtoResponse : IDto
     {
         TEntity? entity = _repository.Get(where: where);
-        if (entity == null) throw new Exception($"The entity({nameof(TEntity)}) was not found to update. Update model => {JsonConvert.SerializeObject(updateModel)}.");
+        if (entity == null) throw new GeneralException($"The entity({nameof(TEntity)}) was not found to update.");
 
         TEntity entityToUpdate = _mapper.Map(updateModel, entity);
         TEntity updatedEntity = _repository.UpdateAndSave(entityToUpdate);
@@ -534,7 +535,7 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
     public async Task<TEntity> _UpdateAsync<TDtoRequest>(TDtoRequest updateModel, Expression<Func<TEntity, bool>> where, CancellationToken cancellationToken = default) where TDtoRequest : IDto
     {
         TEntity? entity = await _repository.GetAsync(where: where, cancellationToken: cancellationToken);
-        if (entity == null) throw new Exception($"The entity({nameof(TEntity)}) was not found to update. Update model => {JsonConvert.SerializeObject(updateModel)}.");
+        if (entity == null) throw new GeneralException($"The entity({nameof(TEntity)}) was not found to update.");
 
         TEntity entityToUpdate = _mapper.Map(updateModel, entity);
         return await _repository.UpdateAndSaveAsync(entityToUpdate, cancellationToken);
@@ -543,7 +544,7 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
     public async Task<TDtoResponse> _UpdateAsync<TDtoRequest, TDtoResponse>(TDtoRequest updateModel, Expression<Func<TEntity, bool>> where, CancellationToken cancellationToken = default) where TDtoRequest : IDto where TDtoResponse : IDto
     {
         TEntity? entity = await _repository.GetAsync(where: where, cancellationToken: cancellationToken);
-        if (entity == null) throw new Exception($"The entity({nameof(TEntity)}) was not found to update. Update model => {JsonConvert.SerializeObject(updateModel)}.");
+        if (entity == null) throw new GeneralException($"The entity({nameof(TEntity)}) was not found to update.");
 
         TEntity entityToUpdate = _mapper.Map(updateModel, entity);
         TEntity updatedEntity = await _repository.UpdateAndSaveAsync(entityToUpdate, cancellationToken);

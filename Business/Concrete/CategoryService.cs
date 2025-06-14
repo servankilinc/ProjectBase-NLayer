@@ -105,9 +105,9 @@ public class CategoryService : ServiceBase<Category, ICategoryRepository>, ICate
 
     #region Create
     [Validation(typeof(CategoryCreateDto))]
-    public async Task<Category> CreateAsync(CategoryCreateDto request, CancellationToken cancellationToken = default)
+    public async Task<CategoryResponseDto> CreateAsync(CategoryCreateDto request, CancellationToken cancellationToken = default)
     {
-        var result = await _AddAsync(request, cancellationToken);
+        var result = await _AddAsync<CategoryCreateDto, CategoryResponseDto>(request, cancellationToken);
 
         return result;
     }
