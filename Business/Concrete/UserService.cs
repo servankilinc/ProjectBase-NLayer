@@ -144,9 +144,9 @@ public class UserService : ServiceBase<User, IUserRepository>, IUserService
 
     #region Create
     [Validation(typeof(UserCreateDto))]
-    public async Task<User> CreateAsync(UserCreateDto request, CancellationToken cancellationToken = default)
+    public async Task<UserBasicResponseDto> CreateAsync(UserCreateDto request, CancellationToken cancellationToken = default)
     {
-        var result = await _AddAsync(request, cancellationToken);
+        var result = await _AddAsync<UserCreateDto, UserBasicResponseDto>(request, cancellationToken);
 
         return result;
     }
@@ -154,9 +154,9 @@ public class UserService : ServiceBase<User, IUserRepository>, IUserService
 
     #region Update
     [Validation(typeof(UserUpdateDto))]
-    public async Task<User> UpdateAsync(UserUpdateDto request, CancellationToken cancellationToken = default)
+    public async Task<UserBasicResponseDto> UpdateAsync(UserUpdateDto request, CancellationToken cancellationToken = default)
     {
-        var result = await _UpdateAsync(updateModel: request, where: f => f.Id == request.Id, cancellationToken);
+        var result = await _UpdateAsync<UserUpdateDto, UserBasicResponseDto>(updateModel: request, where: f => f.Id == request.Id, cancellationToken);
 
         return result;
     }

@@ -22,11 +22,11 @@ public interface IBlogService : IServiceBase<Blog>, IServiceBaseAsync<Blog>
     #endregion
 
     #region Create
-    Task<Blog> CreateAsync(BlogCreateDto request, CancellationToken cancellationToken = default);
+    Task<BlogBasicResponseDto> CreateAsync(BlogCreateDto request, CancellationToken cancellationToken = default);
     #endregion
 
     #region Update
-    Task<Blog> UpdateAsync(BlogUpdateDto request, CancellationToken cancellationToken = default);
+    Task<BlogBasicResponseDto> UpdateAsync(BlogUpdateDto request, CancellationToken cancellationToken = default);
     #endregion
 
     #region Delete

@@ -105,9 +105,9 @@ public class BlogCommentService : ServiceBase<BlogComment, IBlogCommentRepositor
 
     #region Create
     [Validation(typeof(BlogCommentCreateDto))]
-    public async Task<BlogComment> CreateAsync(BlogCommentCreateDto request, CancellationToken cancellationToken = default)
+    public async Task<BlogCommentBasicResponseDto> CreateAsync(BlogCommentCreateDto request, CancellationToken cancellationToken = default)
     {
-        var result = await _AddAsync(request, cancellationToken);
+        var result = await _AddAsync<BlogCommentCreateDto, BlogCommentBasicResponseDto>(request, cancellationToken);
 
         return result;
     }
@@ -115,9 +115,9 @@ public class BlogCommentService : ServiceBase<BlogComment, IBlogCommentRepositor
 
     #region Update
     [Validation(typeof(BlogCommentUpdateDto))]
-    public async Task<BlogComment> UpdateAsync(BlogCommentUpdateDto request, CancellationToken cancellationToken = default)
+    public async Task<BlogCommentBasicResponseDto> UpdateAsync(BlogCommentUpdateDto request, CancellationToken cancellationToken = default)
     {
-        var result = await _UpdateAsync(updateModel: request, where: f => f.Id == request.Id, cancellationToken);
+        var result = await _UpdateAsync<BlogCommentUpdateDto, BlogCommentBasicResponseDto>(updateModel: request, where: f => f.Id == request.Id, cancellationToken);
 
         return result;
     }

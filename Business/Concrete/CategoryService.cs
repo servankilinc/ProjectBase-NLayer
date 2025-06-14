@@ -115,9 +115,9 @@ public class CategoryService : ServiceBase<Category, ICategoryRepository>, ICate
 
     #region Update
     [Validation(typeof(CategoryUpdateDto))]
-    public async Task<Category> UpdateAsync(CategoryUpdateDto request, CancellationToken cancellationToken = default)
+    public async Task<CategoryResponseDto> UpdateAsync(CategoryUpdateDto request, CancellationToken cancellationToken = default)
     {
-        var result = await _UpdateAsync(updateModel: request, where: f => f.Id == request.Id, cancellationToken);
+        var result = await _UpdateAsync<CategoryUpdateDto, CategoryResponseDto>(updateModel: request, where: f => f.Id == request.Id, cancellationToken);
 
         return result;
     }

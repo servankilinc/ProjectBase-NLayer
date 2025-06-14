@@ -111,9 +111,9 @@ public class BlogService : ServiceBase<Blog, IBlogRepository>, IBlogService
 
     #region Create
     [Validation(typeof(BlogCreateDto))]
-    public async Task<Blog> CreateAsync(BlogCreateDto request, CancellationToken cancellationToken = default)
+    public async Task<BlogBasicResponseDto> CreateAsync(BlogCreateDto request, CancellationToken cancellationToken = default)
     {
-        var result = await _AddAsync(request, cancellationToken);
+        var result = await _AddAsync<BlogCreateDto, BlogBasicResponseDto>(request, cancellationToken);
 
         return result;
     }
@@ -121,9 +121,9 @@ public class BlogService : ServiceBase<Blog, IBlogRepository>, IBlogService
 
     #region Update
     [Validation(typeof(BlogUpdateDto))]
-    public async Task<Blog> UpdateAsync(BlogUpdateDto request, CancellationToken cancellationToken = default)
+    public async Task<BlogBasicResponseDto> UpdateAsync(BlogUpdateDto request, CancellationToken cancellationToken = default)
     {
-        var result = await _UpdateAsync(updateModel: request, where: f => f.Id == request.Id, cancellationToken);
+        var result = await _UpdateAsync<BlogUpdateDto, BlogBasicResponseDto>(updateModel: request, where: f => f.Id == request.Id, cancellationToken);
 
         return result;
     }

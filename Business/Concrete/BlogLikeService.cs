@@ -113,9 +113,9 @@ public class BlogLikeService : ServiceBase<BlogLike, IBlogLikeRepository>, IBlog
 
     #region Create
     [Validation(typeof(BlogLikeCreateDto))]
-    public async Task<BlogLike> CreateAsync(BlogLikeCreateDto request, CancellationToken cancellationToken = default)
+    public async Task<BlogLikeResponseDto> CreateAsync(BlogLikeCreateDto request, CancellationToken cancellationToken = default)
     {
-        var result = await _AddAsync(request, cancellationToken);
+        var result = await _AddAsync<BlogLikeCreateDto, BlogLikeResponseDto>(request, cancellationToken);
 
         return result;
     }
@@ -123,9 +123,9 @@ public class BlogLikeService : ServiceBase<BlogLike, IBlogLikeRepository>, IBlog
 
     #region Update
     [Validation(typeof(BlogLike))]
-    public async Task<BlogLike> UpdateAsync(BlogLike request, CancellationToken cancellationToken = default)
+    public async Task<BlogLikeResponseDto> UpdateAsync(BlogLike request, CancellationToken cancellationToken = default)
     {
-        var result = await _UpdateAsync(request, cancellationToken);
+        var result = await _UpdateAsync<BlogLikeResponseDto>(request, cancellationToken);
 
         return result;
     }

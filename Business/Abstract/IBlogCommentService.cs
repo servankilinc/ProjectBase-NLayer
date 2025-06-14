@@ -22,11 +22,11 @@ public interface IBlogCommentService : IServiceBase<BlogComment>, IServiceBaseAs
     #endregion
 
     #region Create
-    Task<BlogComment> CreateAsync(BlogCommentCreateDto request, CancellationToken cancellationToken = default);
+    Task<BlogCommentBasicResponseDto> CreateAsync(BlogCommentCreateDto request, CancellationToken cancellationToken = default);
     #endregion
 
     #region Update
-    Task<BlogComment> UpdateAsync(BlogCommentUpdateDto request, CancellationToken cancellationToken = default);
+    Task<BlogCommentBasicResponseDto> UpdateAsync(BlogCommentUpdateDto request, CancellationToken cancellationToken = default);
     #endregion
 
     #region Delete

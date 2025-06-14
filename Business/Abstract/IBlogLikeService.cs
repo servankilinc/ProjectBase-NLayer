@@ -22,11 +22,11 @@ public interface IBlogLikeService : IServiceBase<BlogLike>, IServiceBaseAsync<Bl
     #endregion
 
     #region Create
-    Task<BlogLike> CreateAsync(BlogLikeCreateDto request, CancellationToken cancellationToken = default);
+    Task<BlogLikeResponseDto> CreateAsync(BlogLikeCreateDto request, CancellationToken cancellationToken = default);
     #endregion
 
     #region Update
-    Task<BlogLike> UpdateAsync(BlogLike request, CancellationToken cancellationToken = default);
+    Task<BlogLikeResponseDto> UpdateAsync(BlogLike request, CancellationToken cancellationToken = default);
     #endregion
 
     #region Delete

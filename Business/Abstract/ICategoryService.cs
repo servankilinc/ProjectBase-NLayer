@@ -26,7 +26,7 @@ public interface ICategoryService : IServiceBase<Category>, IServiceBaseAsync<Ca
     #endregion
 
     #region Update
-    Task<Category> UpdateAsync(CategoryUpdateDto request, CancellationToken cancellationToken = default);
+    Task<CategoryResponseDto> UpdateAsync(CategoryUpdateDto request, CancellationToken cancellationToken = default);
     #endregion
 
     #region Delete

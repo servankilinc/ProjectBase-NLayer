@@ -28,11 +28,11 @@ public interface IUserService : IServiceBase<User>, IServiceBaseAsync<User>
     #endregion
 
     #region Create
-    Task<User> CreateAsync(UserCreateDto request, CancellationToken cancellationToken = default);
+    Task<UserBasicResponseDto> CreateAsync(UserCreateDto request, CancellationToken cancellationToken = default);
     #endregion
 
     #region Update
-    Task<User> UpdateAsync(UserUpdateDto request, CancellationToken cancellationToken = default);
+    Task<UserBasicResponseDto> UpdateAsync(UserUpdateDto request, CancellationToken cancellationToken = default);
     #endregion
 
     #region Delete
