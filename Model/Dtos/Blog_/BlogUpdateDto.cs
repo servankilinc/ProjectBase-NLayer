@@ -23,7 +23,7 @@ public class BlogUpdateDtoValidator : AbstractValidator<BlogUpdateDto>
         RuleFor(v => v.Title).NotNull().WithMessage("Field cannot be null");
         RuleFor(v => v.Title).NotEmpty().WithMessage("Field cannot be empty");
         RuleFor(v => v.Title).MinimumLength(6).WithMessage("Field must have a minimum 6 character");
-        RuleFor(v => v.Title).MaximumLength(6).WithMessage("Field must have a maximum 80 character");
+        RuleFor(v => v.Title).MaximumLength(80).WithMessage("Field must have a maximum 80 character");
 
         RuleFor(v => v.Content).NotNull().WithMessage("Field cannot be null");
         RuleFor(v => v.Content).NotEmpty().WithMessage("Field cannot be empty");

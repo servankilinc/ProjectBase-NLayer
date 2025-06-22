@@ -1,4 +1,5 @@
 ﻿using Core.Model;
+
 namespace Model.Entities;
 
 public class Blog: IEntity, ISoftDeletableEntity, IAuditableEntity, ILoggableEntity, IArchivableEntity

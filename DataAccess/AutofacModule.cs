@@ -11,11 +11,6 @@ public class AutofacModule : Module
     protected override void Load(ContainerBuilder builder)
     {
         // Repositoy Services
-        builder.RegisterType<RefreshTokenRepository>().As<IRefreshTokenRepository>()
-            .EnableInterfaceInterceptors()
-            .InterceptedBy(typeof(DataAccessExceptionHandlerInterceptor))
-            .InstancePerLifetimeScope();
-
         builder.RegisterType<UserRepository>().As<IUserRepository>()
             .EnableInterfaceInterceptors()
             .InterceptedBy(typeof(DataAccessExceptionHandlerInterceptor))
@@ -37,6 +32,11 @@ public class AutofacModule : Module
             .InstancePerLifetimeScope();
 
         builder.RegisterType<BlogCommentRepository>().As<IBlogCommentRepository>()
+            .EnableInterfaceInterceptors()
+            .InterceptedBy(typeof(DataAccessExceptionHandlerInterceptor))
+            .InstancePerLifetimeScope();
+
+        builder.RegisterType<RefreshTokenRepository>().As<IRefreshTokenRepository>()
             .EnableInterfaceInterceptors()
             .InterceptedBy(typeof(DataAccessExceptionHandlerInterceptor))
             .InstancePerLifetimeScope();

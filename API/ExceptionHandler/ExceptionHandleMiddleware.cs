@@ -1,6 +1,6 @@
 ﻿using Core.Enums;
-using Core.ExceptionHandle.ProblemDetailModels;
 using Core.Utils.ExceptionHandle.Exceptions;
+using Core.Utils.ExceptionHandle.ProblemDetailModels;
 using FluentValidation.Results;
 using Newtonsoft.Json;
 

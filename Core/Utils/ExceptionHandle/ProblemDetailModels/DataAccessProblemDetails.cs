@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Core.ExceptionHandle.ProblemDetailModels;
+namespace Core.Utils.ExceptionHandle.ProblemDetailModels;
 
 public class DataAccessProblemDetails : ProblemDetails
 {

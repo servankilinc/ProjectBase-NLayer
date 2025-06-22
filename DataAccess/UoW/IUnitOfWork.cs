@@ -5,12 +5,12 @@ namespace DataAccess.UoW;
 public interface IUnitOfWork : IDisposable, IAsyncDisposable
 {
     #region Repositories
-    IRefreshTokenRepository RefreshTokens { get; }
     IUserRepository Users { get; }
     IBlogRepository Blogs { get; }
     ICategoryRepository Categories { get; }
     IBlogCommentRepository BlogComments { get; }
     IBlogLikeRepository BlogLikes { get; }
+    IRefreshTokenRepository RefreshTokens { get; }
     #endregion
 
 
