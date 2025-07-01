@@ -1,7 +1,7 @@
 ﻿using Core.Model;
 using Model.Dtos.User_;
 
-namespace Model.Dtos.BlogLike_;
+namespace Model.Dtos.Blog_;
 
 public class BlogLikeListResponseDto : IDto
 {

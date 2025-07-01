@@ -26,7 +26,9 @@ public class BlogService : ServiceBase<Blog, IBlogRepository>, IBlogService
 
         var result = await _GetAsync<BlogBasicResponseDto>(
             where: f => f.Id == Id,
-            include: i => i.Include(x => x.Category),
+            include: i => i
+                .Include(x => x.Author)
+                .Include(x => x.Category),
             tracking: false,
             cancellationToken: cancellationToken
         );
@@ -39,7 +41,9 @@ public class BlogService : ServiceBase<Blog, IBlogRepository>, IBlogService
         var result = await _GetListAsync<BlogBasicResponseDto>(
             filter: request?.Filter,
             sorts: request?.Sorts,
-            include: i => i.Include(x => x.Category),
+            include: i => i
+                .Include(x => x.Author)
+                .Include(x => x.Category),
             tracking: false,
             cancellationToken: cancellationToken
         );
@@ -52,8 +56,10 @@ public class BlogService : ServiceBase<Blog, IBlogRepository>, IBlogService
         var result = await _PaginationAsync<BlogBasicResponseDto>(
             paginationRequest: request.PaginationRequest,
             filter: request.Filter,
-            include: i => i.Include(x => x.Category),
             sorts: request.Sorts,
+            include: i => i
+                .Include(x => x.Author)
+                .Include(x => x.Category),
             cancellationToken: cancellationToken
         );
 
@@ -69,6 +75,7 @@ public class BlogService : ServiceBase<Blog, IBlogRepository>, IBlogService
         var result = await _GetAsync<BlogDetailResponseDto>(
             where: f => f.Id == Id,
             include: i => i
+                .Include(x => x.Author)
                 .Include(x => x.Category)
                 .Include(x => x.BlogComments),
             tracking: false,
@@ -84,6 +91,7 @@ public class BlogService : ServiceBase<Blog, IBlogRepository>, IBlogService
             filter: request?.Filter,
             sorts: request?.Sorts,
             include: i => i
+                .Include(x => x.Author)
                 .Include(x => x.Category)
                 .Include(x => x.BlogComments),
             tracking: false,
@@ -100,6 +108,7 @@ public class BlogService : ServiceBase<Blog, IBlogRepository>, IBlogService
             filter: request.Filter,
             sorts: request.Sorts,
             include: i => i
+                .Include(x => x.Author)
                 .Include(x => x.Category)
                 .Include(x => x.BlogComments),
             cancellationToken: cancellationToken

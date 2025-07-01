@@ -7,6 +7,7 @@ using Core.Utils.Datatable;
 using Core.Utils.Pagination;
 using DataAccess.Abstract;
 using Microsoft.EntityFrameworkCore;
+using Model.Dtos.Blog_;
 using Model.Dtos.BlogLike_;
 using Model.Entities;
 
