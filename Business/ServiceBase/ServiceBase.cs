@@ -6,7 +6,6 @@ using Core.Utils.ExceptionHandle.Exceptions;
 using Core.Utils.Pagination;
 using DataAccess.Repository;
 using Microsoft.EntityFrameworkCore.Query;
-using Newtonsoft.Json;
 using System.Linq.Expressions;
 
 namespace Business.ServiceBase;
@@ -78,14 +77,24 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
     #endregion
 
     #region Update
-    public TEntity _Update(TEntity entity)
+    public TEntity _Update(TEntity entity, Expression<Func<TEntity, bool>> where)
     {
-        return _repository.UpdateAndSave(entity);
+        TEntity? originalEntity = _repository.Get(where: where);
+        if (originalEntity == null) throw new GeneralException($"The entity({nameof(TEntity)}) was not found to update.");
+
+        _mapper.Map(entity, originalEntity);
+
+        return _repository.UpdateAndSave(originalEntity);
     }
 
-    public TDtoResponse _Update<TDtoResponse>(TEntity entity) where TDtoResponse : IDto
+    public TDtoResponse _Update<TDtoResponse>(TEntity entity, Expression<Func<TEntity, bool>> where) where TDtoResponse : IDto
     {
-        TEntity updatedEntity = _repository.UpdateAndSave(entity);
+        TEntity? originalEntity = _repository.Get(where: where);
+        if (originalEntity == null) throw new GeneralException($"The entity({nameof(TEntity)}) was not found to update.");
+
+        _mapper.Map(entity, originalEntity);
+
+        TEntity updatedEntity = _repository.UpdateAndSave(originalEntity);
         return _mapper.Map<TDtoResponse>(updatedEntity);
     }
 
@@ -521,14 +530,24 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
     #endregion
 
     #region Update
-    public async Task<TEntity> _UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
+    public async Task<TEntity> _UpdateAsync(TEntity entity, Expression<Func<TEntity, bool>> where, CancellationToken cancellationToken = default)
     {
-        return await _repository.UpdateAndSaveAsync(entity, cancellationToken);
+        TEntity? originalEntity = await _repository.GetAsync(where: where, cancellationToken: cancellationToken);
+        if (originalEntity == null) throw new GeneralException($"The entity({nameof(TEntity)}) was not found to update.");
+
+        _mapper.Map(entity, originalEntity);
+
+        return await _repository.UpdateAndSaveAsync(originalEntity, cancellationToken);
     }
 
-    public async Task<TDtoResponse> _UpdateAsync<TDtoResponse>(TEntity entity, CancellationToken cancellationToken = default) where TDtoResponse : IDto
+    public async Task<TDtoResponse> _UpdateAsync<TDtoResponse>(TEntity entity, Expression<Func<TEntity, bool>> where, CancellationToken cancellationToken = default) where TDtoResponse : IDto
     {
-        TEntity updatedEntity = await _repository.UpdateAndSaveAsync(entity, cancellationToken);
+        TEntity? originalEntity = await _repository.GetAsync(where: where, cancellationToken: cancellationToken);
+        if (originalEntity == null) throw new GeneralException($"The entity({nameof(TEntity)}) was not found to update.");
+
+        _mapper.Map(entity, originalEntity);
+
+        TEntity updatedEntity = await _repository.UpdateAndSaveAsync(originalEntity, cancellationToken);
         return _mapper.Map<TDtoResponse>(updatedEntity);
     }
 

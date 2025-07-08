@@ -24,8 +24,8 @@ public interface IServiceBaseAsync<TEntity> where TEntity : class, IEntity
     #endregion
 
     #region Update
-    Task<TEntity> _UpdateAsync(TEntity entity, CancellationToken cancellationToken = default);
-    Task<TDtoResponse> _UpdateAsync<TDtoResponse>(TEntity entity, CancellationToken cancellationToken = default) where TDtoResponse : IDto;
+    Task<TEntity> _UpdateAsync(TEntity entity, Expression<Func<TEntity, bool>> where, CancellationToken cancellationToken = default);
+    Task<TDtoResponse> _UpdateAsync<TDtoResponse>(TEntity entity, Expression<Func<TEntity, bool>> where, CancellationToken cancellationToken = default) where TDtoResponse : IDto;
     Task<TEntity> _UpdateAsync<TDtoRequest>(TDtoRequest updateModel, Expression<Func<TEntity, bool>> where, CancellationToken cancellationToken = default) where TDtoRequest : IDto;
     Task<TDtoResponse> _UpdateAsync<TDtoRequest, TDtoResponse>(TDtoRequest updateModel, Expression<Func<TEntity, bool>> where, CancellationToken cancellationToken = default) where TDtoRequest : IDto where TDtoResponse : IDto;
     #endregion

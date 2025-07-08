@@ -136,8 +136,6 @@ builder.Services
 // ------- JWT Implementation -------
 
 
-
-
 builder.Services.AddHealthChecks();
 
 builder.Services.AddControllers();
@@ -155,7 +153,6 @@ app.UseMiddleware<ExceptionHandleMiddleware>();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-
     app.MapScalarApiReference();
 }
 

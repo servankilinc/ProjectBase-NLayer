@@ -118,6 +118,55 @@ public class BlogService : ServiceBase<Blog, IBlogRepository>, IBlogService
     }
     #endregion
 
+    #region Get-BlogLikeListResponseDto
+    public async Task<BlogLikeListResponseDto?> GetBlogLikeListResponseDtoAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        if (id == default) throw new ArgumentNullException(nameof(id));
+
+        var result = await _GetAsync<BlogLikeListResponseDto>(
+            where: f => f.Id == id,
+            include: i => i
+                .Include(x => x.BlogLikes)
+                    .ThenInclude(x => x.User)
+,
+            tracking: false,
+            cancellationToken: cancellationToken
+        );
+
+        return result;
+    }
+    public async Task<ICollection<BlogLikeListResponseDto>?> GetAllBlogLikeListResponseDtoAsync(DynamicRequest? request, CancellationToken cancellationToken = default)
+    {
+        var result = await _GetListAsync<BlogLikeListResponseDto>(
+            filter: request?.Filter,
+            sorts: request?.Sorts,
+            include: i => i
+                .Include(x => x.BlogLikes)
+                    .ThenInclude(x => x.User)
+,
+            tracking: false,
+            cancellationToken: cancellationToken
+        );
+
+        return result;
+    }
+    public async Task<PaginationResponse<BlogLikeListResponseDto>> GetListBlogLikeListResponseDtoAsync(DynamicPaginationRequest request, CancellationToken cancellationToken = default)
+    {
+        var result = await _PaginationAsync<BlogLikeListResponseDto>(
+            paginationRequest: request.PaginationRequest,
+            filter: request.Filter,
+            sorts: request.Sorts,
+            include: i => i
+                .Include(x => x.BlogLikes)
+                    .ThenInclude(x => x.User)
+,
+            cancellationToken: cancellationToken
+        );
+
+        return result;
+    }
+    #endregion
+
     #region Create
     [Validation(typeof(BlogCreateDto))]
     public async Task<BlogBasicResponseDto> CreateAsync(BlogCreateDto request, CancellationToken cancellationToken = default)

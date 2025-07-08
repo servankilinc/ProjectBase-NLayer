@@ -46,14 +46,16 @@ public class UnitOfWork : IUnitOfWork
 
     public void BeginTransaction()
     {
-        if (_transaction != null) throw new InvalidOperationException("Transaction already started for begin transaction.");
+        if (_transaction != null) 
+            throw new InvalidOperationException("Transaction already started for begin transaction.");
 
         _transaction = _context.Database.BeginTransaction();
     }
 
     public void CommitTransaction()
     {
-        if (_transaction == null) throw new InvalidOperationException("Transaction has not been started for commit transaction.");
+        if (_transaction == null) 
+            throw new InvalidOperationException("Transaction has not been started for commit transaction.");
 
         _transaction.Commit();
 
@@ -81,14 +83,16 @@ public class UnitOfWork : IUnitOfWork
 
     public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
     {
-        if (_transaction != null) throw new InvalidOperationException("Transaction already started for begin transaction.");
+        if (_transaction != null)
+            throw new InvalidOperationException("Transaction already started for begin transaction.");
 
         _transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
     }
 
     public async Task CommitTransactionAsync(CancellationToken cancellationToken = default)
     {
-        if (_transaction == null) throw new InvalidOperationException("Transaction has not been started for commit.");
+        if (_transaction == null) 
+            throw new InvalidOperationException("Transaction has not been started for commit.");
 
         await _transaction.CommitAsync(cancellationToken);
 

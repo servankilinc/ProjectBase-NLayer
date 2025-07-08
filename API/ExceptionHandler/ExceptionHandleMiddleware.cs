@@ -3,19 +3,14 @@ using Core.Utils.ExceptionHandle.Exceptions;
 using Core.Utils.ExceptionHandle.ProblemDetailModels;
 using FluentValidation.Results;
 using Newtonsoft.Json;
+using Serilog;
 
 namespace API.ExceptionHandler;
 
 public class ExceptionHandleMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly ILogger<ExceptionHandleMiddleware> _logger;
-
-    public ExceptionHandleMiddleware(RequestDelegate next, ILogger<ExceptionHandleMiddleware> logger)
-    {
-        _next = next;
-        _logger = logger;
-    }
+    public ExceptionHandleMiddleware(RequestDelegate next) => _next = next;
 
 
     public async Task InvokeAsync(HttpContext context)
@@ -46,7 +41,7 @@ public class ExceptionHandleMiddleware
 
     private Task HandleValidationException(HttpResponse response, ValidationRuleException exception)
     {
-        _logger.LogError(
+        Log.ForContext("Target", "Validation").Error(exception,
             $"\n\n------- ------- ------- Start ------- ------- ------- \n" +
             $"Type(Validation) \n" +
             $"Location: {exception.LocationName} \n" +
@@ -70,7 +65,7 @@ public class ExceptionHandleMiddleware
 
     private Task HandleBusinessException(HttpResponse response, BusinessException exception)
     {
-        _logger.LogError(
+        Log.ForContext("Target", "Business").Error(exception,
             $"\n\n------- ------- ------- Start ------- ------- ------- \n" +
             $"Type(Business) \n" +
             $"Location: {exception.LocationName} \n" +
@@ -92,7 +87,7 @@ public class ExceptionHandleMiddleware
 
     private Task HandleDataAccessException(HttpResponse response, DataAccessException exception)
     {
-        _logger.LogError(exception,
+        Log.ForContext("Target", "DataAccess").Error(exception,
             $"\n\n------- ------- ------- Start ------- ------- ------- \n" +
             $"Type(DataAccess) \n" +
             $"Location: {exception.LocationName} \n" +
@@ -114,7 +109,7 @@ public class ExceptionHandleMiddleware
 
     private Task HandleGeneralException(HttpResponse response, GeneralException exception)
     {
-        _logger.LogError(exception, 
+        Log.ForContext("Target", "Application").Error(exception,
             $"\n\n------- ------- ------- Start ------- ------- ------- \n" +
             $"Type(General) \n" +
             $"Location: {exception.LocationName} \n" +
@@ -136,7 +131,7 @@ public class ExceptionHandleMiddleware
 
     private Task HandleOtherException(HttpResponse response, Exception exception)
     {
-        _logger.LogError(exception, 
+        Log.Error(exception,
             $"\n\n------- ------- ------- Start ------- ------- ------- \n" +
             $"Type(Others) \n" +
             $"Detail: {exception.Message} \n" +

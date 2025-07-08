@@ -24,8 +24,8 @@ public interface IServiceBase<TEntity> where TEntity : class, IEntity
     #endregion
 
     #region Update
-    TEntity _Update(TEntity entity);
-    TDtoResponse _Update<TDtoResponse>(TEntity entity) where TDtoResponse : IDto;
+    TEntity _Update(TEntity entity, Expression<Func<TEntity, bool>> where);
+    TDtoResponse _Update<TDtoResponse>(TEntity entity, Expression<Func<TEntity, bool>> where) where TDtoResponse : IDto;
     TEntity _Update<TDtoRequest>(TDtoRequest updateModel, Expression<Func<TEntity, bool>> where) where TDtoRequest : IDto;
     TDtoResponse _Update<TDtoRequest, TDtoResponse>(TDtoRequest updateModel, Expression<Func<TEntity, bool>> where) where TDtoRequest : IDto where TDtoResponse : IDto;
     #endregion

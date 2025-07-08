@@ -5,9 +5,9 @@ namespace Model.Auth.Login;
 
 public class LoginResponse
 {
-    public UserBasicResponseDto User { get; set; } = null!;
-    public AccessToken AccessToken { get; set; } = null!;
     public IList<string>? Roles { get; set; }
+    public AccessToken AccessToken { get; set; } = null!;
+    public UserBasicResponseDto User { get; set; } = null!;
 }
 
 public class LoginTrustedResponse : LoginResponse
