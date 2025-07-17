@@ -59,31 +59,37 @@ public static class Extensions
 
         var parameters = methodInfo.GetParameters();
         var arguments = invocation.Arguments;
-        
+
         if (parameters.Length == 0) return "not found any parameter.";
 
-        var paramsByArgs = parameters.Select((p, i) =>
+        var paramDict = new Dictionary<string, object?>();
+
+        for (int i = 0; i < parameters.Length; i++)
         {
-            var arg = arguments[i];
-            if (arg == null) return "null";
-
-            Type type = arg.GetType();
-            
-            if (type == typeof(CancellationToken)) return $"CancellationToken = ...";
-
-            if (type.IsSimpleType()) return $"{p.Name} = {arg.ToString()}";
-
-            string serialized = JsonConvert.SerializeObject(arg, new JsonSerializerSettings
+            string parameterName = parameters[i].Name ?? $"param{i}";
+            if (string.IsNullOrEmpty(parameterName)) continue;
+            var value = i < arguments.Length ? arguments[i] : null;
+            if (value == null)
             {
-                Formatting = Formatting.Indented,
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-                MaxDepth = 7,
-                ContractResolver = new IgnoreCriticalDataResolver()
-            });
-            return $"{p.Name} = {serialized}";
-        }).ToArray();
+                paramDict[parameterName] = "null";
+                continue;
+            }
+            if (value.GetType() == typeof(CancellationToken))
+            {
+                paramDict[parameterName] = "...";
+                continue;
+            }
+            paramDict[parameterName] = value;
+        }
+        ;
 
-        return "\n" + string.Join(", \n\t", paramsByArgs);
+        return JsonConvert.SerializeObject(paramDict, new JsonSerializerSettings
+        {
+            Formatting = Formatting.Indented,
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+            MaxDepth = 7,
+            ContractResolver = new IgnoreCriticalDataResolver()
+        });
     }
 
     public static bool IsSimpleType(this Type type)

@@ -1,0 +1,18 @@
+﻿@using WebUI.Models.ViewModels.BlogComment
+@model BlogCommentUpdateViewModel
+@{
+    Layout = null;
+}
+
+<form asp-controller="BlogComment" asp-action="Update" method="post">
+    <input asp-for="UpdateModel.Id" type="hidden" class="form-control" />
+    <div class="row row-gap-4 m-2">
+        <div class="col-sm-6">
+            <label asp-for="UpdateModel.Comment" class="form-label">
+                Comment
+            </label>
+            <input asp-for="UpdateModel.Comment" type="text" class="form-control" />
+            <span asp-validation-for="UpdateModel.Comment"></span>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,41 @@
+﻿@{
+    var currentUrl = Context.GetUrl();
+    var lightMode = Context.GetLightMode();
+}
+<!DOCTYPE html>
+<html class="@(lightMode == "light" ? "light-style" : "dark-style") layout-menu-fixed layout-menu-expanded overflow-x-hidden"
+      dir="ltr"
+      data-theme="theme-default"
+      data-style="light"
+      lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="icon" type="image/x-icon" href="~/assets/img/favicon/favicon.ico" />
+
+    <partial name="_LayoutHeader" />
+</head>
+<body>
+    <!-- Layout wrapper -->
+    <div class="layout-wrapper layout-content-navbar">
+        <div class="layout-container"> 
+            <!-- Layout container --> 
+                <!-- Content wrapper -->
+                <div class="content-wrapper">
+                    <!-- Content -->
+
+                    <div class="container-sm flex-grow-1 container-p-y">
+                        @RenderBody()
+                    </div>
+                    <!-- / Content --> 
+                </div>
+                <!-- Content wrapper --> 
+            <!-- / Layout page -->
+        </div> 
+    </div>
+    <partial name="_LayoutScripts" />
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

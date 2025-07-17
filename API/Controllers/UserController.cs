@@ -18,7 +18,7 @@ public class UserController : ControllerBase
     [HttpGet("Get")]
     public async Task<IActionResult> Get(Guid Id)
     {
-        var result = await _userService.GetAsync(Id);
+        var result = await _userService.GetByBasicAsync(Id);
 
         if (result == null) return NotFound();
 
@@ -28,7 +28,7 @@ public class UserController : ControllerBase
     [HttpPost("GetAll")]
     public async Task<IActionResult> GetAll(DynamicRequest? request)
     {
-        var result = await _userService.GetAllAsync(request);
+        var result = await _userService.GetAllByBasicAsync(request);
 
         if (result == null) return NotFound();
 
@@ -38,7 +38,7 @@ public class UserController : ControllerBase
     [HttpPost("GetList")]
     public async Task<IActionResult> GetList(DynamicPaginationRequest request)
     {
-        var result = await _userService.GetListAsync(request);
+        var result = await _userService.GetListByBasicAsync(request);
 
         if (result == null) return NotFound();
 

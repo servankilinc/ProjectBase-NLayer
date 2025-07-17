@@ -18,6 +18,24 @@ public class MappingProfiles : Profile
         #region Blog
         CreateMap<Blog, Blog>().ForAllMembers(opt => opt.Condition((src, dest, srcMember, destMember) => !Equals(srcMember, destMember)));
 
+        CreateMap<Blog, BlogReportDto>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.AuthorId, opt => opt.MapFrom(src => src.AuthorId))
+            .ForMember(dest => dest.AuthorName, opt => opt.MapFrom(src => src.Author != default ? src.Author.Name : default))
+            .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
+            .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Content))
+            .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.CategoryId))
+            .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category != default ? src.Category.Name : default))
+            .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.Date))
+            .ForMember(dest => dest.BannerImage, opt => opt.MapFrom(src => src.BannerImage))
+            .ForMember(dest => dest.LikeCount, opt => opt.MapFrom(src => src.LikeCount))
+            .ForMember(dest => dest.CommentCount, opt => opt.MapFrom(src => src.CommentCount))
+            .ForMember(dest => dest.CreateDateUtc, opt => opt.MapFrom(src => src.CreateDateUtc))
+            .ForMember(dest => dest.UpdateDateUtc, opt => opt.MapFrom(src => src.UpdateDateUtc))
+            .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => src.IsDeleted))
+            .ForMember(dest => dest.DeletedDateUtc, opt => opt.MapFrom(src => src.DeletedDateUtc))
+            .ForAllMembers(opt => opt.Condition((src, dest, srcMember, destMember) => !Equals(srcMember, destMember)));
+
         CreateMap<Blog, BlogBasicResponseDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.AuthorId, opt => opt.MapFrom(src => src.AuthorId))
@@ -59,7 +77,7 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Content))
             .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.CategoryId))
             .ForMember(dest => dest.BannerImage, opt => opt.MapFrom(src => src.BannerImage))
-            .ForAllMembers(opt => opt.Condition((src, dest, srcMember, destMember) => !Equals(srcMember, destMember)));
+            .ReverseMap();
 
         CreateMap<BlogUpdateDto, Blog>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -67,11 +85,23 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Content))
             .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.CategoryId))
             .ForMember(dest => dest.BannerImage, opt => opt.MapFrom(src => src.BannerImage))
-            .ForAllMembers(opt => opt.Condition((src, dest, srcMember, destMember) => !Equals(srcMember, destMember)));
+            .ReverseMap();
         #endregion
 
         #region BlogComment
         CreateMap<BlogComment, BlogComment>().ForAllMembers(opt => opt.Condition((src, dest, srcMember, destMember) => !Equals(srcMember, destMember)));
+
+        CreateMap<BlogComment, BlogCommentReportDto>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.BlogId, opt => opt.MapFrom(src => src.BlogId))
+            .ForMember(dest => dest.BlogTitle, opt => opt.MapFrom(src => src.Blog != default ? src.Blog.Title : default))
+            .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
+            .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User != default ? src.User.Name : default))
+            .ForMember(dest => dest.Comment, opt => opt.MapFrom(src => src.Comment))
+            .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.Date))
+            .ForMember(dest => dest.CreateDateUtc, opt => opt.MapFrom(src => src.CreateDateUtc))
+            .ForMember(dest => dest.UpdateDateUtc, opt => opt.MapFrom(src => src.UpdateDateUtc))
+            .ForAllMembers(opt => opt.Condition((src, dest, srcMember, destMember) => !Equals(srcMember, destMember)));
 
         CreateMap<BlogComment, BlogCommentBasicResponseDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -95,12 +125,12 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.BlogId, opt => opt.MapFrom(src => src.BlogId))
             .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
             .ForMember(dest => dest.Comment, opt => opt.MapFrom(src => src.Comment))
-            .ForAllMembers(opt => opt.Condition((src, dest, srcMember, destMember) => !Equals(srcMember, destMember)));
+            .ReverseMap();
 
         CreateMap<BlogCommentUpdateDto, BlogComment>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.Comment, opt => opt.MapFrom(src => src.Comment))
-            .ForAllMembers(opt => opt.Condition((src, dest, srcMember, destMember) => !Equals(srcMember, destMember)));
+            .ReverseMap();
         #endregion
 
         #region BlogLike
@@ -116,16 +146,25 @@ public class MappingProfiles : Profile
         CreateMap<BlogLikeCreateDto, BlogLike>()
             .ForMember(dest => dest.BlogId, opt => opt.MapFrom(src => src.BlogId))
             .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
-            .ForAllMembers(opt => opt.Condition((src, dest, srcMember, destMember) => !Equals(srcMember, destMember)));
+            .ReverseMap();
 
         CreateMap<BlogLikeDeleteDto, BlogLike>()
             .ForMember(dest => dest.BlogId, opt => opt.MapFrom(src => src.BlogId))
             .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
-            .ForAllMembers(opt => opt.Condition((src, dest, srcMember, destMember) => !Equals(srcMember, destMember)));
+            .ReverseMap();
         #endregion
 
         #region Category
         CreateMap<Category, Category>().ForAllMembers(opt => opt.Condition((src, dest, srcMember, destMember) => !Equals(srcMember, destMember)));
+
+        CreateMap<Category, CategoryReportDto>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+            .ForMember(dest => dest.CreateDateUtc, opt => opt.MapFrom(src => src.CreateDateUtc))
+            .ForMember(dest => dest.UpdateDateUtc, opt => opt.MapFrom(src => src.UpdateDateUtc))
+            .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => src.IsDeleted))
+            .ForMember(dest => dest.DeletedDateUtc, opt => opt.MapFrom(src => src.DeletedDateUtc))
+            .ForAllMembers(opt => opt.Condition((src, dest, srcMember, destMember) => !Equals(srcMember, destMember)));
 
         CreateMap<Category, CategoryResponseDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -139,12 +178,12 @@ public class MappingProfiles : Profile
 
         CreateMap<CategoryCreateDto, Category>()
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
-            .ForAllMembers(opt => opt.Condition((src, dest, srcMember, destMember) => !Equals(srcMember, destMember)));
+            .ReverseMap();
 
         CreateMap<CategoryUpdateDto, Category>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
-            .ForAllMembers(opt => opt.Condition((src, dest, srcMember, destMember) => !Equals(srcMember, destMember)));
+            .ReverseMap();
         #endregion
 
         #region User
@@ -154,6 +193,19 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.FirstName))
             .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
             .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+            .ForAllMembers(opt => opt.Condition((src, dest, srcMember, destMember) => !Equals(srcMember, destMember)));
+
+        CreateMap<User, UserReportDto>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+            .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+            .ForMember(dest => dest.Addres, opt => opt.MapFrom(src => src.Addres))
+            .ForMember(dest => dest.BirthDate, opt => opt.MapFrom(src => src.BirthDate))
+            .ForMember(dest => dest.CreateDateUtc, opt => opt.MapFrom(src => src.CreateDateUtc))
+            .ForMember(dest => dest.UpdateDateUtc, opt => opt.MapFrom(src => src.UpdateDateUtc))
+            .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => src.IsDeleted))
+            .ForMember(dest => dest.DeletedDateUtc, opt => opt.MapFrom(src => src.DeletedDateUtc))
             .ForAllMembers(opt => opt.Condition((src, dest, srcMember, destMember) => !Equals(srcMember, destMember)));
 
         CreateMap<User, UserBasicResponseDto>()
@@ -183,7 +235,7 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
             .ForMember(dest => dest.Addres, opt => opt.MapFrom(src => src.Addres))
             .ForMember(dest => dest.BirthDate, opt => opt.MapFrom(src => src.BirthDate))
-            .ForAllMembers(opt => opt.Condition((src, dest, srcMember, destMember) => !Equals(srcMember, destMember)));
+            .ReverseMap();
 
         CreateMap<UserUpdateDto, User>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -191,7 +243,7 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
             .ForMember(dest => dest.Addres, opt => opt.MapFrom(src => src.Addres))
             .ForMember(dest => dest.BirthDate, opt => opt.MapFrom(src => src.BirthDate))
-            .ForAllMembers(opt => opt.Condition((src, dest, srcMember, destMember) => !Equals(srcMember, destMember)));
+            .ReverseMap();
         #endregion
     }
 }

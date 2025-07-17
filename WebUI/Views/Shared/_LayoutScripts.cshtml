@@ -1,0 +1,69 @@
+﻿<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- LIBS -->
+<script src="~/lib/fontawesome-free-6.7.2-web/js/all.min.js"></script>
+<script src="~/lib/popper/popper.js"></script>
+<script src="~/lib/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+<script src="~/lib/highlight/highlight.js"></script>
+<script src="~/lib/clipboard/clipboard.js"></script>
+<script src="~/lib/@@algolia/autocomplete-js.js"></script>
+<script src="~/lib/hammer/hammer.js"></script>
+<script src="~/lib/i18n/i18n.js"></script>
+<script src="~/lib/bloodhound/bloodhound.js"></script>
+<script src="~/lib/apex-charts/apexcharts.js"></script>
+<script src="~/lib/select2/select2.js"></script>
+<script src="~/lib/tagify/tagify.js"></script>
+<script src="~/lib/typeahead-js/typeahead.js"></script>
+<script src="~/lib/bs-stepper/bs-stepper.js"></script>
+<script src="~/lib/bootstrap-select/bootstrap-select.js"></script>
+<script src="~/lib/moment/moment.js"></script>
+<script src="~/lib/flatpickr/flatpickr.js"></script>
+<script src="~/lib/pickr/pickr.js"></script>
+<script src="~/lib/bootstrap-daterangepicker/bootstrap-daterangepicker.js"></script>
+<script src="~/lib/jquery-timepicker/jquery-timepicker.js"></script>
+<script src="~/lib/simple-notify/simple-notify.min.js"></script>
+<script src="~/lib/pace/pace.min.js"></script>
+
+<script src="~/lib/bootstrap-datepicker-1.9.0/js/bootstrap-datepicker.min.js"></script>
+<script src="~/lib/bootstrap-datepicker-1.9.0/locales/bootstrap-datepicker.tr.min.js"></script>
+<script src="~/lib/datatables-bs5/datatables-bootstrap5.js"></script>
+<!-- LIBS -->
+
+<script src="~/js/menu.js"></script>
+<script src="~/js/main.js"></script>
+
+<script src="~/js/utils/requestManager.js"></script>
+<script src="~/js/utils/alertManager.js"></script>
+<script src="~/js/utils/datatableManager.js"></script>
+<script src="~/js/utils/modalManager.js"></script>
+
+<script>
+	window.paceOptions = {
+		ajax: {
+			trackMethods: ['GET', 'POST', 'DELETE', 'PACH'],
+			ignoreURLs: [
+				"/heartbeat",
+				"/keepalive",
+				"signalr",
+				"__browserLink",
+				"browserLinkSignalR"
+			],
+			trackWebSockets: false,
+		},
+		document: true,
+		eventLag: false,
+		restartOnRequestAfter: false
+	};
+	// jquery pace.js handle
+	$(document).ajaxStart(function () { Pace.restart(); });
+
+	// fetch pace.js handle
+	const _fetch = window.fetch;
+	window.fetch = function (...args) {
+		Pace.restart();
+		return _fetch.apply(this, args);
+	};
+</script>

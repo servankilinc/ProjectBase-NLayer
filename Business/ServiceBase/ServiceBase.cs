@@ -769,7 +769,7 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
         Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
-        bool ignoreFilters = false,
+        bool ignoreFilters = true,
         CancellationToken cancellationToken = default)
     {
         return await _repository.DatatableServerSideAsync(
@@ -790,7 +790,7 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
         Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
-        bool ignoreFilters = false,
+        bool ignoreFilters = true,
         CancellationToken cancellationToken = default) where TDtoResponse : IDto
     {
         return await _repository.DatatableServerSideAsync<TDtoResponse>(
@@ -812,7 +812,7 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
         Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
-        bool ignoreFilters = false,
+        bool ignoreFilters = true,
         CancellationToken cancellationToken = default) where TDtoResponse : IDto
     {
         return await _repository.DatatableServerSideAsync<TDtoResponse>(
@@ -835,7 +835,7 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
         Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
-        bool ignoreFilters = false,
+        bool ignoreFilters = true,
         CancellationToken cancellationToken = default)
     {
         return await _repository.DatatableClientSideAsync(
@@ -855,7 +855,7 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
         Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
-        bool ignoreFilters = false,
+        bool ignoreFilters = true,
         CancellationToken cancellationToken = default) where TDtoResponse : IDto
     {
         return await _repository.DatatableClientSideAsync<TDtoResponse>(
@@ -875,7 +875,7 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
         Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
-        bool ignoreFilters = false,
+        bool ignoreFilters = true,
         CancellationToken cancellationToken = default) where TDtoResponse : IDto
     {
         return await _repository.DatatableClientSideAsync<TDtoResponse>(

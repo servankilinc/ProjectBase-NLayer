@@ -1,14 +1,19 @@
 ﻿using AutoMapper;
+using Azure.Core;
 using Business.Abstract;
 using Business.ServiceBase;
 using Core.BaseRequestModels;
+using Core.Model;
 using Core.Utils.CrossCuttingConcerns;
 using Core.Utils.Datatable;
 using Core.Utils.Pagination;
 using DataAccess.Abstract;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Model.Dtos.Blog_;
 using Model.Dtos.BlogComment_;
 using Model.Entities;
+using System.Linq.Expressions;
 
 namespace Business.Concrete;
 
@@ -19,8 +24,71 @@ public class BlogCommentService : ServiceBase<BlogComment, IBlogCommentRepositor
     {
     }
 
+    #region Get Entity
+    public async Task<BlogComment?> GetAsync(Expression<Func<BlogComment, bool>> where, CancellationToken cancellationToken = default)
+    {
+        var result = await _GetAsync(
+            where: where,
+            tracking: false,
+            cancellationToken: cancellationToken
+        );
+
+        return result;
+    }
+
+    public async Task<ICollection<BlogComment>?> GetListAsync(Expression<Func<BlogComment, bool>>? where = null, CancellationToken cancellationToken = default)
+    {
+        var result = await _GetListAsync(
+             where: where,
+             tracking: false,
+             cancellationToken: cancellationToken
+         );
+
+        return result;
+    }
+    #endregion
+
+    #region Get Generic
+    public async Task<TResponse?> GetAsync<TResponse>(Guid Id, CancellationToken cancellationToken = default) where TResponse : IDto
+    {
+        if (Id == default) throw new ArgumentNullException(nameof(Id));
+
+        var result = await _GetAsync<TResponse>(
+            where: f => f.Id == Id,
+            tracking: false,
+            cancellationToken: cancellationToken
+        );
+
+        return result;
+    }
+
+    public async Task<ICollection<TResponse>?> GetListAsync<TResponse>(Expression<Func<BlogComment, bool>>? where = null, CancellationToken cancellationToken = default) where TResponse : IDto
+    {
+        var result = await _GetListAsync<TResponse>(
+            where: where,
+            tracking: false,
+            cancellationToken: cancellationToken
+        );
+
+        return result;
+    }
+    #endregion
+
+    #region SelectList
+    public async Task<SelectList> GetSelectListAsync(Expression<Func<BlogComment, bool>>? where = default, CancellationToken cancellationToken = default)
+    {
+        var result = new SelectList(await _GetListAsync(
+            where: where,
+            tracking: false,
+            cancellationToken: cancellationToken
+        ), "Id", "Name");
+
+        return result;
+    }
+    #endregion
+
     #region GetBasic
-    public async Task<BlogCommentBasicResponseDto?> GetAsync(Guid Id, CancellationToken cancellationToken = default)
+    public async Task<BlogCommentBasicResponseDto?> GetByBasicAsync(Guid Id, CancellationToken cancellationToken = default)
     {
         if (Id == default) throw new ArgumentNullException(nameof(Id));
 
@@ -33,7 +101,7 @@ public class BlogCommentService : ServiceBase<BlogComment, IBlogCommentRepositor
         return result;
     }
 
-    public async Task<ICollection<BlogCommentBasicResponseDto>?> GetAllAsync(DynamicRequest? request, CancellationToken cancellationToken = default)
+    public async Task<ICollection<BlogCommentBasicResponseDto>?> GetAllByBasicAsync(DynamicRequest? request, CancellationToken cancellationToken = default)
     {
         var result = await _GetListAsync<BlogCommentBasicResponseDto>(
             filter: request?.Filter,
@@ -45,7 +113,7 @@ public class BlogCommentService : ServiceBase<BlogComment, IBlogCommentRepositor
         return result;
     }
 
-    public async Task<PaginationResponse<BlogCommentBasicResponseDto>> GetListAsync(DynamicPaginationRequest request, CancellationToken cancellationToken = default)
+    public async Task<PaginationResponse<BlogCommentBasicResponseDto>> GetListByBasicAsync(DynamicPaginationRequest request, CancellationToken cancellationToken = default)
     {
         var result = await _PaginationAsync<BlogCommentBasicResponseDto>(
             paginationRequest: request.PaginationRequest,
@@ -147,8 +215,36 @@ public class BlogCommentService : ServiceBase<BlogComment, IBlogCommentRepositor
     public async Task<DatatableResponseServerSide<BlogComment>> DatatableServerSideAsync(DynamicDatatableServerSideRequest request, CancellationToken cancellationToken = default)
     {
         var result = await _DatatableServerSideAsync(
-            datatableRequest: request.DatatableRequest,
+            datatableRequest: request.GetDatatableRequest(),
             filter: request.Filter,
+            cancellationToken: cancellationToken
+        );
+
+        return result;
+    }
+
+    public async Task<DatatableResponseClientSide<BlogCommentReportDto>> DatatableClientSideByReportAsync(DynamicRequest request, CancellationToken cancellationToken = default)
+    {
+        var result = await _DatatableClientSideAsync<BlogCommentReportDto>(
+            filter: request.Filter,
+            sorts: request.Sorts,
+            include: i => i
+                .Include(x => x.Blog)
+                .Include(x => x.User),
+            cancellationToken: cancellationToken
+        );
+
+        return result;
+    }
+
+    public async Task<DatatableResponseServerSide<BlogCommentReportDto>> DatatableServerSideByReportAsync(DynamicDatatableServerSideRequest request, CancellationToken cancellationToken = default)
+    {
+        var result = await _DatatableServerSideAsync<BlogCommentReportDto>(
+            datatableRequest: request.GetDatatableRequest(),
+            filter: request.Filter,
+            include: i => i
+                .Include(x => x.Blog)
+                .Include(x => x.User),
             cancellationToken: cancellationToken
         );
 

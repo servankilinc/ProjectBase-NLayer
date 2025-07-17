@@ -120,7 +120,7 @@ public interface IServiceBaseAsync<TEntity> where TEntity : class, IEntity
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
         Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
-        bool ignoreFilters = false,
+        bool ignoreFilters = true,
         CancellationToken cancellationToken = default);
 
     Task<DatatableResponseServerSide<TDtoResponse>> _DatatableServerSideAsync<TDtoResponse>(
@@ -131,7 +131,7 @@ public interface IServiceBaseAsync<TEntity> where TEntity : class, IEntity
        Expression<Func<TEntity, bool>>? where = null,
        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
-       bool ignoreFilters = false,
+       bool ignoreFilters = true,
        CancellationToken cancellationToken = default) where TDtoResponse : IDto;
 
     Task<DatatableResponseServerSide<TDtoResponse>> _DatatableServerSideAsync<TDtoResponse>(
@@ -141,7 +141,7 @@ public interface IServiceBaseAsync<TEntity> where TEntity : class, IEntity
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
         Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
-        bool ignoreFilters = false,
+        bool ignoreFilters = true,
         CancellationToken cancellationToken = default) where TDtoResponse : IDto;
     #endregion
 
@@ -152,7 +152,7 @@ public interface IServiceBaseAsync<TEntity> where TEntity : class, IEntity
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
         Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
-        bool ignoreFilters = false,
+        bool ignoreFilters = true,
         CancellationToken cancellationToken = default);
 
     Task<DatatableResponseClientSide<TDtoResponse>> _DatatableClientSideAsync<TDtoResponse>(
@@ -162,7 +162,7 @@ public interface IServiceBaseAsync<TEntity> where TEntity : class, IEntity
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
         Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
-        bool ignoreFilters = false,
+        bool ignoreFilters = true,
         CancellationToken cancellationToken = default) where TDtoResponse : IDto;
 
     Task<DatatableResponseClientSide<TDtoResponse>> _DatatableClientSideAsync<TDtoResponse>(
@@ -171,7 +171,7 @@ public interface IServiceBaseAsync<TEntity> where TEntity : class, IEntity
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
         Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
-        bool ignoreFilters = false,
+        bool ignoreFilters = true,
         CancellationToken cancellationToken = default) where TDtoResponse : IDto;
     #endregion
 

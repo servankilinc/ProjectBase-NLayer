@@ -9,7 +9,7 @@ public class UserCreateDto : IDto
     public string LastName { get; set; } = null!;
     public string Email { get; set; } = null!;
     public string? Addres { get; set; }
-    public DateOnly BirthDate { get; set; }
+    public DateOnly? BirthDate { get; set; }
     public string Password { get; set; } = null!;
 }
 

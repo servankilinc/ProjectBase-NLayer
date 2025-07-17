@@ -51,6 +51,8 @@ public static class QueryableFilterExtension
 
     private static void GetFilters(IList<Filter> filterList, Filter filter)
     {
+        if (filter.Operator != "base" && string.IsNullOrEmpty(filter.Value)) return;
+
         filterList.Add(filter);
         if (filter.Filters is not null && filter.Filters.Any())
             foreach (Filter item in filter.Filters)
@@ -113,7 +115,7 @@ public static class QueryableFilterExtension
         if (filter.Logic is not null && filter.Filters is not null && filter.Filters.Any())
         {
             string baseLogic = filter.Operator == "base" ? "" : filter.Logic;
-            return $"({where} {baseLogic} {string.Join(separator: $" {filter.Logic} ", value: filter.Filters.Select(f => Transform(f, filters)).ToArray())})";
+            return $"({where} {baseLogic} {string.Join(separator: $" {filter.Logic} ", value: filter.Filters.Where(f => f.Operator == "base" || !string.IsNullOrEmpty(f.Value)).Select(f => Transform(f, filters)).ToArray())})";
         }
 
         return where.ToString();

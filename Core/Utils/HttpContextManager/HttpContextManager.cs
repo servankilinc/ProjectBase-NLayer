@@ -44,7 +44,7 @@ public class HttpContextManager
             Secure = true,
             HttpOnly = true,
             Expires = expirationUtc,
-            SameSite = SameSiteMode.Strict,
+            SameSite = SameSiteMode.Lax,
             //Path = "/Account/RefreshAuth"
         });
     }

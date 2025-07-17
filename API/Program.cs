@@ -15,6 +15,7 @@ using Model;
 using Model.Entities;
 using Scalar.AspNetCore;
 using Serilog;
+using Serilog.Filters;
 using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -43,8 +44,8 @@ builder.Services.AddRateLimiter(options =>
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
     options.AddSlidingWindowLimiter(policyName: "policy_rate_limiter", slidingOptions =>
     {
-        slidingOptions.PermitLimit = 15;
-        slidingOptions.Window = TimeSpan.FromSeconds(10);
+        slidingOptions.PermitLimit = 30;
+        slidingOptions.Window = TimeSpan.FromSeconds(5);
         slidingOptions.SegmentsPerWindow = 4;
         slidingOptions.QueueLimit = 5;
         slidingOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
@@ -55,8 +56,30 @@ builder.Services.AddRateLimiter(options =>
 
 // ------- Logger Implementation -------
 Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(builder.Configuration)
+    .MinimumLevel.Information()
+    .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
+    .MinimumLevel.Override("System", Serilog.Events.LogEventLevel.Warning)
     .Enrich.FromLogContext()
+    .WriteTo.Logger(lc => lc
+        .Filter.ByIncludingOnly(Matching.WithProperty("Target", (object p) => p.ToString() == "Validation"))
+        .WriteTo.File("Logs/Validation/validation.log", rollingInterval: RollingInterval.Day,
+            outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level}] {Message}{NewLine}{Exception}"))
+    .WriteTo.Logger(lc => lc
+        .Filter.ByIncludingOnly(Matching.WithProperty("Target", (object p) => p.ToString() == "Application"))
+        .WriteTo.File("Logs/Application/application.log", rollingInterval: RollingInterval.Day,
+            outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level}] {Message}{NewLine}{Exception}"))
+    .WriteTo.Logger(lc => lc
+        .Filter.ByIncludingOnly(Matching.WithProperty("Target", (object p) => p.ToString() == "Business"))
+        .WriteTo.File("Logs/Business/business.log", rollingInterval: RollingInterval.Day,
+            outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level}] {Message}{NewLine}{Exception}"))
+    .WriteTo.Logger(lc => lc
+        .Filter.ByIncludingOnly(Matching.WithProperty("Target", (object p) => p.ToString() == "DataAccess"))
+        .WriteTo.File("Logs/DataAccess/dataAccess.log", rollingInterval: RollingInterval.Day,
+            outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level}] {Message}{NewLine}{Exception}"))
+    .WriteTo.Logger(lc => lc
+        .Filter.ByExcluding(Matching.WithProperty<string>("Target", _ => true))
+        .WriteTo.File("Logs/Other/others.log", rollingInterval: RollingInterval.Day,
+            outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level}] {Message}{NewLine}{Exception}"))
     .CreateLogger();
 
 builder.Host.UseSerilog();
@@ -83,8 +106,6 @@ builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory())
 
 
 // ------- IDENTITY -------
-builder.Services.AddAuthorization();
-
 builder.Services
     .AddIdentity<User, IdentityRole<Guid>>(options =>
     {
@@ -106,6 +127,8 @@ builder.Services
     })
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
+
+builder.Services.AddAuthorization();
 // ------- IDENTITY -------
 
 

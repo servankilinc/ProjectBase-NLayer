@@ -41,7 +41,7 @@ public class ExceptionHandleMiddleware
 
     private Task HandleValidationException(HttpResponse response, ValidationRuleException exception)
     {
-        Log.ForContext("Target", "Validation").Error(exception,
+        Log.ForContext("Target", "Validation").Error(
             $"\n\n------- ------- ------- Start ------- ------- ------- \n" +
             $"Type(Validation) \n" +
             $"Location: {exception.LocationName} \n" +
@@ -65,13 +65,14 @@ public class ExceptionHandleMiddleware
 
     private Task HandleBusinessException(HttpResponse response, BusinessException exception)
     {
-        Log.ForContext("Target", "Business").Error(exception,
+        Log.ForContext("Target", "Business").Error(
             $"\n\n------- ------- ------- Start ------- ------- ------- \n" +
             $"Type(Business) \n" +
             $"Location: {exception.LocationName} \n" +
             $"Detail: {exception.Message} \n" +
             $"Description:{exception.Description} \n" +
             $"Parameters: {exception.Parameters} \n" +
+            $"Exception Raw: \n\n{exception.ToString()} \n" +
             $"------- ------- ------- FINISH ------- ------- -------\n\n");
 
         response.StatusCode = StatusCodes.Status409Conflict;
@@ -87,13 +88,14 @@ public class ExceptionHandleMiddleware
 
     private Task HandleDataAccessException(HttpResponse response, DataAccessException exception)
     {
-        Log.ForContext("Target", "DataAccess").Error(exception,
+        Log.ForContext("Target", "DataAccess").Error(
             $"\n\n------- ------- ------- Start ------- ------- ------- \n" +
             $"Type(DataAccess) \n" +
             $"Location: {exception.LocationName} \n" +
             $"Detail: {exception.Message} \n" +
             $"Description:{exception.Description} \n" +
             $"Parameters: {exception.Parameters} \n" +
+            $"Exception Raw: \n\n{exception.ToString()} \n" +
             $"------- ------- ------- FINISH ------- ------- -------\n\n");
 
         response.StatusCode = StatusCodes.Status500InternalServerError;
@@ -109,13 +111,14 @@ public class ExceptionHandleMiddleware
 
     private Task HandleGeneralException(HttpResponse response, GeneralException exception)
     {
-        Log.ForContext("Target", "Application").Error(exception,
+        Log.ForContext("Target", "Application").Error(
             $"\n\n------- ------- ------- Start ------- ------- ------- \n" +
             $"Type(General) \n" +
             $"Location: {exception.LocationName} \n" +
             $"Detail: {exception.Message} \n" +
             $"Description:{exception.Description} \n" +
             $"Parameters: {exception.Parameters} \n" +
+            $"Exception Raw: \n\n{exception.ToString()} \n" +
             $"------- ------- ------- FINISH ------- ------- -------\n\n");
 
         response.StatusCode = StatusCodes.Status500InternalServerError; // 500
@@ -131,10 +134,11 @@ public class ExceptionHandleMiddleware
 
     private Task HandleOtherException(HttpResponse response, Exception exception)
     {
-        Log.Error(exception,
+        Log.Error(
             $"\n\n------- ------- ------- Start ------- ------- ------- \n" +
             $"Type(Others) \n" +
             $"Detail: {exception.Message} \n" +
+            $"Exception Raw: \n\n{exception.ToString()} \n" +
             $"------- ------- ------- FINISH ------- ------- -------\n\n");
 
         response.StatusCode = StatusCodes.Status500InternalServerError; // 500

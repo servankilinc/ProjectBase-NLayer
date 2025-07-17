@@ -506,7 +506,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Archives");
+                    b.ToTable("Archives", (string)null);
                 });
 
             modelBuilder.Entity("Model.ProjectEntities.Log", b =>
@@ -549,7 +549,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Logs");
+                    b.ToTable("Logs", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>

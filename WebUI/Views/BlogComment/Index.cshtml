@@ -1,0 +1,271 @@
+﻿@using WebUI.Models.ViewModels.BlogComment
+@model BlogCommentViewModel
+@{
+    ViewData["Title"] = "Blog Comments";
+}
+
+<div class="card">
+    <div class="card-header">
+        <form id="form_blogComment_filter">
+            <div class="row row-gap-4">
+                <div class="col-md-3 col-sm-4 col-6">
+                    <div class="input-group d-flex flex-nowrap col-md-3 col-sm-4 col-6">
+                        <span class="input-group-text bg-lightest">
+                            Blog
+                        </span>
+                        <select name="BlogId" asp-items="Model.BlogIds" class="autoInitSelect2 form-select">
+                            <option></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-4 col-6">
+                    <div class="input-group d-flex flex-nowrap col-md-3 col-sm-4 col-6">
+                        <span class="input-group-text bg-lightest">
+                            User
+                        </span>
+                        <select name="UserId" asp-items="Model.UserIds" class="autoInitSelect2 form-select">
+                            <option></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-4 col-6">
+                    <div class="input-group">
+                        <span class="input-group-text bg-lightest">
+                            Comment
+                        </span>
+                        <input name="Comment" type="text" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-4 col-6">
+                    <div class="input-group col-md-3 col-sm-4 col-6">
+                        <span class="input-group-text bg-lightest">
+                            Date
+                        </span>
+                        <input name="Date" type="text" class="form-control autoInitDatePicker" />
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-4 col-6">
+                    <button onclick="InitilazeTable(this)" type="button" class="btn btn-light">
+                        <span class="dynamic-content">
+                            <i class="fa-solid fa-search me-2"></i>
+                            Search
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="card-body">
+        <table id="table_blogComment" class="table table-hover table-striped">
+            <thead class="bg-light">
+                <tr>
+                    <!-- Unique Field'ları Alma -->
+                    <!-- Report Dto oluştururken kullandığın ilişkili Field'ları Alma -->
+                    <th>Blog Title</th> <!-- CamelCase arasına boşluk koy -->
+                    <th>User Name</th>
+                    <th>Comment</th>
+                    <th>Date</th>
+                    <!-- entity auditable ise -->
+                    <th>Create Date</th>
+                    <th>Last Update Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script>
+
+        let PageTable;
+
+        $(document).ready(function(){
+            InitilazeTable();
+        })
+
+        function InitilazeTable(e) {
+
+            PageTable = DatatableManager.Create({
+                serverSide: true,
+                tableId: 'table_blogComment',
+                path: 'BlogComment/DatatableServerSide',
+                method: 'Post',
+                buttonElement: e,
+                requestData: {
+                    filter: {
+                        operator: 'base',
+                        logic: 'and',
+                        filters: [
+                            {
+                                operator: 'eq',
+                                field: "BlogId",
+                                value: $("select[name='BlogId']").val(),
+                            },
+                            {
+                                operator: 'eq',
+                                field: "UserId",
+                                value: $("select[name='UserId']").val(),
+                            },
+                            {
+                                operator: 'contains',
+                                field: "Comment",
+                                value: $("input[name='Comment']").val(),
+                            },
+                            {
+                                operator: 'eq',
+                                field: "Date",
+                                value: $("input[name='Date']").val(),
+                            }
+                        ]
+                    }
+                },
+                columns: [
+                    { data: 'blogTitle' },
+                    { data: 'userName' },
+                    { data: 'comment' },
+                    { data: 'date' },
+                    {
+                        data: 'createDateUtc',
+                        render: function (data) {
+                            if(data == null) return '';
+                            return moment(data).format('DD.MM.YYYY HH:mm');
+                        }
+                    },
+                    {
+                        data: 'updateDateUtc',
+                        render: function (data) {
+                            if(data == null) return '';
+                            return moment(data).format('DD.MM.YYYY HH:mm');
+                        }
+                    },
+                    {
+                        data: null,
+                        defaultContent: '',
+                        searchable: false,
+                        createdCell: function (td, cellData, rowData, row, col)
+                        {
+                            DatatableManager.AppendRowButtons(td,
+                                [
+                                    // 1) Update Button
+                                    DatatableManager.RowButton({
+                                        kind: DatatableManager.buttonKinds.update,
+                                        onClick: async (e_btn) =>
+                                        {
+                                            await RequestManager.Get({
+                                                path: 'BlogComment/UpdateForm',
+                                                requestData: {
+                                                    id: rowData.id
+                                                },
+                                                dataType: 'text',
+                                                showToastrSuccess: false,
+                                                buttonElement: e_btn.currentTarget,
+                                                onSuccess: (formHtml) =>
+                                                {
+                                                    ModalManager.CreateModal({
+                                                        title: "Update Blog Comment Informations",
+                                                        innerHtml: formHtml,
+                                                        modalSize: "xl",
+                                                        buttons: [
+                                                            ModalManager.Button({
+                                                                kind: ModalManager.buttonKinds.update,
+                                                                onClick: (e_btn_modal, e_modal, e_form) =>
+                                                                {
+                                                                    RequestManager.HandleRequest({
+                                                                        type: e_form.attr("method"),
+                                                                        path: e_form.attr("action"),
+                                                                        requestData: e_form.serializeArray(),
+                                                                        buttonElement: e_btn_modal,
+                                                                        onSuccess: () =>
+                                                                        {
+                                                                            $(e_modal).modal("hide");
+                                                                            PageTable.reload();
+                                                                        }
+                                                                    })
+                                                                }
+                                                            })
+                                                        ]
+                                                    }).show();
+                                                }
+                                            })
+                                        }
+                                    }),
+                                    // 2) Delete Button
+                                    DatatableManager.RowButton({
+                                        kind: DatatableManager.buttonKinds.delete,
+                                        onClick: async () =>
+                                        {
+                                            ModalManager.DeleteModal({
+                                                onClick: (e_btn, e_mdl) =>
+                                                {
+                                                    RequestManager.Delete({
+                                                        path: 'BlogComment/Delete',
+                                                        requestData: {
+                                                            id: rowData.id
+                                                        },
+                                                        buttonElement: e_btn,
+                                                        onSuccess: () =>
+                                                        {
+                                                            $(e_mdl).modal("hide");
+                                                            PageTable.reload();
+                                                        }
+                                                    })
+                                                }
+                                            }).show();
+                                        }
+                                    })
+                                ]
+                            );
+                        }
+                    }
+                ],
+                customButtons:
+                [
+                    // 1) Create Button
+                    {
+                        text: '<span class="dynamic-content"><i class="fa-solid fa-file-circle-plus me-2"></i>Add New Blog Comment</span>',
+                        className: 'create-new btn btn-primary mx-2',
+                        action: (e_btn) =>
+                        {
+                            RequestManager.Get({
+                                path: 'BlogComment/CreateForm',
+                                dataType: 'text',
+                                showToastrSuccess: false,
+                                buttonElement: e_btn.currentTarget,
+                                onSuccess: (formHtml) =>
+                                {
+                                    ModalManager.CreateModal({
+                                        title: "Add New Blog Comment",
+                                        innerHtml: formHtml,
+                                        modalSize: "xl",
+                                        buttons: [
+                                            ModalManager.Button({
+                                                kind: ModalManager.buttonKinds.save,
+                                                onClick: (e_btn_modal, e_modal, e_form) =>
+                                                {
+                                                    RequestManager.HandleRequest({
+                                                        type: e_form.attr("method"),
+                                                        path: e_form.attr("action"),
+                                                        requestData: e_form.serializeArray(),
+                                                        buttonElement: e_btn_modal,
+                                                        onSuccess: () =>
+                                                        {
+                                                            $(e_modal).modal("hide");
+                                                            PageTable.reload();
+                                                        }
+                                                    })
+                                                }
+                                            })
+                                        ]
+                                    }).show();
+                                }
+                            })
+                        }
+                    }
+                ]
+            })
+        }
+    </script>
+}

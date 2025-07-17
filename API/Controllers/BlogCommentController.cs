@@ -18,7 +18,7 @@ public class BlogCommentController : ControllerBase
     [HttpGet("Get")]
     public async Task<IActionResult> Get(Guid Id)
     {
-        var result = await _blogCommentService.GetAsync(Id);
+        var result = await _blogCommentService.GetByBasicAsync(Id);
 
         if (result == null) return NotFound();
 
@@ -28,7 +28,7 @@ public class BlogCommentController : ControllerBase
     [HttpPost("GetAll")]
     public async Task<IActionResult> GetAll(DynamicRequest? request)
     {
-        var result = await _blogCommentService.GetAllAsync(request);
+        var result = await _blogCommentService.GetAllByBasicAsync(request);
 
         if (result == null) return NotFound();
 
@@ -38,7 +38,7 @@ public class BlogCommentController : ControllerBase
     [HttpPost("GetList")]
     public async Task<IActionResult> GetList(DynamicPaginationRequest request)
     {
-        var result = await _blogCommentService.GetListAsync(request);
+        var result = await _blogCommentService.GetListByBasicAsync(request);
 
         if (result == null) return NotFound();
 

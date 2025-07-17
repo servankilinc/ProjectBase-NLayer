@@ -18,7 +18,7 @@ public class CategoryController : ControllerBase
     [HttpGet("Get")]
     public async Task<IActionResult> Get(Guid Id)
     {
-        var result = await _categoryService.GetAsync(Id);
+        var result = await _categoryService.GetByBasicAsync(Id);
 
         if (result == null) return NotFound();
 
@@ -28,7 +28,7 @@ public class CategoryController : ControllerBase
     [HttpPost("GetAll")]
     public async Task<IActionResult> GetAll(DynamicRequest? request)
     {
-        var result = await _categoryService.GetAllAsync(request);
+        var result = await _categoryService.GetAllByBasicAsync(request);
 
         if (result == null) return NotFound();
 
@@ -38,7 +38,7 @@ public class CategoryController : ControllerBase
     [HttpPost("GetList")]
     public async Task<IActionResult> GetList(DynamicPaginationRequest request)
     {
-        var result = await _categoryService.GetListAsync(request);
+        var result = await _categoryService.GetListByBasicAsync(request);
 
         if (result == null) return NotFound();
 

@@ -16,7 +16,7 @@ public static class QueryableDatatableExtension
 
         // 2. Filter by search parameter
         string? searchPredicate = GenerateSearchPredicate<TData>(dataTableRequest);
-        if (searchPredicate != null) query = query.Where(searchPredicate, dataTableRequest.Search!.Value!.ToLower());
+        if (!string.IsNullOrWhiteSpace(searchPredicate)) query = query.Where(searchPredicate, dataTableRequest.Search!.Value!.ToLower());
 
         // 3. Count of Filtered Records
         int recordsFiltered = query.Count();
@@ -47,7 +47,7 @@ public static class QueryableDatatableExtension
 
         // 2. Filter by search parameter
         string? searchPredicate = GenerateSearchPredicate<TData>(dataTableRequest);
-        if (searchPredicate != null) query = query.Where(searchPredicate, dataTableRequest.Search!.Value!.ToLower());
+        if (!string.IsNullOrWhiteSpace(searchPredicate)) query = query.Where(searchPredicate, dataTableRequest.Search!.Value!.ToLower());
 
         // 3. Count of Filtered Records
         int recordsFiltered = await query.CountAsync();
@@ -99,9 +99,13 @@ public static class QueryableDatatableExtension
     {
         if (dataTableRequest.Search == null || string.IsNullOrEmpty(dataTableRequest.Search.Value) || dataTableRequest.Columns == null) return null;
 
-        var props = typeof(TData).GetProperties().Select(p => p.Name).ToDictionary(p => p.ToLower(), p => p);
+        IEnumerable<Column>? searchableColumns = dataTableRequest.Columns!.Where(c => c.Searchable && !string.IsNullOrEmpty(c.Data)).ToList();
 
-        IEnumerable<Column>? searchableColumns = dataTableRequest.Columns!.Where(c => c.Searchable && !string.IsNullOrEmpty(c.Data));
+        var props = typeof(TData)
+            .GetProperties()
+            .Where(p => p.PropertyType == typeof(string))
+            .Select(p => p.Name)
+            .ToDictionary(p => p.ToLower(), p => p);
 
         foreach (var column in searchableColumns) // c.Data is column name
         {
@@ -110,8 +114,13 @@ public static class QueryableDatatableExtension
             {
                 column.Data = actualPropName;
             }
+            else
+            {
+                column.Searchable = false;
+            }
         }
-        var filters = searchableColumns.Select(c => $"{c.Data}.Contains(@0)");
+        var filters = searchableColumns.Where(f => f.Searchable)
+            .Select(c => $"({c.Data}.ToLower().StartsWith(@0) OR {c.Data}.ToLower().EndsWith(@0) OR {c.Data}.ToLower().Contains(@0))");
 
         var searchPredicate = string.Join(" OR ", filters);
         return searchPredicate;
@@ -120,7 +129,7 @@ public static class QueryableDatatableExtension
     private static string? GenerateOrderPredicate<TData>(DatatableRequest dataTableRequest)
     {
         if (dataTableRequest.Order == null || dataTableRequest.Columns == null) return null;
-        
+
         var props = typeof(TData).GetProperties().Select(p => p.Name).ToDictionary(p => p.ToLower(), p => p);
 
         List<string> orderList = new List<string>();

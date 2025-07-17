@@ -2,13 +2,17 @@
 using Business.Abstract;
 using Business.ServiceBase;
 using Core.BaseRequestModels;
+using Core.Model;
 using Core.Utils.CrossCuttingConcerns;
 using Core.Utils.Datatable;
+using Core.Utils.ExceptionHandle.Exceptions;
 using Core.Utils.Pagination;
 using DataAccess.Abstract;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Model.Dtos.Blog_;
 using Model.Entities;
+using System.Linq.Expressions;
 
 namespace Business.Concrete;
 
@@ -19,8 +23,71 @@ public class BlogService : ServiceBase<Blog, IBlogRepository>, IBlogService
     {
     }
 
+    #region Get Entity
+    public async Task<Blog?> GetAsync(Expression<Func<Blog, bool>> where, CancellationToken cancellationToken = default)
+    {
+        var result = await _GetAsync(
+            where: where,
+            tracking: false,
+            cancellationToken: cancellationToken
+        );
+
+        return result;
+    }
+
+    public async Task<ICollection<Blog>?> GetListAsync(Expression<Func<Blog, bool>>? where = null, CancellationToken cancellationToken = default)
+    {
+        var result = await _GetListAsync(
+             where: where,
+             tracking: false,
+             cancellationToken: cancellationToken
+         );
+
+        return result;
+    }
+    #endregion
+
+    #region Get Generic
+    public async Task<TResponse?> GetAsync<TResponse>(Guid Id, CancellationToken cancellationToken = default) where TResponse : IDto
+    {
+        if (Id == default) throw new ArgumentNullException(nameof(Id));
+
+        var result = await _GetAsync<TResponse>(
+            where: f => f.Id == Id,
+            tracking: false,
+            cancellationToken: cancellationToken
+        );
+
+        return result;
+    }
+
+    public async Task<ICollection<TResponse>?> GetListAsync<TResponse>(Expression<Func<Blog, bool>>? where = null, CancellationToken cancellationToken = default) where TResponse : IDto
+    {
+        var result = await _GetListAsync<TResponse>(
+            where: where,
+            tracking: false,
+            cancellationToken: cancellationToken
+        );
+
+        return result;
+    }
+    #endregion
+
+    #region SelectList
+    public async Task<SelectList> GetSelectListAsync(Expression<Func<Blog, bool>>? where = default, CancellationToken cancellationToken = default)
+    {
+        var result = new SelectList(await _GetListAsync(
+            where: where,
+            tracking: false,
+            cancellationToken: cancellationToken
+        ), "Id", "Name");
+
+        return result;
+    }
+    #endregion
+
     #region GetBasic
-    public async Task<BlogBasicResponseDto?> GetAsync(Guid Id, CancellationToken cancellationToken = default)
+    public async Task<BlogBasicResponseDto?> GetByBasicAsync(Guid Id, CancellationToken cancellationToken = default)
     {
         if (Id == default) throw new ArgumentNullException(nameof(Id));
 
@@ -36,7 +103,7 @@ public class BlogService : ServiceBase<Blog, IBlogRepository>, IBlogService
         return result;
     }
 
-    public async Task<ICollection<BlogBasicResponseDto>?> GetAllAsync(DynamicRequest? request, CancellationToken cancellationToken = default)
+    public async Task<ICollection<BlogBasicResponseDto>?> GetAllByBasicAsync(DynamicRequest? request, CancellationToken cancellationToken = default)
     {
         var result = await _GetListAsync<BlogBasicResponseDto>(
             filter: request?.Filter,
@@ -51,7 +118,7 @@ public class BlogService : ServiceBase<Blog, IBlogRepository>, IBlogService
         return result;
     }
 
-    public async Task<PaginationResponse<BlogBasicResponseDto>> GetListAsync(DynamicPaginationRequest request, CancellationToken cancellationToken = default)
+    public async Task<PaginationResponse<BlogBasicResponseDto>> GetListByBasicAsync(DynamicPaginationRequest request, CancellationToken cancellationToken = default)
     {
         var result = await _PaginationAsync<BlogBasicResponseDto>(
             paginationRequest: request.PaginationRequest,
@@ -181,6 +248,7 @@ public class BlogService : ServiceBase<Blog, IBlogRepository>, IBlogService
     [Validation(typeof(BlogUpdateDto))]
     public async Task<BlogBasicResponseDto> UpdateAsync(BlogUpdateDto request, CancellationToken cancellationToken = default)
     {
+        throw new BusinessException("Test Amaçlı Bir Hata");
         var result = await _UpdateAsync<BlogUpdateDto, BlogBasicResponseDto>(updateModel: request, where: f => f.Id == request.Id, cancellationToken);
 
         return result;
@@ -208,11 +276,39 @@ public class BlogService : ServiceBase<Blog, IBlogRepository>, IBlogService
         return result;
     }
 
+    public async Task<DatatableResponseClientSide<BlogReportDto>> DatatableClientSideByReportAsync(DynamicRequest request, CancellationToken cancellationToken = default)
+    {
+        var result = await _DatatableClientSideAsync<BlogReportDto>(
+            filter: request.Filter,
+            sorts: request.Sorts,
+            include: i => i
+                .Include(x => x.Author)
+                .Include(x => x.Category),
+            cancellationToken: cancellationToken
+        );
+
+        return result;
+    }
+
     public async Task<DatatableResponseServerSide<Blog>> DatatableServerSideAsync(DynamicDatatableServerSideRequest request, CancellationToken cancellationToken = default)
     {
         var result = await _DatatableServerSideAsync(
-            datatableRequest: request.DatatableRequest,
+            datatableRequest: request.GetDatatableRequest(),
             filter: request.Filter,
+            cancellationToken: cancellationToken
+        );
+
+        return result;
+    }
+
+    public async Task<DatatableResponseServerSide<BlogReportDto>> DatatableServerSideByReportAsync(DynamicDatatableServerSideRequest request, CancellationToken cancellationToken = default)
+    {
+        var result = await _DatatableServerSideAsync<BlogReportDto>(
+            datatableRequest: request.GetDatatableRequest(),
+            filter: request.Filter,
+            include: i => i
+                .Include(x => x.Author)
+                .Include(x => x.Category),
             cancellationToken: cancellationToken
         );
 

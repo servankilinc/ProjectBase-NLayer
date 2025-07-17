@@ -117,7 +117,7 @@ public interface IServiceBase<TEntity> where TEntity : class, IEntity
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
         Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
-        bool ignoreFilters = false);
+        bool ignoreFilters = true);
 
     DatatableResponseServerSide<TDtoResponse> _DatatableServerSide<TDtoResponse>(
        DatatableRequest datatableRequest,
@@ -127,7 +127,7 @@ public interface IServiceBase<TEntity> where TEntity : class, IEntity
        Expression<Func<TEntity, bool>>? where = null,
        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
-       bool ignoreFilters = false) where TDtoResponse : IDto;
+       bool ignoreFilters = true) where TDtoResponse : IDto;
 
     DatatableResponseServerSide<TDtoResponse> _DatatableServerSide<TDtoResponse>(
         DatatableRequest datatableRequest,
@@ -136,7 +136,7 @@ public interface IServiceBase<TEntity> where TEntity : class, IEntity
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
         Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
-        bool ignoreFilters = false) where TDtoResponse : IDto;
+        bool ignoreFilters = true) where TDtoResponse : IDto;
     #endregion
 
     #region Datatable Client-Side
@@ -146,7 +146,7 @@ public interface IServiceBase<TEntity> where TEntity : class, IEntity
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
         Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
-        bool ignoreFilters = false);
+        bool ignoreFilters = true);
 
     DatatableResponseClientSide<TDtoResponse> _DatatableClientSide<TDtoResponse>(
         Expression<Func<TEntity, TDtoResponse>> select,
@@ -155,7 +155,7 @@ public interface IServiceBase<TEntity> where TEntity : class, IEntity
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
         Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
-        bool ignoreFilters = false) where TDtoResponse : IDto;
+        bool ignoreFilters = true) where TDtoResponse : IDto;
 
     DatatableResponseClientSide<TDtoResponse> _DatatableClientSide<TDtoResponse>(
         Filter? filter = null,
@@ -163,7 +163,7 @@ public interface IServiceBase<TEntity> where TEntity : class, IEntity
         Expression<Func<TEntity, bool>>? where = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
         Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
-        bool ignoreFilters = false) where TDtoResponse : IDto;
+        bool ignoreFilters = true) where TDtoResponse : IDto;
     #endregion
 
     #region Pagination

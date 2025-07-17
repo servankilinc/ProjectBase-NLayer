@@ -1,0 +1,18 @@
+﻿@using WebUI.Models.ViewModels.Category
+@model CategoryUpdateViewModel
+@{
+    Layout = null;
+}
+
+<form asp-controller="Category" asp-action="Update" method="post">
+    <input asp-for="UpdateModel.Id" type="hidden" class="form-control" />
+    <div class="row row-gap-4 m-2">
+        <div class="col-sm-6">
+            <label asp-for="UpdateModel.Name" class="form-label">
+                Name
+            </label>
+            <input asp-for="UpdateModel.Name" type="text" class="form-control" />
+            <span asp-validation-for="UpdateModel.Name"></span>
+        </div>
+    </div>
+</form>

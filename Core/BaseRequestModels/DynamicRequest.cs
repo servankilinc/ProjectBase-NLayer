@@ -17,8 +17,7 @@ public class DynamicPaginationRequest
     public IEnumerable<Sort>? Sorts { get; set; }
 }
 
-public class DynamicDatatableServerSideRequest
+public class DynamicDatatableServerSideRequest : DatatableRequest
 {
-    public DatatableRequest DatatableRequest { get; set; } = null!;
     public Filter? Filter { get; set; }
 }

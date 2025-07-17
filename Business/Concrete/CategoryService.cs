@@ -2,13 +2,17 @@
 using Business.Abstract;
 using Business.ServiceBase;
 using Core.BaseRequestModels;
+using Core.Model;
 using Core.Utils.CrossCuttingConcerns;
 using Core.Utils.Datatable;
 using Core.Utils.Pagination;
 using DataAccess.Abstract;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Model.Dtos.Blog_;
 using Model.Dtos.Category_;
 using Model.Entities;
+using System.Linq.Expressions;
 
 namespace Business.Concrete;
 
@@ -19,8 +23,71 @@ public class CategoryService : ServiceBase<Category, ICategoryRepository>, ICate
     {
     }
 
+    #region Get Entity
+    public async Task<Category?> GetAsync(Expression<Func<Category, bool>> where, CancellationToken cancellationToken = default)
+    {
+        var result = await _GetAsync(
+            where: where,
+            tracking: false,
+            cancellationToken: cancellationToken
+        );
+
+        return result;
+    }
+
+    public async Task<ICollection<Category>?> GetListAsync(Expression<Func<Category, bool>>? where = null, CancellationToken cancellationToken = default)
+    {
+        var result = await _GetListAsync(
+             where: where,
+             tracking: false,
+             cancellationToken: cancellationToken
+         );
+
+        return result;
+    }
+    #endregion
+
+    #region Get Generic
+    public async Task<TResponse?> GetAsync<TResponse>(Guid Id, CancellationToken cancellationToken = default) where TResponse : IDto
+    {
+        if (Id == default) throw new ArgumentNullException(nameof(Id));
+
+        var result = await _GetAsync<TResponse>(
+            where: f => f.Id == Id,
+            tracking: false,
+            cancellationToken: cancellationToken
+        );
+
+        return result;
+    }
+
+    public async Task<ICollection<TResponse>?> GetListAsync<TResponse>(Expression<Func<Category, bool>>? where = null, CancellationToken cancellationToken = default) where TResponse : IDto
+    {
+        var result = await _GetListAsync<TResponse>(
+            where: where,
+            tracking: false,
+            cancellationToken: cancellationToken
+        );
+
+        return result;
+    }
+    #endregion
+
+    #region SelectList
+    public async Task<SelectList> GetSelectListAsync(Expression<Func<Category, bool>>? where = default, CancellationToken cancellationToken = default)
+    {
+        var result = new SelectList(await _GetListAsync(
+            where: where,
+            tracking: false,
+            cancellationToken: cancellationToken
+        ), "Id", "Name");
+
+        return result;
+    }
+    #endregion
+
     #region GetBasic
-    public async Task<CategoryResponseDto?> GetAsync(Guid Id, CancellationToken cancellationToken = default)
+    public async Task<CategoryResponseDto?> GetByBasicAsync(Guid Id, CancellationToken cancellationToken = default)
     {
         if (Id == default) throw new ArgumentNullException(nameof(Id));
 
@@ -33,7 +100,7 @@ public class CategoryService : ServiceBase<Category, ICategoryRepository>, ICate
         return result;
     }
 
-    public async Task<ICollection<CategoryResponseDto>?> GetAllAsync(DynamicRequest? request, CancellationToken cancellationToken = default)
+    public async Task<ICollection<CategoryResponseDto>?> GetAllByBasicAsync(DynamicRequest? request, CancellationToken cancellationToken = default)
     {
         var result = await _GetListAsync<CategoryResponseDto>(
             filter: request?.Filter,
@@ -45,7 +112,7 @@ public class CategoryService : ServiceBase<Category, ICategoryRepository>, ICate
         return result;
     }
 
-    public async Task<PaginationResponse<CategoryResponseDto>> GetListAsync(DynamicPaginationRequest request, CancellationToken cancellationToken = default)
+    public async Task<PaginationResponse<CategoryResponseDto>> GetListByBasicAsync(DynamicPaginationRequest request, CancellationToken cancellationToken = default)
     {
         var result = await _PaginationAsync<CategoryResponseDto>(
             paginationRequest: request.PaginationRequest,
@@ -144,15 +211,38 @@ public class CategoryService : ServiceBase<Category, ICategoryRepository>, ICate
         return result;
     }
 
+    public async Task<DatatableResponseClientSide<CategoryReportDto>> DatatableClientSideByReportAsync(DynamicRequest request, CancellationToken cancellationToken = default)
+    {
+        var result = await _DatatableClientSideAsync<CategoryReportDto>(
+            filter: request.Filter,
+            sorts: request.Sorts,
+            cancellationToken: cancellationToken
+        );
+
+        return result;
+    }
+
     public async Task<DatatableResponseServerSide<Category>> DatatableServerSideAsync(DynamicDatatableServerSideRequest request, CancellationToken cancellationToken = default)
     {
         var result = await _DatatableServerSideAsync(
-            datatableRequest: request.DatatableRequest,
+            datatableRequest: request.GetDatatableRequest(),
             filter: request.Filter,
             cancellationToken: cancellationToken
         );
 
         return result;
+    }
+
+    public async Task<DatatableResponseServerSide<CategoryReportDto>> DatatableServerSideByReportAsync(DynamicDatatableServerSideRequest request, CancellationToken cancellationToken = default)
+    {
+        var result = await _DatatableServerSideAsync<CategoryReportDto>(
+            datatableRequest: request.GetDatatableRequest(),
+            filter: request.Filter,
+            cancellationToken: cancellationToken
+        );
+
+        return result;
+
     }
     #endregion
 }

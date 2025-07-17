@@ -1,0 +1,17 @@
+﻿@using WebUI.Models.ViewModels.Category
+@model CategoryCreateViewModel
+@{
+    Layout = null;
+}
+
+<form asp-controller="Category" asp-action="Create" method="post">
+    <div class="row row-gap-4 m-2">
+        <div class="col-sm-6">
+            <label asp-for="CreateModel.Name" class="form-label">
+                Name
+            </label>
+            <input asp-for="CreateModel.Name" type="text" class="form-control" />
+            <span asp-validation-for="CreateModel.Name"></span>
+        </div>
+    </div>
+</form>

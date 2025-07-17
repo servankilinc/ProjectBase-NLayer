@@ -18,7 +18,7 @@ public class BlogLikeController : ControllerBase
     [HttpGet("Get")]
     public async Task<IActionResult> Get(Guid BlogId, Guid UserId)
     {
-        var result = await _blogLikeService.GetAsync(BlogId, UserId);
+        var result = await _blogLikeService.GetByBasicAsync(BlogId, UserId);
 
         if (result == null) return NotFound();
 
@@ -28,7 +28,7 @@ public class BlogLikeController : ControllerBase
     [HttpPost("GetAll")]
     public async Task<IActionResult> GetAll(DynamicRequest? request)
     {
-        var result = await _blogLikeService.GetAllAsync(request);
+        var result = await _blogLikeService.GetAllByBasicAsync(request);
 
         if (result == null) return NotFound();
 
@@ -38,7 +38,7 @@ public class BlogLikeController : ControllerBase
     [HttpPost("GetList")]
     public async Task<IActionResult> GetList(DynamicPaginationRequest request)
     {
-        var result = await _blogLikeService.GetListAsync(request);
+        var result = await _blogLikeService.GetListByBasicAsync(request);
 
         if (result == null) return NotFound();
 

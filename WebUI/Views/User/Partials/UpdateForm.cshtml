@@ -1,0 +1,39 @@
+﻿@using WebUI.Models.ViewModels.User
+@model UserUpdateViewModel
+@{
+    Layout = null;
+}
+
+<form asp-controller="User" asp-action="Update" method="post">
+    <input asp-for="UpdateModel.Id" type="hidden" class="form-control" />
+    <div class="row row-gap-4 m-2">
+        <div class="col-sm-6">
+            <label asp-for="UpdateModel.Name" class="form-label">
+                Name
+            </label>
+            <input asp-for="UpdateModel.Name" type="text" class="form-control" />
+            <span asp-validation-for="UpdateModel.Name"></span>
+        </div>
+        <div class="col-sm-6">
+            <label asp-for="UpdateModel.LastName" class="form-label">
+                Last Name
+            </label>
+            <input asp-for="UpdateModel.LastName" type="text" class="form-control" />
+            <span asp-validation-for="UpdateModel.LastName"></span>
+        </div>
+        <div class="col-sm-6">
+            <label asp-for="UpdateModel.Addres" class="form-label">
+                Addres
+            </label>
+            <input asp-for="UpdateModel.Addres" type="text" class="form-control" />
+            <span asp-validation-for="UpdateModel.Addres"></span>
+        </div>
+        <div class="col-sm-6">
+            <label asp-for="UpdateModel.BirthDate" class="form-label">
+                Birth Date
+            </label>
+            <input asp-for="UpdateModel.BirthDate" type="text" class="form-control autoInitDatePicker" />
+            <span asp-validation-for="UpdateModel.BirthDate"></span>
+        </div>
+    </div>
+</form>

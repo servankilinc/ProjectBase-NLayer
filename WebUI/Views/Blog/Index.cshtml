@@ -1,0 +1,321 @@
+﻿@using WebUI.Models.ViewModels.Blog
+@model BlogViewModel
+@{
+    ViewData["Title"] = "Blogs";
+}
+
+<div class="card">
+    <div class="card-header">
+        <form id="form_blog_filter">
+            <div class="row row-gap-4">
+                <div class="col-md-3 col-sm-4 col-6">
+                    <div class="input-group d-flex flex-nowrap col-md-3 col-sm-4 col-6">
+                        <span class="input-group-text bg-lightest">
+                            Author <!-- CamelCase arasına boşluk koy ve Id ve devamını koyma -->
+                        </span>
+                        <select name="AuthorId" asp-items="Model.AuthorIds" class="autoInitSelect2 form-select">
+                            <option></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-4 col-6">
+                    <div class="input-group">
+                        <span class="input-group-text bg-lightest">
+                            Title
+                        </span>
+                        <input name="Title" type="text" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-4 col-6">
+                    <div class="input-group d-flex flex-nowrap col-md-3 col-sm-4 col-6">
+                        <span class="input-group-text bg-lightest">
+                            Category
+                        </span>
+                        <select name="CategoryId" asp-items="Model.CategoryIds" class="autoInitSelect2 form-select">
+                            <option></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-4 col-6">
+                    <div class="input-group col-md-3 col-sm-4 col-6">
+                        <span class="input-group-text bg-lightest">
+                            Date
+                        </span>
+                        <input name="Date" type="text" class="form-control autoInitDatePicker" />
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-4 col-6">
+                    <div class="input-group col-md-3 col-sm-4 col-6">
+                        <span class="input-group-text bg-lightest">
+                            Include Deleted
+                        </span>
+                        <div class="input-group-text">
+                            <input name="IsDeleted" type="checkbox" class="form-check-input" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-4 col-6">
+                    <button onclick="InitilazeTable(this)" type="button" class="btn btn-light">
+                        <span class="dynamic-content">
+                            <i class="fa-solid fa-search me-2"></i>
+                            Search
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="card-body">
+        <table id="table_blog" class="table table-hover table-striped">
+            <thead class="bg-light">
+                <tr>
+                    <!-- Unique Field'ları Alma -->
+                    <!-- Report Dto oluştururken kullandığın ilişkili Field'ları Alma -->
+                    <th>Author Name</th> <!-- CamelCase arasına boşluk koy -->
+                    <th>Title</th>
+                    <th>Content</th>
+                    <th>Category Name</th>
+                    <th>Date</th>
+                    <th>Banner Image</th>
+                    <th>Like Count</th>
+                    <th>Comment Count</th>
+                    <!-- entity auditable ise -->
+                    <th>Create Date</th>
+                    <th>Last Update Date</th>
+                    <!-- entity soft deletable ise-->
+                    <th>Status</th>
+                    <th>Delete Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script>
+
+        let PageTable;
+
+        $(document).ready(function(){
+            InitilazeTable();
+        })
+
+        function InitilazeTable(e) {
+
+            PageTable = DatatableManager.Create({
+                serverSide: true,
+                tableId: 'table_blog',
+                path: 'Blog/DatatableServerSide',
+                method: 'Post',
+                buttonElement: e,
+                requestData: {
+                    filter: {
+                        operator: 'base',
+                        logic: 'and',
+                        filters: [
+                            {
+                                operator: 'eq',
+                                field: "AuthorId",
+                                value: $("select[name='AuthorId']").val(),
+                            },
+                            {
+                                operator: 'contains',
+                                field: "Title",
+                                value: $("input[name='Title']").val(),
+                            },
+                            {
+                                operator: 'eq',
+                                field: "CategoryId",
+                                value: $("select[name='CategoryId']").val(),
+                            },
+                            {
+                                operator: 'eq',
+                                field: "Date",
+                                value: $("input[name='Date']").val(),
+                            },
+                            {
+                                operator: 'eq',
+                                field: "IsDeleted",
+                                value: false,
+                                logic: 'or',
+                                filters: [
+                                    {
+                                        operator: 'eq',
+                                        field: "IsDeleted",
+                                        value: $("input[name='IsDeleted']").val(),
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                },
+                columns: [
+                    { data: 'authorName' },
+                    { data: 'title' },
+                    { data: 'content' },
+                    { data: 'categoryName' },
+                    { data: 'date' },
+                    { data: 'bannerImage' },
+                    { data: 'likeCount' },
+                    { data: 'likeCount' },
+                    { data: 'commentCount' },
+                    {
+                        data: 'createDateUtc',
+                        render: function (data) {
+                            if(data == null) return '';
+                            return moment(data).format('DD.MM.YYYY HH:mm');
+                        }
+                    },
+                    {
+                        data: 'updateDateUtc',
+                        render: function (data) {
+                            if(data == null) return '';
+                            return moment(data).format('DD.MM.YYYY HH:mm');
+                        }
+                    },
+                    {
+                        data: 'isDeleted',
+                        render: function (data) {
+                            if(data == true) return (`<span class="badge rounded-pill bg-label-danger"><i class="fa-solid fa-xmark"></i></span>`);
+                            else if(data == false) return (`<span class="badge rounded-pill bg-label-success"><i class="fa-solid fa-check"></i></span>`);
+                            else return ('');
+                        }
+                    },
+                    {
+                        data: 'deletedDateUtc',
+                        render: function (data) {
+                            if(data == null) return '';
+                            return moment(data).format('DD.MM.YYYY HH:mm');
+                        }
+                    },
+                    {
+                        data: null,
+                        defaultContent: '',
+                        searchable: false,
+                        createdCell: function (td, cellData, rowData, row, col)
+                        {
+                            DatatableManager.AppendRowButtons(td,
+                                [
+                                    // 1) Update Button
+                                    DatatableManager.RowButton({
+                                        kind: DatatableManager.buttonKinds.update,
+                                        onClick: async (e_btn) =>
+                                        {
+                                            await RequestManager.Get({
+                                                path: 'Blog/UpdateForm',
+                                                requestData: {
+                                                    id: rowData.id
+                                                },
+                                                dataType: 'text',
+                                                showToastrSuccess: false,
+                                                buttonElement: e_btn.currentTarget,
+                                                onSuccess: (formHtml) =>
+                                                {
+                                                    ModalManager.CreateModal({
+                                                        title: "Update Blog Informations",
+                                                        innerHtml: formHtml,
+                                                        modalSize: "xl",
+                                                        buttons: [
+                                                            ModalManager.Button({
+                                                                kind: ModalManager.buttonKinds.update,
+                                                                onClick: (e_btn_modal, e_modal, e_form) =>
+                                                                {
+                                                                    RequestManager.HandleRequest({
+                                                                        type: e_form.attr("method"),
+                                                                        path: e_form.attr("action"),
+                                                                        requestData: e_form.serializeArray(),
+                                                                        buttonElement: e_btn_modal,
+                                                                        onSuccess: () =>
+                                                                        {
+                                                                            $(e_modal).modal("hide");
+                                                                            PageTable.reload();
+                                                                        }
+                                                                    })
+                                                                }
+                                                            })
+                                                        ]
+                                                    }).show();
+                                                }
+                                            })
+                                        }
+                                    }),
+                                    // 2) Delete Button
+                                    DatatableManager.RowButton({
+                                        kind: DatatableManager.buttonKinds.delete,
+                                        onClick: async () =>
+                                        {
+                                            ModalManager.DeleteModal({
+                                                onClick: (e_btn, e_mdl) =>
+                                                {
+                                                    RequestManager.Delete({
+                                                        path: 'Blog/Delete',
+                                                        requestData: {
+                                                            id: rowData.id
+                                                        },
+                                                        buttonElement: e_btn,
+                                                        onSuccess: () =>
+                                                        {
+                                                            $(e_mdl).modal("hide");
+                                                            PageTable.reload();
+                                                        }
+                                                    })
+                                                }
+                                            }).show();
+                                        }
+                                    })
+                                ]
+                            );
+                        }
+                    }
+                ],
+                customButtons:
+                [
+                    // 1) Create Button
+                    {
+                        text: '<span class="dynamic-content"><i class="fa-solid fa-file-circle-plus me-2"></i>Add New Blog</span>',
+                        className: 'create-new btn btn-primary mx-2',
+                        action: (e_btn) =>
+                        {
+                            RequestManager.Get({
+                                path: 'Blog/CreateForm',
+                                dataType: 'text',
+                                showToastrSuccess: false,
+                                buttonElement: e_btn.currentTarget,
+                                onSuccess: (formHtml) =>
+                                {
+                                    ModalManager.CreateModal({
+                                        title: "Add New Blog",
+                                        innerHtml: formHtml,
+                                        modalSize: "xl",
+                                        buttons: [
+                                            ModalManager.Button({
+                                                kind: ModalManager.buttonKinds.save,
+                                                onClick: (e_btn_modal, e_modal, e_form) =>
+                                                {
+                                                    RequestManager.HandleRequest({
+                                                        type: e_form.attr("method"),
+                                                        path: e_form.attr("action"),
+                                                        requestData: e_form.serializeArray(),
+                                                        buttonElement: e_btn_modal,
+                                                        onSuccess: () =>
+                                                        {
+                                                            $(e_modal).modal("hide");
+                                                            PageTable.reload();
+                                                        }
+                                                    })
+                                                }
+                                            })
+                                        ]
+                                    }).show();
+                                }
+                            })
+                        }
+                    }
+                ]
+            })
+        }
+    </script>
+}

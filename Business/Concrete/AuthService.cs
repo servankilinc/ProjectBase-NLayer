@@ -14,7 +14,6 @@ using Model.Dtos.User_;
 using Model.Entities;
 using System.Security.Claims;
 using System.Security.Cryptography;
-using System.Threading;
 
 namespace Business.Concrete;
 
@@ -23,12 +22,14 @@ public class AuthService : IAuthService
     private readonly IUnitOfWork _unitOfWork;
     private readonly ITokenService _tokenService;
     private readonly UserManager<User> _userManager;
+    private readonly SignInManager<User> _signInManager;
     private readonly HttpContextManager _httpContextManager;
     private readonly IMapper _mapper;
     public AuthService(
         IUnitOfWork unitOfWork,
         ITokenService tokenService,
         UserManager<User> userManager,
+        SignInManager<User> signInManager,
         HttpContextManager httpContextManager,
         IMapper mapper
     )
@@ -36,6 +37,7 @@ public class AuthService : IAuthService
         _unitOfWork = unitOfWork;
         _tokenService = tokenService;
         _userManager = userManager;
+        _signInManager = signInManager;
         _httpContextManager = httpContextManager;
         _mapper = mapper;
     }
@@ -90,15 +92,15 @@ public class AuthService : IAuthService
         {
             await _unitOfWork.BeginTransactionAsync(cancellationToken);
 
-            bool isExistEmail = await _unitOfWork.Users.IsExistAsync(where: f => f.NormalizedEmail == signUpRequest.Email.ToUpperInvariant(), cancellationToken: cancellationToken);
-            if (isExistEmail) throw new BusinessException("The email address is already in use.", description: $"Requester email address: {signUpRequest.Email}");
+            var userExist = await _userManager.FindByEmailAsync(signUpRequest.Email);
+            if (userExist != null) throw new BusinessException("The email address is already in use.", description: $"Requester email address: {signUpRequest.Email}");
 
-            User user = _mapper.Map<User>(signUpRequest);
+            var user = _mapper.Map<User>(signUpRequest);
             user.UserName = $"{signUpRequest.Email}_{DateTime.UtcNow:yyyyMMddHHmmss}";
 
             var result = await _userManager.CreateAsync(user, signUpRequest.Password);
             if (!result.Succeeded) throw new GeneralException(string.Join("\n", result.Errors.Select(e => e.Description)), description: $"User cannot be created. Requester email: {signUpRequest.Email}");
-            
+
             var roleResult = await _userManager.AddToRoleAsync(user, "User");
             if (!roleResult.Succeeded) throw new GeneralException("Failed to assign role.", description: $"Requester email address: {signUpRequest.Email}");
 
@@ -153,7 +155,7 @@ public class AuthService : IAuthService
                 refreshAuthRequest.RefreshToken = _httpContextManager.GetRefreshTokenFromCookie();
             }
 
-            User? user = await _unitOfWork.Users.GetAsync(where: f => f.Id == refreshAuthRequest.UserId, cancellationToken: cancellationToken);
+            var user = await _unitOfWork.Users.GetAsync(where: f => f.Id == refreshAuthRequest.UserId, cancellationToken: cancellationToken);
             if (user == null) throw new GeneralException("User cannot found for refresh auth!", description: $"Requester userId: {refreshAuthRequest.UserId}");
 
             string? ipAddress = _httpContextManager.GetClientIp();
@@ -210,6 +212,52 @@ public class AuthService : IAuthService
         }
     }
 
+
+    [Validation(typeof(LoginRequest))]
+    public async Task LoginWebBaseAsync(LoginRequest loginRequest, CancellationToken cancellationToken = default)
+    {
+        var user = await _userManager.FindByEmailAsync(loginRequest.Email);
+        if (user == null) throw new BusinessException("The email address is not exist.", description: $"Requester email address: {loginRequest.Email}");
+
+        var result = await _signInManager.PasswordSignInAsync(user, loginRequest.Password, isPersistent: true, lockoutOnFailure: false);
+
+        if (result.IsLockedOut)
+        {
+            throw new BusinessException("Your account is locked.", description: $"Requester email address: {loginRequest.Email}");
+        }
+        else if (!result.Succeeded)
+        {
+            throw new BusinessException("Invalid login information..", description: $"Requester email address: {loginRequest.Email}");
+        }
+    }
+
+
+    [Validation(typeof(SignUpRequest))]
+    public async Task SignUpWebBaseAsync(SignUpRequest signUpRequest, CancellationToken cancellationToken = default)
+    {
+        var userExist = await _userManager.FindByEmailAsync(signUpRequest.Email);
+        if (userExist != null) throw new BusinessException("The email address is already in use.", description: $"Requester email address: {signUpRequest.Email}");
+
+        var user = _mapper.Map<User>(signUpRequest);
+        user.UserName = $"{signUpRequest.Email}_{DateTime.UtcNow:yyyyMMddHHmmss}";
+
+        var result = await _userManager.CreateAsync(user, signUpRequest.Password);
+        if (!result.Succeeded) throw new GeneralException(string.Join("\n", result.Errors.Select(e => e.Description)), description: $"User cannot be created. Requester email: {signUpRequest.Email}");
+
+        var roleResult = await _userManager.AddToRoleAsync(user, "User");
+        if (!roleResult.Succeeded) throw new GeneralException("Failed to assign role.", description: $"Requester email address: {signUpRequest.Email}");
+
+        var resultSignIn = await _signInManager.PasswordSignInAsync(user, signUpRequest.Password, isPersistent: true, lockoutOnFailure: false);
+
+        if (resultSignIn.IsLockedOut)
+        {
+            throw new BusinessException("Your account is locked.", description: $"Requester email address: {signUpRequest.Email}");
+        }
+        else if (!resultSignIn.Succeeded)
+        {
+            throw new BusinessException("Invalid login information..", description: $"Requester email address: {signUpRequest.Email}");
+        }
+    }
 
     #region Helpers
     private async Task<IList<Claim>> GetClaimsAsync(User user, IList<string> roles)
