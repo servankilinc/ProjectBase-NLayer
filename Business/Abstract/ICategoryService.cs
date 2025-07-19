@@ -4,7 +4,6 @@ using Core.Model;
 using Core.Utils.Datatable;
 using Core.Utils.Pagination;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Model.Dtos.Blog_;
 using Model.Dtos.Category_;
 using Model.Entities;
 using System.Linq.Expressions;
@@ -19,12 +18,18 @@ public interface ICategoryService : IServiceBase<Category>, IServiceBaseAsync<Ca
     #endregion
 
     #region Get Generic
-    Task<TResponse?> GetAsync<TResponse>(Guid Id, CancellationToken cancellationToken = default) where TResponse : IDto;
+    Task<TResponse?> GetAsync<TResponse>(Expression<Func<Category, bool>> where, CancellationToken cancellationToken = default) where TResponse : IDto;
     Task<ICollection<TResponse>?> GetListAsync<TResponse>(Expression<Func<Category, bool>>? where = default, CancellationToken cancellationToken = default) where TResponse : IDto;
     #endregion
 
     #region SelectList
     Task<SelectList> GetSelectListAsync(Expression<Func<Category, bool>>? where = default, CancellationToken cancellationToken = default);
+    #endregion
+
+    #region Get
+    Task<Category?> GetAsync(Guid Id, CancellationToken cancellationToken = default);
+    Task<ICollection<Category>?> GetAllAsync(DynamicRequest? request, CancellationToken cancellationToken = default);
+    Task<PaginationResponse<Category>> GetListAsync(DynamicPaginationRequest request, CancellationToken cancellationToken = default);
     #endregion
 
     #region GetBasic

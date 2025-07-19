@@ -1,4 +1,5 @@
 using Business.Abstract;
+using Business.Concrete;
 using Core.BaseRequestModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,11 +15,11 @@ public class CategoryController : ControllerBase
     private readonly ICategoryService _categoryService;
     public CategoryController(ICategoryService categoryService) => _categoryService = categoryService;
 
-    #region GetBasic
+    #region GetEntity
     [HttpGet("Get")]
-    public async Task<IActionResult> Get(Guid Id)
+    public async Task<IActionResult> Get(Guid id)
     {
-        var result = await _categoryService.GetByBasicAsync(Id);
+        var result = await _categoryService.GetAsync(id);
 
         if (result == null) return NotFound();
 
@@ -28,7 +29,7 @@ public class CategoryController : ControllerBase
     [HttpPost("GetAll")]
     public async Task<IActionResult> GetAll(DynamicRequest? request)
     {
-        var result = await _categoryService.GetAllByBasicAsync(request);
+        var result = await _categoryService.GetAllAsync(request);
 
         if (result == null) return NotFound();
 
@@ -37,6 +38,38 @@ public class CategoryController : ControllerBase
 
     [HttpPost("GetList")]
     public async Task<IActionResult> GetList(DynamicPaginationRequest request)
+    {
+        var result = await _categoryService.GetListAsync(request);
+
+        if (result == null) return NotFound();
+
+        return Ok(result);
+    }
+    #endregion
+
+    #region GetBasic
+    [HttpGet("GetByBasic")]
+    public async Task<IActionResult> GetByBasic(Guid Id)
+    {
+        var result = await _categoryService.GetByBasicAsync(Id);
+
+        if (result == null) return NotFound();
+
+        return Ok(result);
+    }
+
+    [HttpPost("GetAllByBasic")]
+    public async Task<IActionResult> GetAllByBasic(DynamicRequest? request)
+    {
+        var result = await _categoryService.GetAllByBasicAsync(request);
+
+        if (result == null) return NotFound();
+
+        return Ok(result);
+    }
+
+    [HttpPost("GetListByBasic")]
+    public async Task<IActionResult> GetListByBasic(DynamicPaginationRequest request)
     {
         var result = await _categoryService.GetListByBasicAsync(request);
 
@@ -119,11 +152,27 @@ public class CategoryController : ControllerBase
         return Ok(result);
     }
 
+    [HttpPost("DatatableClientSideReport")]
+    public async Task<IActionResult> DatatableClientSideReport(DynamicRequest request)
+    {
+        var result = await _categoryService.DatatableClientSideByReportAsync(request);
+        if (result == null) return NotFound();
+        return Ok(result);
+    }
+
     [HttpPost("DatatableServerSide")]
     public async Task<IActionResult> DatatableServerSide(DynamicDatatableServerSideRequest request)
     {
         var result = await _categoryService.DatatableServerSideAsync(request);
 
+        return Ok(result);
+    }
+
+    [HttpPost("DatatableServerSideReport")]
+    public async Task<IActionResult> DatatableServerSideReport(DynamicDatatableServerSideRequest request)
+    {
+        var result = await _categoryService.DatatableServerSideByReportAsync(request);
+        if (result == null) return NotFound();
         return Ok(result);
     }
     #endregion

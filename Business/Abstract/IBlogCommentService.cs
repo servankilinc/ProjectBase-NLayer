@@ -18,12 +18,18 @@ public interface IBlogCommentService : IServiceBase<BlogComment>, IServiceBaseAs
     #endregion
 
     #region Get Generic
-    Task<TResponse?> GetAsync<TResponse>(Guid Id, CancellationToken cancellationToken = default) where TResponse : IDto;
+    Task<TResponse?> GetAsync<TResponse>(Expression<Func<BlogComment, bool>> where, CancellationToken cancellationToken = default) where TResponse : IDto;
     Task<ICollection<TResponse>?> GetListAsync<TResponse>(Expression<Func<BlogComment, bool>>? where = default, CancellationToken cancellationToken = default) where TResponse : IDto;
     #endregion
 
     #region SelectList
     Task<SelectList> GetSelectListAsync(Expression<Func<BlogComment, bool>>? where = default, CancellationToken cancellationToken = default);
+    #endregion
+
+    #region Get
+    Task<BlogComment?> GetAsync(Guid Id, CancellationToken cancellationToken = default);
+    Task<ICollection<BlogComment>?> GetAllAsync(DynamicRequest? request, CancellationToken cancellationToken = default);
+    Task<PaginationResponse<BlogComment>> GetListAsync(DynamicPaginationRequest request, CancellationToken cancellationToken = default);
     #endregion
 
     #region GetBasic

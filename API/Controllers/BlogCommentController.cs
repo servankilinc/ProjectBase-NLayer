@@ -14,11 +14,11 @@ public class BlogCommentController : ControllerBase
     private readonly IBlogCommentService _blogCommentService;
     public BlogCommentController(IBlogCommentService blogCommentService) => _blogCommentService = blogCommentService;
 
-    #region GetBasic
+    #region GetEntity
     [HttpGet("Get")]
-    public async Task<IActionResult> Get(Guid Id)
+    public async Task<IActionResult> Get(Guid id)
     {
-        var result = await _blogCommentService.GetByBasicAsync(Id);
+        var result = await _blogCommentService.GetAsync(id);
 
         if (result == null) return NotFound();
 
@@ -28,7 +28,7 @@ public class BlogCommentController : ControllerBase
     [HttpPost("GetAll")]
     public async Task<IActionResult> GetAll(DynamicRequest? request)
     {
-        var result = await _blogCommentService.GetAllByBasicAsync(request);
+        var result = await _blogCommentService.GetAllAsync(request);
 
         if (result == null) return NotFound();
 
@@ -37,6 +37,38 @@ public class BlogCommentController : ControllerBase
 
     [HttpPost("GetList")]
     public async Task<IActionResult> GetList(DynamicPaginationRequest request)
+    {
+        var result = await _blogCommentService.GetListAsync(request);
+
+        if (result == null) return NotFound();
+
+        return Ok(result);
+    }
+    #endregion
+
+    #region GetBasic
+    [HttpGet("GetByBasic")]
+    public async Task<IActionResult> GetByBasic(Guid Id)
+    {
+        var result = await _blogCommentService.GetByBasicAsync(Id);
+
+        if (result == null) return NotFound();
+
+        return Ok(result);
+    }
+
+    [HttpPost("GetAllByBasic")]
+    public async Task<IActionResult> GetAllByBasic(DynamicRequest? request)
+    {
+        var result = await _blogCommentService.GetAllByBasicAsync(request);
+
+        if (result == null) return NotFound();
+
+        return Ok(result);
+    }
+
+    [HttpPost("GetListByBasic")]
+    public async Task<IActionResult> GetListByBasic(DynamicPaginationRequest request)
     {
         var result = await _blogCommentService.GetListByBasicAsync(request);
 

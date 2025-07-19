@@ -48,12 +48,10 @@ public class BlogService : ServiceBase<Blog, IBlogRepository>, IBlogService
     #endregion
 
     #region Get Generic
-    public async Task<TResponse?> GetAsync<TResponse>(Guid Id, CancellationToken cancellationToken = default) where TResponse : IDto
+    public async Task<TResponse?> GetAsync<TResponse>(Expression<Func<Blog, bool>> where, CancellationToken cancellationToken = default) where TResponse : IDto
     {
-        if (Id == default) throw new ArgumentNullException(nameof(Id));
-
         var result = await _GetAsync<TResponse>(
-            where: f => f.Id == Id,
+            where: where,
             tracking: false,
             cancellationToken: cancellationToken
         );
@@ -77,10 +75,54 @@ public class BlogService : ServiceBase<Blog, IBlogRepository>, IBlogService
     public async Task<SelectList> GetSelectListAsync(Expression<Func<Blog, bool>>? where = default, CancellationToken cancellationToken = default)
     {
         var result = new SelectList(await _GetListAsync(
+            select: s => new
+            {   
+                s.Id, 
+                s.Title
+            },
             where: where,
             tracking: false,
             cancellationToken: cancellationToken
-        ), "Id", "Name");
+        ), "Id", "Title");
+
+        return result;
+    }
+    #endregion
+
+    #region Get
+    public async Task<Blog?> GetAsync(Guid Id, CancellationToken cancellationToken = default)
+    {
+        if (Id == default) throw new ArgumentNullException(nameof(Id));
+
+        var result = await _GetAsync(
+            where: f => f.Id == Id,
+            tracking: false,
+            cancellationToken: cancellationToken
+        );
+
+        return result;
+    }
+
+    public async Task<ICollection<Blog>?> GetAllAsync(DynamicRequest? request, CancellationToken cancellationToken = default)
+    {
+        var result = await _GetListAsync(
+            filter: request?.Filter,
+            sorts: request?.Sorts,
+            tracking: false,
+            cancellationToken: cancellationToken
+        );
+
+        return result;
+    }
+
+    public async Task<PaginationResponse<Blog>> GetListAsync(DynamicPaginationRequest request, CancellationToken cancellationToken = default)
+    {
+        var result = await _PaginationAsync(
+            paginationRequest: request.PaginationRequest,
+            filter: request.Filter,
+            sorts: request.Sorts,
+            cancellationToken: cancellationToken
+        );
 
         return result;
     }

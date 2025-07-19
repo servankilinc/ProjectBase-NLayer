@@ -1,4 +1,5 @@
 using Business.Abstract;
+using Business.Concrete;
 using Core.BaseRequestModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,11 +15,12 @@ public class BlogLikeController : ControllerBase
     private readonly IBlogLikeService _blogLikeService;
     public BlogLikeController(IBlogLikeService blogLikeService) => _blogLikeService = blogLikeService;
 
-    #region GetBasic
+
+    #region GetEntity
     [HttpGet("Get")]
-    public async Task<IActionResult> Get(Guid BlogId, Guid UserId)
+    public async Task<IActionResult> Get(Guid blogId, Guid userId)
     {
-        var result = await _blogLikeService.GetByBasicAsync(BlogId, UserId);
+        var result = await _blogLikeService.GetAsync(BlogId: blogId, UserId: userId);
 
         if (result == null) return NotFound();
 
@@ -28,7 +30,7 @@ public class BlogLikeController : ControllerBase
     [HttpPost("GetAll")]
     public async Task<IActionResult> GetAll(DynamicRequest? request)
     {
-        var result = await _blogLikeService.GetAllByBasicAsync(request);
+        var result = await _blogLikeService.GetAllAsync(request);
 
         if (result == null) return NotFound();
 
@@ -37,6 +39,39 @@ public class BlogLikeController : ControllerBase
 
     [HttpPost("GetList")]
     public async Task<IActionResult> GetList(DynamicPaginationRequest request)
+    {
+        var result = await _blogLikeService.GetListAsync(request);
+
+        if (result == null) return NotFound();
+
+        return Ok(result);
+    }
+    #endregion
+
+
+    #region GetBasic
+    [HttpGet("GetByBasic")]
+    public async Task<IActionResult> GetByBasic(Guid BlogId, Guid UserId)
+    {
+        var result = await _blogLikeService.GetByBasicAsync(BlogId, UserId);
+
+        if (result == null) return NotFound();
+
+        return Ok(result);
+    }
+
+    [HttpPost("GetAllByBasic")]
+    public async Task<IActionResult> GetAllByBasic(DynamicRequest? request)
+    {
+        var result = await _blogLikeService.GetAllByBasicAsync(request);
+
+        if (result == null) return NotFound();
+
+        return Ok(result);
+    }
+
+    [HttpPost("GetListByBasic")]
+    public async Task<IActionResult> GetListByBasic(DynamicPaginationRequest request)
     {
         var result = await _blogLikeService.GetListByBasicAsync(request);
 

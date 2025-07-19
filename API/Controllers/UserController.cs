@@ -14,11 +14,11 @@ public class UserController : ControllerBase
     private readonly IUserService _userService;
     public UserController(IUserService userService) => _userService = userService;
 
-    #region GetBasic
+    #region GetEntity
     [HttpGet("Get")]
-    public async Task<IActionResult> Get(Guid Id)
+    public async Task<IActionResult> Get(Guid id)
     {
-        var result = await _userService.GetByBasicAsync(Id);
+        var result = await _userService.GetAsync(id);
 
         if (result == null) return NotFound();
 
@@ -28,7 +28,7 @@ public class UserController : ControllerBase
     [HttpPost("GetAll")]
     public async Task<IActionResult> GetAll(DynamicRequest? request)
     {
-        var result = await _userService.GetAllByBasicAsync(request);
+        var result = await _userService.GetAllAsync(request);
 
         if (result == null) return NotFound();
 
@@ -37,6 +37,38 @@ public class UserController : ControllerBase
 
     [HttpPost("GetList")]
     public async Task<IActionResult> GetList(DynamicPaginationRequest request)
+    {
+        var result = await _userService.GetListAsync(request);
+
+        if (result == null) return NotFound();
+
+        return Ok(result);
+    }
+    #endregion
+
+    #region GetBasic
+    [HttpGet("GetByBasic")]
+    public async Task<IActionResult> GetByBasic(Guid Id)
+    {
+        var result = await _userService.GetByBasicAsync(Id);
+
+        if (result == null) return NotFound();
+
+        return Ok(result);
+    }
+
+    [HttpPost("GetAllByBasic")]
+    public async Task<IActionResult> GetAllByBasic(DynamicRequest? request)
+    {
+        var result = await _userService.GetAllByBasicAsync(request);
+
+        if (result == null) return NotFound();
+
+        return Ok(result);
+    }
+
+    [HttpPost("GetListByBasic")]
+    public async Task<IActionResult> GetListByBasic(DynamicPaginationRequest request)
     {
         var result = await _userService.GetListByBasicAsync(request);
 
@@ -149,11 +181,27 @@ public class UserController : ControllerBase
         return Ok(result);
     }
 
+    [HttpPost("DatatableClientSideReport")]
+    public async Task<IActionResult> DatatableClientSideReport(DynamicRequest request)
+    {
+        var result = await _userService.DatatableClientSideByReportAsync(request);
+        if (result == null) return NotFound();
+        return Ok(result);
+    }
+
     [HttpPost("DatatableServerSide")]
     public async Task<IActionResult> DatatableServerSide(DynamicDatatableServerSideRequest request)
     {
         var result = await _userService.DatatableServerSideAsync(request);
 
+        return Ok(result);
+    }
+
+    [HttpPost("DatatableServerSideReport")]
+    public async Task<IActionResult> DatatableServerSideReport(DynamicDatatableServerSideRequest request)
+    {
+        var result = await _userService.DatatableServerSideByReportAsync(request);
+        if (result == null) return NotFound();
         return Ok(result);
     }
     #endregion

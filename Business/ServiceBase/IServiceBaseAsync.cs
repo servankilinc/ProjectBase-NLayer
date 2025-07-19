@@ -68,6 +68,17 @@ public interface IServiceBaseAsync<TEntity> where TEntity : class, IEntity
         bool tracking = false,
         CancellationToken cancellationToken = default) where TDtoResponse : IDto;
 
+    Task<object?> _GetAsync(
+        Expression<Func<TEntity, object>> select,
+        Filter? filter = null,
+        IEnumerable<Sort>? sorts = null,
+        Expression<Func<TEntity, bool>>? where = null,
+        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
+        bool ignoreFilters = false,
+        bool tracking = false,
+        CancellationToken cancellationToken = default);
+
     Task<TDtoResponse?> _GetAsync<TDtoResponse>(
         Filter? filter = null,
         IEnumerable<Sort>? sorts = null,
@@ -100,6 +111,17 @@ public interface IServiceBaseAsync<TEntity> where TEntity : class, IEntity
         bool ignoreFilters = false,
         bool tracking = false,
         CancellationToken cancellationToken = default) where TDtoResponse : IDto;
+
+    Task<ICollection<object>?> _GetListAsync(
+        Expression<Func<TEntity, object>> select,
+        Filter? filter = null,
+        IEnumerable<Sort>? sorts = null,
+        Expression<Func<TEntity, bool>>? where = null,
+        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
+        bool ignoreFilters = false,
+        bool tracking = false,
+        CancellationToken cancellationToken = default);
 
     Task<ICollection<TDtoResponse>?> _GetListAsync<TDtoResponse>(
         Filter? filter = null,

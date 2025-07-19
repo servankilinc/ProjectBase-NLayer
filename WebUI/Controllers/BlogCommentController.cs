@@ -90,7 +90,7 @@ public class BlogCommentController : Controller
     [HttpGet]
     public async Task<IActionResult> UpdateForm(Guid id)
     {
-        var data = await _blogCommentService.GetAsync<BlogCommentUpdateDto>(id);
+        var data = await _blogCommentService.GetAsync<BlogCommentUpdateDto>(where: f => f.Id == id);
 
         if (data == null) return NotFound(data);
 

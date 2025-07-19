@@ -68,6 +68,17 @@ public interface IServiceBase<TEntity> where TEntity : class, IEntity
         bool tracking = false
     ) where TDtoResponse : IDto;
 
+    object? _Get(
+        Expression<Func<TEntity, object>> select,
+        Filter? filter = null,
+        IEnumerable<Sort>? sorts = null,
+        Expression<Func<TEntity, bool>>? where = null,
+        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
+        bool ignoreFilters = false,
+        bool tracking = false
+    );
+
     TDtoResponse? _Get<TDtoResponse>(
         Filter? filter = null,
         IEnumerable<Sort>? sorts = null,
@@ -98,6 +109,16 @@ public interface IServiceBase<TEntity> where TEntity : class, IEntity
         Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
         bool ignoreFilters = false,
         bool tracking = false) where TDtoResponse : IDto;
+
+    ICollection<object>? _GetList(
+        Expression<Func<TEntity, object>> select,
+        Filter? filter = null,
+        IEnumerable<Sort>? sorts = null,
+        Expression<Func<TEntity, bool>>? where = null,
+        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
+        bool ignoreFilters = false,
+        bool tracking = false);
 
     ICollection<TDtoResponse>? _GetList<TDtoResponse>(
         Filter? filter = null,

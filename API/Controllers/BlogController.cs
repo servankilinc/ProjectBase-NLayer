@@ -14,11 +14,11 @@ public class BlogController : ControllerBase
     private readonly IBlogService _blogService;
     public BlogController(IBlogService blogService) => _blogService = blogService;
 
-    #region GetBasic
+    #region GetEntity
     [HttpGet("Get")]
-    public async Task<IActionResult> Get(Guid Id)
+    public async Task<IActionResult> Get(Guid id)
     {
-        var result = await _blogService.GetByBasicAsync(Id);
+        var result = await _blogService.GetAsync(id);
 
         if (result == null) return NotFound();
 
@@ -28,7 +28,7 @@ public class BlogController : ControllerBase
     [HttpPost("GetAll")]
     public async Task<IActionResult> GetAll(DynamicRequest? request)
     {
-        var result = await _blogService.GetAllByBasicAsync(request);
+        var result = await _blogService.GetAllAsync(request);
 
         if (result == null) return NotFound();
 
@@ -37,6 +37,38 @@ public class BlogController : ControllerBase
 
     [HttpPost("GetList")]
     public async Task<IActionResult> GetList(DynamicPaginationRequest request)
+    {
+        var result = await _blogService.GetListAsync(request);
+
+        if (result == null) return NotFound();
+
+        return Ok(result);
+    }
+    #endregion
+
+    #region GetBasic
+    [HttpGet("GetByBasic")]
+    public async Task<IActionResult> GetByBasic(Guid Id)
+    {
+        var result = await _blogService.GetByBasicAsync(Id);
+
+        if (result == null) return NotFound();
+
+        return Ok(result);
+    }
+
+    [HttpPost("GetAllByBasic")]
+    public async Task<IActionResult> GetAllByBasic(DynamicRequest? request)
+    {
+        var result = await _blogService.GetAllByBasicAsync(request);
+
+        if (result == null) return NotFound();
+
+        return Ok(result);
+    }
+
+    [HttpPost("GetListByBasic")]
+    public async Task<IActionResult> GetListByBasic(DynamicPaginationRequest request)
     {
         var result = await _blogService.GetListByBasicAsync(request);
 
@@ -116,12 +148,28 @@ public class BlogController : ControllerBase
 
         return Ok(result);
     }
+    
+    [HttpPost("DatatableClientSideReport")]
+    public async Task<IActionResult> DatatableClientSideReport(DynamicRequest request)
+    {
+        var result = await _blogService.DatatableClientSideByReportAsync(request);
+        if (result == null) return NotFound();
+        return Ok(result);
+    }
 
     [HttpPost("DatatableServerSide")]
     public async Task<IActionResult> DatatableServerSide(DynamicDatatableServerSideRequest request)
     {
         var result = await _blogService.DatatableServerSideAsync(request);
 
+        return Ok(result);
+    } 
+
+    [HttpPost("DatatableServerSideReport")]
+    public async Task<IActionResult> DatatableServerSideReport(DynamicDatatableServerSideRequest request)
+    {
+        var result = await _blogService.DatatableServerSideByReportAsync(request);
+        if (result == null) return NotFound();
         return Ok(result);
     }
     #endregion

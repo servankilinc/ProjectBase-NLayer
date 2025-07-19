@@ -27,7 +27,7 @@ public class UserController : Controller
         };
         return View(viewModel);
     }
-    
+
     [HttpGet]
     public async Task<IActionResult> Create()
     {
@@ -62,10 +62,10 @@ public class UserController : Controller
 
     #region Datatable
     [HttpPost]
-    public async Task<DatatableResponseServerSide<UserReportDto>> DatatableServerSide(DynamicDatatableServerSideRequest request)
+    public async Task<IActionResult> DatatableServerSide(DynamicDatatableServerSideRequest request)
     {
         var result = await _userService.DatatableServerSideByReportAsync(request);
-        return result;
+        return Ok(result);
     }
     #endregion
 
@@ -82,7 +82,7 @@ public class UserController : Controller
     [HttpGet]
     public async Task<IActionResult> UpdateForm(Guid id)
     {
-        var data = await _userService.GetAsync<UserUpdateDto>(id);
+        var data = await _userService.GetAsync<UserUpdateDto>(where: f => f.Id == id);
 
         if (data == null) return NotFound(data);
 

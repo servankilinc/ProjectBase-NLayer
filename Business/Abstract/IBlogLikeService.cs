@@ -19,12 +19,18 @@ public interface IBlogLikeService : IServiceBase<BlogLike>, IServiceBaseAsync<Bl
     #endregion
 
     #region Get Generic
-    Task<TResponse?> GetAsync<TResponse>(Guid BlogId, Guid UserId, CancellationToken cancellationToken = default) where TResponse : IDto;
+    Task<TResponse?> GetAsync<TResponse>(Expression<Func<BlogLike, bool>> where, CancellationToken cancellationToken = default) where TResponse : IDto;
     Task<ICollection<TResponse>?> GetListAsync<TResponse>(Expression<Func<BlogLike, bool>>? where = default, CancellationToken cancellationToken = default) where TResponse : IDto;
     #endregion
 
     #region SelectList
-    Task<SelectList> GetSelectListAsync(Expression<Func<BlogLike, bool>>? where = default, CancellationToken cancellationToken = default);
+    // Multiple Primary Key...
+    #endregion
+
+    #region Get
+    Task<BlogLike?> GetAsync(Guid BlogId, Guid UserId, CancellationToken cancellationToken = default);
+    Task<ICollection<BlogLike>?> GetAllAsync(DynamicRequest? request, CancellationToken cancellationToken = default);
+    Task<PaginationResponse<BlogLike>> GetListAsync(DynamicPaginationRequest request, CancellationToken cancellationToken = default);
     #endregion
 
     #region GetBasic

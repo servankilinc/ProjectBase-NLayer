@@ -205,6 +205,29 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
         return responseModel;
     }
 
+    public object? _Get(
+        Expression<Func<TEntity, object>> select,
+        Filter? filter = null,
+        IEnumerable<Sort>? sorts = null,
+        Expression<Func<TEntity, bool>>? where = null,
+        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
+        bool ignoreFilters = false,
+        bool tracking = false)
+    {
+        object? responseModel = _repository.Get(
+            select: select,
+            filter: filter,
+            sorts: sorts,
+            where: where,
+            orderBy: orderBy,
+            include: include,
+            ignoreFilters: ignoreFilters,
+            tracking: tracking);
+
+        return responseModel;
+    }
+
     public TDtoResponse? _Get<TDtoResponse>(
         Filter? filter = null,
         IEnumerable<Sort>? sorts = null,
@@ -261,6 +284,29 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
        bool tracking = false) where TDtoResponse : IDto
     {
         ICollection<TDtoResponse>? responseModel = _repository.GetAll(
+            select: select,
+            filter: filter,
+            sorts: sorts,
+            where: where,
+            orderBy: orderBy,
+            include: include,
+            ignoreFilters: ignoreFilters,
+            tracking: tracking);
+
+        return responseModel;
+    }
+
+    public ICollection<object>? _GetList(
+       Expression<Func<TEntity, object>> select,
+       Filter? filter = null,
+       IEnumerable<Sort>? sorts = null,
+       Expression<Func<TEntity, bool>>? where = null,
+       Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
+       Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
+       bool ignoreFilters = false,
+       bool tracking = false)
+    {
+        ICollection<object>? responseModel = _repository.GetAll(
             select: select,
             filter: filter,
             sorts: sorts,
@@ -662,6 +708,31 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
         return responseModel;
     }
 
+    public async Task<object?> _GetAsync(
+        Expression<Func<TEntity, object>> select,
+        Filter? filter = null,
+        IEnumerable<Sort>? sorts = null,
+        Expression<Func<TEntity, bool>>? where = null,
+        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
+        bool ignoreFilters = false,
+        bool tracking = false,
+        CancellationToken cancellationToken = default)
+    {
+        object? responseModel = await _repository.GetAsync(
+            select: select,
+            filter: filter,
+            sorts: sorts,
+            where: where,
+            orderBy: orderBy,
+            include: include,
+            ignoreFilters: ignoreFilters,
+            tracking: tracking,
+            cancellationToken: cancellationToken);
+
+        return responseModel;
+    }
+
     public async Task<TDtoResponse?> _GetAsync<TDtoResponse>(
         Filter? filter = null,
         IEnumerable<Sort>? sorts = null,
@@ -723,6 +794,31 @@ public class ServiceBase<TEntity, TRepository> : IServiceBase<TEntity>, IService
         CancellationToken cancellationToken = default) where TDtoResponse : IDto
     {
         ICollection<TDtoResponse>? responseModel = await _repository.GetAllAsync(
+            select: select,
+            filter: filter,
+            sorts: sorts,
+            where: where,
+            orderBy: orderBy,
+            include: include,
+            ignoreFilters: ignoreFilters,
+            tracking: tracking,
+            cancellationToken: cancellationToken);
+
+        return responseModel;
+    }
+
+    public async Task<ICollection<object>?> _GetListAsync(
+        Expression<Func<TEntity, object>> select,
+        Filter? filter = null,
+        IEnumerable<Sort>? sorts = null,
+        Expression<Func<TEntity, bool>>? where = null,
+        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
+        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object?>>? include = null,
+        bool ignoreFilters = false,
+        bool tracking = false,
+        CancellationToken cancellationToken = default)
+    {
+        ICollection<object>? responseModel = await _repository.GetAllAsync(
             select: select,
             filter: filter,
             sorts: sorts,

@@ -1,5 +1,4 @@
-﻿using Azure;
-using Business.ServiceBase;
+﻿using Business.ServiceBase;
 using Core.BaseRequestModels;
 using Core.Model;
 using Core.Utils.Datatable;
@@ -19,12 +18,18 @@ public interface IBlogService : IServiceBase<Blog>, IServiceBaseAsync<Blog>
     #endregion
 
     #region Get Generic
-    Task<TResponse?> GetAsync<TResponse>(Guid Id, CancellationToken cancellationToken = default) where TResponse : IDto;
+    Task<TResponse?> GetAsync<TResponse>(Expression<Func<Blog, bool>> where, CancellationToken cancellationToken = default) where TResponse : IDto;
     Task<ICollection<TResponse>?> GetListAsync<TResponse>(Expression<Func<Blog, bool>>? where = default, CancellationToken cancellationToken = default) where TResponse : IDto;
     #endregion
 
     #region SelectList
     Task<SelectList> GetSelectListAsync(Expression<Func<Blog, bool>>? where = default, CancellationToken cancellationToken = default);
+    #endregion
+
+    #region Get
+    Task<Blog?> GetAsync(Guid Id, CancellationToken cancellationToken = default);
+    Task<ICollection<Blog>?> GetAllAsync(DynamicRequest? request, CancellationToken cancellationToken = default);
+    Task<PaginationResponse<Blog>> GetListAsync(DynamicPaginationRequest request, CancellationToken cancellationToken = default);
     #endregion
 
     #region GetBasic

@@ -1,6 +1,5 @@
 ﻿using Business.Abstract;
 using Core.BaseRequestModels;
-using Core.Utils.Datatable;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Model.Dtos.Blog_;
@@ -34,6 +33,7 @@ public class BlogController : Controller
         return View(viewModel);
     }
 
+    #region Create
     [HttpGet]
     public async Task<IActionResult> Create()
     {
@@ -45,39 +45,6 @@ public class BlogController : Controller
         return View(viewModel);
     }
 
-    [HttpPost]
-    [ServiceFilter(typeof(ValidationFilter<BlogCreateDto>))]
-    public async Task<IActionResult> Create(BlogCreateDto createModel)
-    {
-        var result = await _blogService.CreateAsync(createModel);
-        return Ok(result);
-    }
-
-    [HttpPost]
-    [ServiceFilter(typeof(ValidationFilter<BlogUpdateDto>))]
-    public async Task<IActionResult> Update(BlogUpdateDto updateModel)
-    {
-        var result = await _blogService.UpdateAsync(updateModel);
-        return Ok(result);
-    }
-
-    [HttpDelete]
-    public async Task<IActionResult> Delete(Guid id)
-    {
-        await _blogService.DeleteAsync(id);
-        return Ok();
-    }
-
-    #region Datatable
-    [HttpPost]
-    public async Task<DatatableResponseServerSide<BlogReportDto>> DatatableServerSide(DynamicDatatableServerSideRequest request)
-    {
-        var result = await _blogService.DatatableServerSideByReportAsync(request);
-        return result;
-    }
-    #endregion
-
-    #region Form Partials
     [HttpGet]
     public async Task<IActionResult> CreateForm()
     {
@@ -89,10 +56,20 @@ public class BlogController : Controller
         return PartialView("./Partials/CreateForm", viewModel);
     }
 
+    [HttpPost]
+    [ServiceFilter(typeof(ValidationFilter<BlogCreateDto>))]
+    public async Task<IActionResult> Create(BlogCreateDto createModel)
+    {
+        var result = await _blogService.CreateAsync(createModel);
+        return Ok(result);
+    }
+    #endregion
+
+    #region Update
     [HttpGet]
     public async Task<IActionResult> UpdateForm(Guid id)
     {
-        var data = await _blogService.GetAsync<BlogUpdateDto>(id);
+        var data = await _blogService.GetAsync<BlogUpdateDto>(where: f => f.Id == id);
 
         if (data == null) return NotFound(data);
 
@@ -103,6 +80,32 @@ public class BlogController : Controller
             CategoryIds = await _categoryService.GetSelectListAsync()
         };
         return PartialView("./Partials/UpdateForm", viewModel);
+    }
+
+    [HttpPost]
+    [ServiceFilter(typeof(ValidationFilter<BlogUpdateDto>))]
+    public async Task<IActionResult> Update(BlogUpdateDto updateModel)
+    {
+        var result = await _blogService.UpdateAsync(updateModel);
+        return Ok(result);
+    }
+    #endregion
+
+    #region Delete
+    [HttpDelete]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        await _blogService.DeleteAsync(id);
+        return Ok();
+    }
+    #endregion
+    
+    #region Datatable
+    [HttpPost]
+    public async Task<IActionResult> DatatableServerSide(DynamicDatatableServerSideRequest request)
+    {
+        var result = await _blogService.DatatableServerSideByReportAsync(request);
+        return Ok(result);
     }
     #endregion
 }

@@ -48,13 +48,10 @@ public class BlogLikeService : ServiceBase<BlogLike, IBlogLikeRepository>, IBlog
     #endregion
 
     #region Get Generic
-    public async Task<TResponse?> GetAsync<TResponse>(Guid BlogId, Guid UserId, CancellationToken cancellationToken = default) where TResponse : IDto
+    public async Task<TResponse?> GetAsync<TResponse>(Expression<Func<BlogLike, bool>> where, CancellationToken cancellationToken = default) where TResponse : IDto
     {
-        if (BlogId == default) throw new ArgumentNullException(nameof(BlogId));
-        if (UserId == default) throw new ArgumentNullException(nameof(UserId));
-
         var result = await _GetAsync<TResponse>(
-            where: f => f.BlogId == BlogId && f.UserId == UserId,
+            where: where,
             tracking: false,
             cancellationToken: cancellationToken
         );
@@ -75,13 +72,47 @@ public class BlogLikeService : ServiceBase<BlogLike, IBlogLikeRepository>, IBlog
     #endregion
 
     #region SelectList
-    public async Task<SelectList> GetSelectListAsync(Expression<Func<BlogLike, bool>>? where = default, CancellationToken cancellationToken = default)
+    // Multiple Primary Key...
+    #endregion
+
+    #region Get
+    public async Task<BlogLike?> GetAsync(Guid BlogId, Guid UserId, CancellationToken cancellationToken = default)
     {
-        var result = new SelectList(await _GetListAsync(
-            where: where,
+        if (BlogId == default) throw new ArgumentNullException(nameof(BlogId));
+        if (UserId == default) throw new ArgumentNullException(nameof(UserId));
+
+        var result = await _GetAsync(
+            where: f => f.BlogId == BlogId && f.UserId == UserId,
+            include: i => i.Include(x => x.User),
             tracking: false,
             cancellationToken: cancellationToken
-        ), "Id", "Name");
+        );
+
+        return result;
+    }
+
+    public async Task<ICollection<BlogLike>?> GetAllAsync(DynamicRequest? request, CancellationToken cancellationToken = default)
+    {
+        var result = await _GetListAsync(
+            filter: request?.Filter,
+            sorts: request?.Sorts,
+            include: i => i.Include(x => x.User),
+            tracking: false,
+            cancellationToken: cancellationToken
+        );
+
+        return result;
+    }
+
+    public async Task<PaginationResponse<BlogLike>> GetListAsync(DynamicPaginationRequest request, CancellationToken cancellationToken = default)
+    {
+        var result = await _PaginationAsync(
+            paginationRequest: request.PaginationRequest,
+            filter: request.Filter,
+            sorts: request.Sorts,
+            include: i => i.Include(x => x.User),
+            cancellationToken: cancellationToken
+        );
 
         return result;
     }
