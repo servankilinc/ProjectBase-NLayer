@@ -6,7 +6,6 @@ using Core.Utils.Auth;
 using DataAccess;
 using DataAccess.Contexts;
 using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
 using Model;
@@ -18,7 +17,6 @@ using WebUI.ExceptionHandler;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
 builder.Services.AddFluentValidationAutoValidation();
@@ -111,8 +109,7 @@ builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory())
 
 
 // ------- IDENTITY -------
-TokenSettings tokenSettings = builder.Configuration.GetSection("TokenSettings").Get<TokenSettings>()!;
-builder.Services.AddSingleton(tokenSettings);
+builder.Services.AddSingleton<TokenSettings>(new TokenSettings());
 
 builder.Services
     .AddIdentity<User, IdentityRole<Guid>>(options =>
@@ -124,7 +121,7 @@ builder.Services
 
         options.SignIn.RequireConfirmedEmail = false;
 
-        options.Password.RequiredLength = 6;
+        options.Password.RequiredLength = 4;
         options.Password.RequireDigit = false;
         options.Password.RequireNonAlphanumeric = false;
         options.Password.RequireLowercase = false;
@@ -168,7 +165,8 @@ var app = builder.Build();
 
 app.UseMiddleware<ExceptionHandleMiddleware>();
 
-// Configure the HTTP request pipeline.
+//app.UseStaticFiles();
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/InvalidProcess");
@@ -179,7 +177,6 @@ if (!app.Environment.IsDevelopment())
 app.UseStatusCodePagesWithReExecute("/Error/NotFound");
 
 app.UseHttpsRedirection();
-//app.UseStaticFiles();
 
 app.UseCors("policy_cors");
 

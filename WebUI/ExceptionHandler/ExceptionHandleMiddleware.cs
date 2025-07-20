@@ -26,7 +26,7 @@ public class ExceptionHandleMiddleware
             {
                 await CatchJsonExceptionAsync(context.Response, e);
             }
-            else 
+            else
             {
                 CatchPageException(context.Response, e);
             }
@@ -135,7 +135,7 @@ public class ExceptionHandleMiddleware
 
         return HandleOtherException(response, exception);
     }
-    
+
 
     private Task HandleValidationException(HttpResponse response, ValidationRuleException exception)
     {

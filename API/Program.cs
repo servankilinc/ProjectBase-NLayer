@@ -116,7 +116,7 @@ builder.Services
 
         options.SignIn.RequireConfirmedEmail = false;
 
-        options.Password.RequiredLength = 6;
+        options.Password.RequiredLength = 4;
         options.Password.RequireDigit = false;
         options.Password.RequireNonAlphanumeric = false;
         options.Password.RequireLowercase = false;

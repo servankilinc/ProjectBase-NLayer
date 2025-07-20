@@ -1,6 +1,4 @@
-﻿using WebUI.Models;
-
-namespace WebUI.Models.UI;
+﻿namespace WebUI.Models.UI;
 
 public class MenuItem
 {

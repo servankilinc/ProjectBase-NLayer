@@ -2,11 +2,9 @@
 using Core.Utils.ExceptionHandle.Exceptions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Model.Auth.Login;
 using Model.Auth.SignUp;
-using Model.Entities;
 using WebUI.Utils.ActionFilters;
 
 namespace WebUI.Controllers
@@ -14,13 +12,9 @@ namespace WebUI.Controllers
     public class AccountController : Controller
     {
         private readonly IAuthService _authService;
-        private readonly UserManager<User> _userManager;
-        private readonly SignInManager<User> _signInManager;
-        public AccountController(IAuthService authService, UserManager<User> userManager, SignInManager<User> signInManager)
+        public AccountController(IAuthService authService)
         {
             _authService = authService;
-            _userManager = userManager;
-            _signInManager = signInManager;
         }
 
 
@@ -68,7 +62,7 @@ namespace WebUI.Controllers
         {
             try
             {
-                await _authService.SignUpWebBaseAsync(signUpRequest); 
+                await _authService.SignUpWebBaseAsync(signUpRequest);
 
                 return RedirectToAction("Index", "Home");
             }
