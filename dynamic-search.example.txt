@@ -1,0 +1,220 @@
+HasImage == true && (category == "yemek" || category == "okul") && (english == "masa" || turkish == "masa")
+ 
+için
+
+// *************************** Solution 1 ***************************
+
+{
+  "pagingRequest": {
+    "page": 0,
+    "pageSize": 10
+  },
+  "dynamicQuery": { 
+    "filter": {
+      "field": "HasImage",
+      "operator": "eq",
+      "value": "true",
+      "logic": "and",
+      "filters": [
+        {
+          "field": "CategoryId",
+          "operator": "eq",
+          "value": "30e4922c-21b0-41ca-3437-08dc7f1d20b7",
+          "logic": "or",
+          "filters": [
+            {
+              "field": "CategoryId",
+              "operator": "eq",
+              "value": "6ced3c9d-da88-43f3-02dc-08dc7d95e5e0"
+            }
+          ]
+        },
+        {
+          "field": "english",
+          "operator": "eq",
+          "value": "masa",
+          "logic": "or",
+          "filters": [
+            {
+              "field": "turkish",
+              "operator": "eq",
+              "value": "masa"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
+
+ 
+// *************************** Solution 2 ***************************
+
+{
+  "pagingRequest": {
+    "page": 0,
+    "pageSize": 10
+  },
+  "dynamicQuery": { 
+    "filter": { 
+      "operator": "base", 
+      "logic": "and",
+      "filters": [
+        {
+          "field": "HasImage",
+          "operator": "eq",
+          "value": "true"
+        },
+        {
+          "field": "CategoryId",
+          "operator": "eq",
+          "value": "30e4922c-21b0-41ca-3437-08dc7f1d20b7",
+          "logic": "or",
+          "filters": [
+            {
+              "field": "CategoryId",
+              "operator": "eq",
+              "value": "6ced3c9d-da88-43f3-02dc-08dc7d95e5e0"
+            }
+          ]
+        },
+        {
+          "field": "english",
+          "operator": "eq",
+          "value": "masa",
+          "logic": "or",
+          "filters": [
+            {
+              "field": "turkish",
+              "operator": "eq",
+              "value": "masa"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
+
+
+// *************************** Solution 3 ***************************
+
+{
+  "pagingRequest": {
+    "page": 0,
+    "pageSize": 10
+  },
+  "dynamicQuery": { 
+    "filter": { 
+      "operator": "base", 
+      "logic": "and",
+      "filters": [
+        {
+          "field": "HasImage",
+          "operator": "eq",
+          "value": "true"
+        },
+        {
+          "operator": "base", 
+          "logic": "or",
+          "filters": [
+            {
+              "field": "CategoryId",
+              "operator": "eq",
+              "value": "6ced3c9d-da88-43f3-02dc-08dc7d95e5e0"
+            },
+            {
+              "field": "CategoryId",
+              "operator": "eq",
+              "value": "30e4922c-21b0-41ca-3437-08dc7f1d20b7"
+            }
+          ]
+        },
+        {
+          "operator": "base", 
+          "logic": "or",
+          "filters": [
+            {
+              "field": "english",
+              "operator": "eq",
+              "value": "masa"
+            },
+            {
+              "field": "turkish",
+              "operator": "eq",
+              "value": "masa"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
+
+
+
+
+//  *************************** EXAMPLE 2 ***************************
+
+{
+  "filter": {
+    "field": "name",
+    "operator": "eq",
+    "value": "Focus",
+    "logic": "or",
+    "filters": [
+      {
+        "field": "id",
+        "operator": "gte",
+        "value": "8",
+        "logic": "and",
+        "filters": [
+          {
+            "field": "name",
+            "operator": "eq",
+            "value": "GLA",
+            "logic":"and",
+            "filters": [
+              {
+              "field": "dailyPrice",
+               "operator": "gte",
+              "value": "2000"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+ 
+
+
+
+{
+  "items": [
+    {
+      "id": 3,
+      "name": "Focus",
+      "dailyPrice": 900,
+      "brandName": "FORD"
+    },
+    {
+      "id": 9,
+      "name": "GLA",
+      "dailyPrice": 2200,
+      "brandName": "MERCEDES"
+    }
+  ],
+  "index": 0,
+  "size": 2,
+  "count": 2,
+  "pages": 1,
+  "hasPrevious": false,
+  "hasNext": false
+}
+
+
+
+
+
