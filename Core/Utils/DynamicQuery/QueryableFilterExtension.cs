@@ -1,4 +1,5 @@
-﻿using System.Linq.Dynamic.Core;
+using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Text;
 
 namespace Core.Utils.DynamicQuery;
@@ -41,7 +42,7 @@ public static class QueryableFilterExtension
                 throw new ArgumentException("Invalid Logic Type For Filter Process");
         }
 
-        string?[] values = filterList.Select(f => f.Value).ToArray();
+        string?[] values = filterList.Where(f => f.Value != null).Select(f => f.Value).ToArray();
         string where = Transform(filter, filterList);
 
         if (!string.IsNullOrWhiteSpace(where))
@@ -61,7 +62,8 @@ public static class QueryableFilterExtension
 
     public static string Transform(Filter filter, IList<Filter> filters)
     {
-        int index = filters.IndexOf(filter);
+        var tempList = filters.Where(f => f.Value != null).ToList();
+        int index = tempList.IndexOf(filter);
         string comparison = _operators[filter.Operator!];
         StringBuilder where = new();
 
@@ -115,6 +117,8 @@ public static class QueryableFilterExtension
         if (filter.Logic is not null && filter.Filters is not null && filter.Filters.Any())
         {
             string baseLogic = filter.Operator == "base" ? "" : filter.Logic;
+            if (filter.Operator == "base" && !filter.Filters.Any(f => f.Value != null)) return "";
+
             return $"({where} {baseLogic} {string.Join(separator: $" {filter.Logic} ", value: filter.Filters.Where(f => f.Operator == "base" || !string.IsNullOrEmpty(f.Value)).Select(f => Transform(f, filters)).ToArray())})";
         }
 

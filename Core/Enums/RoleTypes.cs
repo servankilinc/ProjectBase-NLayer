@@ -1,15 +1,15 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 
 namespace Core.Enums;
 
 public enum RoleTypes
 {
     [Description("User")]
-    User = 0,
+    User = 1,
     [Description("Manager")]
-    Manager = 1,
+    Manager = 2,
     [Description("Admin")]
-    Admin = 2,
+    Admin = 3,
     [Description("Owner")]
-    Owner = 3,
+    Owner = 4,
 }

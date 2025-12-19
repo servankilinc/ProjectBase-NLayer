@@ -1,4 +1,4 @@
-﻿using Castle.DynamicProxy;
+using Castle.DynamicProxy;
 using Core.Utils.Caching;
 using Core.Utils.CrossCuttingConcerns.Helpers;
 using Newtonsoft.Json;
@@ -116,11 +116,14 @@ public class CacheInterceptor : IInterceptor
 
     private string GenerateCacheKey(string cacheKey, object[] args)
     {
-        if (args.Length > 0)
+        var filteredArgs = args.Where(a => a is not CancellationToken && a is not null).ToArray();
+         
+        if (filteredArgs.Length > 0)
         {
-            var serializedArgs = JsonConvert.SerializeObject(args, new JsonSerializerSettings
+            var serializedArgs = JsonConvert.SerializeObject(filteredArgs, new JsonSerializerSettings
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                Formatting = Formatting.None
             });
             return $"{cacheKey}-{serializedArgs}";
         }

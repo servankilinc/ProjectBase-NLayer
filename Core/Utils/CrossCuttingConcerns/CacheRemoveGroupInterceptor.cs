@@ -1,9 +1,10 @@
-﻿using Castle.DynamicProxy;
+using Castle.DynamicProxy;
 using Core.Utils.Caching;
 using Core.Utils.CrossCuttingConcerns.Helpers;
 using System.Reflection;
 
 namespace Core.Utils.CrossCuttingConcerns;
+
 public class CacheRemoveGroupInterceptor : IInterceptor
 {
     private readonly ICacheService _cacheService;

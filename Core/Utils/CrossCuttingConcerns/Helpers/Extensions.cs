@@ -1,4 +1,4 @@
-﻿using Castle.DynamicProxy;
+using Castle.DynamicProxy;
 using Core.Utils.CriticalData;
 using Newtonsoft.Json;
 using System.Reflection;
@@ -81,7 +81,7 @@ public static class Extensions
             }
             paramDict[parameterName] = value;
         }
-        ;
+        
 
         return JsonConvert.SerializeObject(paramDict, new JsonSerializerSettings
         {

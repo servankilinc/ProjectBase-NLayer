@@ -5,14 +5,14 @@ using System.Reflection;
 namespace Core.Utils.CriticalData
 {
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
-    public class CriticalDataAttribute : Attribute
+    public class IgnoreMapAttribute : Attribute
     {
     }
 
     /// <summary>
-    /// Json Serilaze Ignore Critical Properties for logs ...
+    /// Json Serilaze Ignore Properties for logs ...
     /// </summary>
-    public class IgnoreCriticalDataResolver : DefaultContractResolver
+    public class IgnoreMapResolver : DefaultContractResolver
     {
         protected override IList<JsonProperty> CreateProperties(Type type, MemberSerialization memberSerialization)
         {
@@ -25,7 +25,7 @@ namespace Core.Utils.CriticalData
                 PropertyInfo? propertyInfo = type.GetProperty(p.PropertyName);
                 if (propertyInfo == null) return true;
 
-                return !Attribute.IsDefined(propertyInfo, typeof(CriticalDataAttribute));
+                return !Attribute.IsDefined(propertyInfo, typeof(IgnoreMapAttribute));
             }).ToList();
         }
     }

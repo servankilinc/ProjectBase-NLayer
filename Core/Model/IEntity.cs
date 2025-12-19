@@ -1,4 +1,4 @@
-﻿namespace Core.Model;
+namespace Core.Model;
 
 /// <summary>
 /// Base interface for all entities.
@@ -48,4 +48,19 @@ public interface ILoggableEntity
 /// </summary>
 public interface IArchivableEntity
 {
+}
+
+/// <summary>
+/// Interface for entities that support localization.
+/// </summary>
+public interface ILocalizableEntity
+{
+}
+
+/// <summary>
+/// Interface for entities that support localization.
+/// </summary>
+public interface ILocalizableEntity<TId> : ILocalizableEntity
+{
+    public TId Id { get; set; }
 }
